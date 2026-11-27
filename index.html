@@ -10,7 +10,7 @@
 <title>PDMU Virtual Office</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #020617; padding: 10px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #ffffff; }
+  html, body { background: transparent; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #ffffff; }
   .vo-shell { max-width: 1440px; margin: 0 auto; background: #030954; border: 2px solid #fbbf24; border-bottom: 5px solid #f59e0b; border-radius: 14px; padding: 12px; box-shadow: 0 12px 30px rgba(3, 9, 84, 0.35); position: relative; }
   .vo-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
   .vo-header h2 { font-size: 18px; font-weight: 900; color: #fbbf24; }
@@ -29,11 +29,11 @@
   .view-only-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(127, 29, 29, 0.9); border: 1px solid #fca5a5; color: #fecaca; font-weight: 800; display: none; }
   .view-only-pill.active { display: inline-flex; align-items: center; gap: 4px; }
 
-  .summary-strip { flex: 1; min-width: 280px; background: #07116e; border: 1.5px solid #fbbf24; border-radius: 8px; padding: 5px 8px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+  .summary-strip { flex: 1; min-width: 320px; background: #07116e; border: 1.5px solid #fbbf24; border-radius: 8px; padding: 5px 8px; display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
   .stat-card { background: #030954; border: 1px solid rgba(251, 191, 36, 0.45); border-radius: 6px; padding: 3px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
-  .stat-num { font-size: 13.5px; font-weight: 900; line-height: 1.1; }
-  .stat-lbl { font-size: 8.5px; font-weight: 800; color: #e2e8f0; white-space: nowrap; }
-  .c-total { color: #fde047; } .c-online { color: #4ade80; } .c-activity { color: #fb923c; } .c-leave { color: #60a5fa; } .c-absent { color: #cbd5e1; } .c-offline { color: #e879f9; }
+  .stat-num { font-size: 13px; font-weight: 900; line-height: 1.1; }
+  .stat-lbl { font-size: 8px; font-weight: 800; color: #e2e8f0; white-space: nowrap; }
+  .c-total { color: #fde047; } .c-online { color: #4ade80; } .c-activity { color: #fb923c; } .c-passlip { color: #facc15; } .c-ptl { color: #2dd4bf; } .c-leave { color: #60a5fa; } .c-absent { color: #cbd5e1; } .c-offline { color: #e879f9; }
 
   .vo-main-grid { display: grid; grid-template-columns: 295px 1fr; gap: 10px; align-items: stretch; }
 
@@ -115,9 +115,8 @@
   .actor-node.is-walking-coffee .px-sprite { opacity: 0.15; }
 
   .bubble-tag { position: relative; padding: 1.5px 6px; border-radius: 5px; border: 1.5px solid #0f172a; font-size: 8.5px; font-weight: 900; color: #0f172a; margin-bottom: 2px; white-space: nowrap; }
-  .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; }
+  .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-passlip { background: #facc15; } .st-ptl { background: #2dd4bf; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; }
   .st-coffee { background: #fde047; }
-  .st-singing { background: #fde047; color: #030954; }
 
   .mini-station-rig { position: relative; display: flex; flex-direction: column; align-items: center; }
   .px-sprite { width: 28px; height: 28px; margin-bottom: -5px; z-index: 4; shape-rendering: crispEdges; }
@@ -174,9 +173,9 @@
   /* Mobile Bottom Navigation Bar */
   .mobile-bottom-nav { display: none; }
   @media (max-width: 820px) {
-    body { padding: 6px 6px 74px 6px; }
+    html, body { padding-bottom: 64px; }
     .vo-shell { border-radius: 10px; padding: 8px; }
-    .summary-strip { grid-template-columns: repeat(3, 1fr); min-width: 100%; }
+    .summary-strip { grid-template-columns: repeat(4, 1fr); min-width: 100%; }
     .vo-main-grid { grid-template-columns: 1fr; }
     .chat-panel { min-height: 430px; max-height: 62vh; }
     .stage-wrap { aspect-ratio: auto; min-height: 440px; height: 64vh; overflow: auto; }
@@ -234,7 +233,7 @@
       <button type="button" class="install-pwa-btn" id="installPwaBtn" onclick="installPwaApp()">📲 Install App</button>
       <span class="view-only-pill" id="viewOnlyPill">👁 VIEW ONLY (OTHER OFFICE)</span>
       <span class="after-hours-pill" id="afterHoursPill">🌙 7:30 PM+ • AUTO-OFFLINE</span>
-      <span class="sync-pill" id="syncPill">Live Synced</span>
+      <span class="sync-pill" id="syncPill">Syncing...</span>
     </div>
   </div>
 
@@ -253,6 +252,8 @@
         <option value="ALL">Show All</option>
         <option value="online">Online / In Office</option>
         <option value="activity">Activity / Gawas</option>
+        <option value="passlip">Passlip</option>
+        <option value="ptl">PTL</option>
         <option value="leave">On Leave</option>
         <option value="absent">Absent</option>
         <option value="offline">Offline</option>
@@ -266,6 +267,8 @@
       <div class="stat-card" onclick="quickFilter('ALL')"><span class="stat-num c-total" id="cntTotal">0</span><span class="stat-lbl">TOTAL</span></div>
       <div class="stat-card" onclick="quickFilter('online')"><span class="stat-num c-online" id="cntOnline">0</span><span class="stat-lbl">IN OFFICE</span></div>
       <div class="stat-card" onclick="quickFilter('activity')"><span class="stat-num c-activity" id="cntActivity">0</span><span class="stat-lbl">GAWAS / ACT</span></div>
+      <div class="stat-card" onclick="quickFilter('passlip')"><span class="stat-num c-passlip" id="cntPasslip">0</span><span class="stat-lbl">PASSLIP</span></div>
+      <div class="stat-card" onclick="quickFilter('ptl')"><span class="stat-num c-ptl" id="cntPtl">0</span><span class="stat-lbl">PTL</span></div>
       <div class="stat-card" onclick="quickFilter('leave')"><span class="stat-num c-leave" id="cntLeave">0</span><span class="stat-lbl">ON LEAVE</span></div>
       <div class="stat-card" onclick="quickFilter('absent')"><span class="stat-num c-absent" id="cntAbsent">0</span><span class="stat-lbl">ABSENT</span></div>
       <div class="stat-card" onclick="quickFilter('offline')"><span class="stat-num c-offline" id="cntOffline">0</span><span class="stat-lbl">OFFLINE</span></div>
@@ -381,6 +384,8 @@
       <div class="status-btns">
         <button type="button" style="background:#4ade80;" onclick="requestPinAction('STATUS_ONLINE')">Online</button>
         <button type="button" style="background:#fb923c;" onclick="requestPinAction('STATUS_ACTIVITY')">Activity</button>
+        <button type="button" style="background:#facc15;" onclick="requestPinAction('STATUS_PASSLIP')">Passlip</button>
+        <button type="button" style="background:#2dd4bf;" onclick="requestPinAction('STATUS_PTL')">PTL</button>
         <button type="button" style="background:#60a5fa;" onclick="requestPinAction('STATUS_LEAVE')">Leave</button>
         <button type="button" style="background:#cbd5e1;" onclick="requestPinAction('STATUS_ABSENT')">Absent</button>
         <button type="button" style="background:#e879f9;" onclick="requestPinAction('STATUS_OFFLINE')">Offline</button>
@@ -435,16 +440,13 @@
 </div>
 
 <script>
-  const APPS_SCRIPT_URL = "";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7-3e7fOJ_cNRqbFQNBmZ2K-XnU15C-MDLiYRVOrYwMJtTeF_Y-ZA04QnXmVzSkR-f/exec";
   const CONVO_PASSKEY = "PDMU2026";
   const ADMIN_PIN = "PDMUADMIN";
   const DANCE_BREAK_MINUTES = 30;
   const COFFEE_DURATION_MS = 60000;
   const COFFEE_INTERVAL_MS = 180000;
   const PROVINCE_CODES = ["ADN", "ADS", "SDN", "SDS", "PDI"];
-
-  let JAY_SINGING_SUBAYBAYANI = true;
-  const JAY_CENTER_POS = { x: 49.5, y: 52.0 };
 
   const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="16" fill="#030954"/><circle cx="16" cy="12" r="5.5" fill="#fcd34d"/><path d="M7 28c0-5 4-8.5 9-8.5s9 3.5 9 8.5" fill="#2563eb"/></svg>');
 
@@ -471,25 +473,25 @@
   };
 
   const PEOPLE = [
-    { name: "Airah", x: 29.0, y: 14.0, hair: "#334155", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Shaira", x: 12.0, y: 27.0, hair: "#451a03", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Darren", x: 23.0, y: 27.0, hair: "#0f172a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Rachel", x: 34.0, y: 27.0, hair: "#334155", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Carl", x: 45.0, y: 27.0, hair: "#1e1b4b", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Nuelson", x: 12.0, y: 40.0, hair: "#27272a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Aisley", x: 23.0, y: 40.0, hair: "#451a03", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "AJ Boy", x: 34.0, y: 40.0, hair: "#0f172a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jill", x: 45.0, y: 40.0, hair: "#1e293b", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Lee", x: 12.0, y: 53.0, hair: "#27272a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Kiarah", x: 23.0, y: 53.0, hair: "#334155", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Cyrus", x: 34.0, y: 53.0, hair: "#1e1b4b", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jay", x: 45.0, y: 53.0, hair: "#451a03", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Ian", x: 12.0, y: 66.0, hair: "#0f172a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Kirsten", x: 80.5, y: 23.0, hair: "#451a03", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Christian", x: 80.5, y: 39.0, hair: "#1e293b", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jojo (Chief)", x: 81.5, y: 66.5, hair: "#1e293b", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Alvin", x: 57.5, y: 84.5, hair: "#0f172a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jesreel (Asst. Chief)", x: 68.5, y: 84.5, hair: "#451a03", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" }
+    { name: "Airah", x: 29.0, y: 14.0, hair: "#334155", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Shaira", x: 12.0, y: 27.0, hair: "#451a03", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Darren", x: 23.0, y: 27.0, hair: "#0f172a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Rachel", x: 34.0, y: 27.0, hair: "#334155", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Carl", x: 45.0, y: 27.0, hair: "#1e1b4b", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Nuelson", x: 12.0, y: 40.0, hair: "#27272a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Aisley", x: 23.0, y: 40.0, hair: "#451a03", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "AJ Boy", x: 34.0, y: 40.0, hair: "#0f172a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jill", x: 45.0, y: 40.0, hair: "#1e293b", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Lee", x: 12.0, y: 53.0, hair: "#27272a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kiarah", x: 23.0, y: 53.0, hair: "#334155", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Cyrus", x: 34.0, y: 53.0, hair: "#1e1b4b", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jay", x: 45.0, y: 53.0, hair: "#451a03", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Ian", x: 12.0, y: 66.0, hair: "#0f172a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kirsten", x: 80.5, y: 23.0, hair: "#451a03", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Christian", x: 80.5, y: 39.0, hair: "#1e293b", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jojo (Chief)", x: 81.5, y: 66.5, hair: "#1e293b", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Alvin", x: 57.5, y: 84.5, hair: "#0f172a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jesreel (Asst. Chief)", x: 68.5, y: 84.5, hair: "#451a03", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" }
   ];
 
   let deferredInstallPrompt = null;
@@ -542,32 +544,56 @@
     return String(v || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
+  function formatTimeOnly(val) {
+    if (!val) return "";
+    const s = String(val).trim();
+    const m12 = s.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)\b/i);
+    if (m12) {
+      let hr = parseInt(m12[1], 10);
+      const min = m12[2];
+      const ap = m12[3].toUpperCase();
+      if (ap === "PM" && hr < 12) hr += 12;
+      if (ap === "AM" && hr === 12) hr = 0;
+      return String(hr).padStart(2, "0") + ":" + min;
+    }
+    const m24 = s.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\b/);
+    if (m24) {
+      return String(parseInt(m24[1], 10)).padStart(2, "0") + ":" + m24[2];
+    }
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    }
+    return s.replace(/\s*GMT[+-]\d{4}.*$/i, "").trim();
+  }
+
   function normalizeStatus(st) {
-    const s = String(st || "online").trim().toLowerCase();
-    if (s.includes("offline") || s.includes("uli")) return "offline";
+    const s = String(st || "offline").trim().toLowerCase();
+    if (s.includes("passlip")) return "passlip";
+    if (s === "ptl" || s.includes("ptl")) return "ptl";
+    if (s.includes("online") || s.includes("office")) return "online";
     if (s.includes("activity") || s.includes("gawas") || s.includes("field")) return "activity";
     if (s.includes("leave")) return "leave";
     if (s.includes("absent")) return "absent";
-    return "online";
+    return "offline";
   }
 
   function statusLabel(st) {
-    if (st === "offline") return "offline (uli na)";
+    if (st === "online") return "online";
     if (st === "activity") return "activity / gawas";
+    if (st === "passlip") return "passlip";
+    if (st === "ptl") return "ptl";
     if (st === "leave") return "on leave";
     if (st === "absent") return "absent";
-    return "online";
+    return "offline (uli na)";
   }
 
   function getTimingBadgeText(p) {
-    if (!p || !p.checkInAt) return "No Check-In Yet";
-    const m = String(p.checkInAt).match(/^(\d{1,2}):(\d{2})/);
+    const cleanTime = formatTimeOnly(p && p.checkInAt);
+    if (!cleanTime) return "No Check-In Yet";
+    const m = cleanTime.match(/^(\d{1,2}):(\d{2})/);
     if (!m) return "Checked-In";
-    let hr = parseInt(m[1], 10);
-    const min = parseInt(m[2], 10);
-    if (/pm/i.test(p.checkInAt) && hr < 12) hr += 12;
-    if (/am/i.test(p.checkInAt) && hr === 12) hr = 0;
-    const totalMins = hr * 60 + min;
+    const totalMins = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
     if (totalMins <= 8 * 60) return "🟢 On-Time";
     if (totalMins <= 8 * 60 + 15) return "🟠 Grace";
     return "🔴 Late";
@@ -686,28 +712,53 @@
 
   async function executeAuthorizedAction(p, actionType) {
     const noteInputVal = document.getElementById("noteInput").value.trim();
-    const nowStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-    if (actionType === "CHECK_IN") {
-      p.status = "online"; p.note = noteInputVal || "Checked-In at Office"; p.checkInAt = nowStr; p.checkOutAt = "";
-      appendLocalLog(p, "CHECK_IN", getTimingBadgeText(p));
-    } else if (actionType === "CHECK_OUT") {
-      p.status = "offline"; p.note = noteInputVal || "Checked-Out (Uli na)"; p.checkOutAt = nowStr;
-      appendLocalLog(p, "CHECK_OUT", "");
-    } else {
-      const map = { STATUS_ONLINE: ["online", "In Office"], STATUS_ACTIVITY: ["activity", "Activity sa Gawas"], STATUS_LEAVE: ["leave", "On Leave"], STATUS_ABSENT: ["absent", "Absent"], STATUS_OFFLINE: ["offline", "Uli na"] };
-      const [st, defNote] = map[actionType] || ["online", "In Office"];
-      p.status = st; p.note = noteInputVal || defNote;
-      if (st === "offline") p.checkOutAt = nowStr;
-      appendLocalLog(p, actionType, st === "online" ? getTimingBadgeText(p) : "");
-    }
-    renderFloor();
-    await postStatusPayload(p, actionType);
-  }
-
-  function appendLocalLog(p, action, timing) {
     const now = new Date();
-    todayLogsData.unshift({ date: now.toISOString().slice(0, 10), time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }), name: p.name, province: p.province || "Regional", action, status: p.status, timing: timing || "", note: p.note || "" });
+    const hmStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+    const dateKey = now.toLocaleDateString("en-CA");
+    let timingText = "";
+
+    if (actionType === "CHECK_IN") {
+      p.status = "online";
+      p.note = noteInputVal || "Checked-In at Office";
+      p.checkInAt = hmStr;
+      p.checkOutAt = "";
+      timingText = getTimingBadgeText(p);
+    } else if (actionType === "CHECK_OUT") {
+      p.status = "offline";
+      p.note = noteInputVal || "Checked-Out (Uli na)";
+      p.checkOutAt = hmStr;
+    } else {
+      const map = {
+        STATUS_ONLINE: ["online", "In Office"],
+        STATUS_ACTIVITY: ["activity", "Activity sa Gawas"],
+        STATUS_PASSLIP: ["passlip", "Passlip"],
+        STATUS_PTL: ["ptl", "PTL"],
+        STATUS_LEAVE: ["leave", "On Leave"],
+        STATUS_ABSENT: ["absent", "Absent"],
+        STATUS_OFFLINE: ["offline", "Uli na"]
+      };
+      const [st, defNote] = map[actionType] || ["online", "In Office"];
+      p.status = st;
+      p.note = noteInputVal || defNote;
+      if (st === "offline") p.checkOutAt = hmStr;
+      if (st === "online") timingText = getTimingBadgeText(p);
+    }
+
+    const logEntry = {
+      date: dateKey,
+      time: hmStr,
+      name: p.name,
+      province: p.province || "Regional",
+      action: actionType,
+      status: p.status,
+      timing: timingText,
+      note: p.note || ""
+    };
+
+    todayLogsData.unshift(logEntry);
     renderTodayLogTable();
+    renderFloor();
+    await postStatusPayload(p, actionType, logEntry);
   }
 
   function spriteDeskSvg(hair, female) {
@@ -817,7 +868,7 @@
         const active = currentChatUser && users.includes(currentChatUser);
         return `<button type="button" class="msg-act-btn ${active ? "reacted" : ""}" onclick="toggleReaction('${esc(m.id)}','${emo}')">${emo}${users.length ? " " + users.length : ""}</button>`;
       }).join("") + `<button type="button" class="msg-act-btn" onclick="setReplyTarget('${esc(m.id)}','${esc(m.sender)}','${esc(m.message)}')">↩ Reply</button>`;
-      return `<div class="msg-row ${isMine ? "mine" : ""}"><img class="msg-avatar" src="${esc(getAvatarForSender(m.sender))}" alt="${esc(m.sender)}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}';"><div class="msg-col"><div class="msg-sender">${esc(m.sender)}</div><div class="msg-bubble">${quoteHtml}${esc(m.message)}</div><div class="msg-actions-bar">${btnsHtml}</div><div class="msg-time">${esc(m.sentAt || "")}</div></div></div>`;
+      return `<div class="msg-row ${isMine ? "mine" : ""}"><img class="msg-avatar" src="${esc(getAvatarForSender(m.sender))}" alt="${esc(m.sender)}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}';"><div class="msg-col"><div class="msg-sender">${esc(m.sender)}</div><div class="msg-bubble">${quoteHtml}${esc(m.message)}</div><div class="msg-actions-bar">${btnsHtml}</div><div class="msg-time">${esc(formatTimeOnly(m.sentAt || ""))}</div></div></div>`;
     }).join("");
     box.scrollTop = box.scrollHeight;
   }
@@ -844,10 +895,13 @@
     }
     updatePinBadgeUI(); updateActionPinStatus();
     const msgId = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
-    chatMessages.push({ id: msgId, sender, message: text, sentAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), replyTo: replyTarget ? { sender: replyTarget.sender, text: replyTarget.text } : null, reactions: {} });
+    const replySnapshot = replyTarget ? { sender: replyTarget.sender, text: replyTarget.text } : null;
+    const now = new Date();
+    const hmStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+    chatMessages.push({ id: msgId, sender, message: text, sentAt: hmStr, replyTo: replySnapshot, reactions: {} });
     input.value = ""; clearReplyTarget(); renderChatMessages();
     if (APPS_SCRIPT_URL) {
-      fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "chat", id: msgId, sender, message: text, replyTo: replyTarget }) }).catch(() => {});
+      fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "chat", id: msgId, sender, message: text, replyTo: replySnapshot }) }).catch(() => {});
     }
   }
 
@@ -861,17 +915,30 @@
       if (pos > -1) target.reactions[emoji].splice(pos, 1);
       else target.reactions[emoji].push(currentChatUser);
       renderChatMessages();
+      if (APPS_SCRIPT_URL) {
+        fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "react", msgId, emoji, reactor: currentChatUser }) }).catch(() => {});
+      }
     }
   }
 
   function updateSummaryCounts() {
     const prov = document.getElementById("provFilter").value;
     const list = PEOPLE.filter(p => (p.province || "Regional") === prov);
-    let online = 0, activity = 0, leave = 0, absent = 0, offline = 0;
-    list.forEach(p => { if (p.status === "online") online++; else if (p.status === "activity") activity++; else if (p.status === "leave") leave++; else if (p.status === "absent") absent++; else offline++; });
+    let online = 0, activity = 0, passlip = 0, ptl = 0, leave = 0, absent = 0, offline = 0;
+    list.forEach(p => {
+      if (p.status === "online") online++;
+      else if (p.status === "activity") activity++;
+      else if (p.status === "passlip") passlip++;
+      else if (p.status === "ptl") ptl++;
+      else if (p.status === "leave") leave++;
+      else if (p.status === "absent") absent++;
+      else offline++;
+    });
     document.getElementById("cntTotal").textContent = list.length;
     document.getElementById("cntOnline").textContent = online;
     document.getElementById("cntActivity").textContent = activity;
+    document.getElementById("cntPasslip").textContent = passlip;
+    document.getElementById("cntPtl").textContent = ptl;
     document.getElementById("cntLeave").textContent = leave;
     document.getElementById("cntAbsent").textContent = absent;
     document.getElementById("cntOffline").textContent = offline;
@@ -908,7 +975,6 @@
       const provMatch = (p.province || "Regional") === prov;
       const hiddenByFilter = !provMatch || (stFilter !== "ALL" && p.status !== stFilter) || (hideOut && isOut);
       const walkingCoffee = coffeeBusy && activeCoffeeName === p.name && !isProvSquare;
-      const jaySingingNow = JAY_SINGING_SUBAYBAYANI && p.name === "Jay" && !isProvSquare;
 
       const node = document.createElement("div");
       node.className = "actor-node";
@@ -918,15 +984,19 @@
       if (walkingCoffee) node.classList.add("is-walking-coffee");
       if (p.x >= 50) node.classList.add("flipped-desk");
 
-      if (jaySingingNow) { node.style.left = JAY_CENTER_POS.x + "%"; node.style.top = JAY_CENTER_POS.y + "%"; node.style.zIndex = "25"; }
-      else if (isProvSquare && provMatch) { node.style.left = (34 + (provSlotIdx % 3) * 16) + "%"; node.style.top = (28 + Math.floor(provSlotIdx / 3) * 18) + "%"; provSlotIdx++; }
-      else { node.style.left = p.x + "%"; node.style.top = p.y + "%"; }
+      if (isProvSquare && provMatch) {
+        node.style.left = (34 + (provSlotIdx % 3) * 16) + "%";
+        node.style.top = (28 + Math.floor(provSlotIdx / 3) * 18) + "%";
+        provSlotIdx++;
+      } else {
+        node.style.left = p.x + "%";
+        node.style.top = p.y + "%";
+      }
 
       node.onclick = () => selectPerson(idx);
 
       let bubbleCls = "st-" + p.status, bubbleText = statusLabel(p.status);
-      if (jaySingingNow) { bubbleCls = "st-singing"; bubbleText = "🎤 ♪ SUBAYBAYANI ♪"; }
-      else if (walkingCoffee) { bubbleCls = "st-coffee"; bubbleText = "☕ coffee (" + getCoffeeRemText() + ")"; }
+      if (walkingCoffee) { bubbleCls = "st-coffee"; bubbleText = "☕ coffee (" + getCoffeeRemText() + ")"; }
 
       node.innerHTML = `<div class="bubble-tag ${bubbleCls}">${esc(bubbleText)}</div><div class="mini-station-rig">${spriteDeskSvg(p.hair, p.female)}<div class="mini-wood-desk"><div class="m-binders"><div class="m-binder" style="background:#ef4444;"></div><div class="m-binder" style="background:#3b82f6;"></div><div class="m-binder" style="background:#22c55e;"></div></div><div class="m-monitor"><div class="m-screen"></div></div><div class="m-mug"></div></div></div><div class="name-chip">${esc(p.name)}</div>`;
       layer.appendChild(node);
@@ -952,12 +1022,30 @@
     const prov = document.getElementById("provFilter").value;
     document.getElementById("selectedInfo").innerHTML = "Selected: <strong>" + esc(p.name) + "</strong> (" + esc(prov) + ") — " + esc(statusLabel(p.status)) + (isViewingProvinceOffice() ? " • [View Only]" : "");
     document.getElementById("timingBadge").textContent = getTimingBadgeText(p);
-    document.getElementById("checkTimesInfo").textContent = "In: " + (p.checkInAt || "--") + " | Out: " + (p.checkOutAt || "--");
+    document.getElementById("checkTimesInfo").textContent = "In: " + (formatTimeOnly(p.checkInAt) || "--") + " | Out: " + (formatTimeOnly(p.checkOutAt) || "--");
   }
 
-  async function postStatusPayload(p, action) {
+  async function postStatusPayload(p, action, logEntry) {
     if (!APPS_SCRIPT_URL) return;
-    fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ name: p.name, status: p.status, note: p.note, province: p.province || "Regional", action }) }).catch(() => {});
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          type: "status",
+          name: p.name,
+          status: p.status,
+          note: p.note,
+          province: p.province || "Regional",
+          action: action,
+          time: logEntry ? formatTimeOnly(logEntry.time) : "",
+          timing: logEntry ? logEntry.timing : "",
+          checkInAt: formatTimeOnly(p.checkInAt) || "",
+          checkOutAt: formatTimeOnly(p.checkOutAt) || ""
+        })
+      });
+    } catch (_) {}
   }
 
   function buildCoffeeWaypoints(p) {
@@ -983,7 +1071,7 @@
 
   function triggerCoffeeBreak() {
     if (coffeeBusy || isDancingNow() || isAfterHours || isViewingProvinceOffice()) return;
-    const onlineList = PEOPLE.filter(p => p.status === "online" && (p.province || "Regional") === "Regional" && !(JAY_SINGING_SUBAYBAYANI && p.name === "Jay"));
+    const onlineList = PEOPLE.filter(p => p.status === "online" && (p.province || "Regional") === "Regional");
     if (!onlineList.length) return;
     const p = onlineList[Math.floor(Math.random() * onlineList.length)];
     coffeeBusy = true;
@@ -1040,29 +1128,51 @@
     document.getElementById("afterHoursPill").classList.toggle("active", after730);
   }
 
-  function openTodayLogModal() { document.getElementById("logModalBackdrop").classList.add("open"); renderTodayLogTable(); }
+  function openTodayLogModal() {
+    document.getElementById("logModalBackdrop").classList.add("open");
+    renderTodayLogTable();
+    fetchFromSheet(false);
+  }
   function closeTodayLogModal() { document.getElementById("logModalBackdrop").classList.remove("open"); }
   function renderTodayLogTable() {
     const tb = document.getElementById("logTableBody");
-    tb.innerHTML = todayLogsData.length ? todayLogsData.map(r => `<tr><td>${esc(r.time)}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.province)}</td><td>${esc(r.action)}</td><td>${esc(r.status)}</td><td>${esc(r.timing)}</td><td>${esc(r.note)}</td></tr>`).join("") : `<tr><td colspan="7">No check-in/out logs recorded yet today.</td></tr>`;
+    tb.innerHTML = todayLogsData.length ? todayLogsData.map(r => `<tr><td>${esc(formatTimeOnly(r.time))}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.province)}</td><td>${esc(r.action)}</td><td>${esc(r.status)}</td><td>${esc(r.timing)}</td><td>${esc(r.note)}</td></tr>`).join("") : `<tr><td colspan="7">No check-in/out logs recorded yet today.</td></tr>`;
   }
   function exportTodayLogCsv() {
-    const lines = [["Date", "Time", "Name", "Office", "Action", "Status", "Timing", "Note"].join(",")].concat(todayLogsData.map(r => [r.date, r.time, r.name, r.province, r.action, r.status, r.timing, r.note].map(v => `"${String(v || "").replace(/"/g, '""')}"`).join(",")));
+    const lines = [["Date", "Time", "Name", "Office", "Action", "Status", "Timing", "Note"].join(",")].concat(todayLogsData.map(r => [r.date, formatTimeOnly(r.time), r.name, r.province, r.action, r.status, r.timing, r.note].map(v => `"${String(v || "").replace(/"/g, '""')}"`).join(",")));
     const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" }), url = URL.createObjectURL(blob), a = document.createElement("a");
     a.href = url; a.download = "PDMU_Log_" + new Date().toISOString().slice(0, 10) + ".csv"; a.click(); URL.revokeObjectURL(url);
   }
-  async function archiveTodayNow() { alert("Archived locally / ready for Sheet sync."); }
+  async function archiveTodayNow() {
+    if (!APPS_SCRIPT_URL) { alert("Ibutang una ang APPS_SCRIPT_URL para ma-archive sa Sheet."); return; }
+    await fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "archive_day" }) }).catch(() => {});
+    alert("Na-archive na sa VO_Daily_History!");
+  }
 
   async function fetchFromSheet(showAlert) {
     if (!APPS_SCRIPT_URL) { document.getElementById("syncPill").textContent = "Local Mode"; return; }
     try {
       const json = await (await fetch(APPS_SCRIPT_URL + "?t=" + Date.now())).json();
       if (json && json.ok) {
-        if (Array.isArray(json.data)) json.data.forEach(row => { const m = PEOPLE.find(p => p.name.toLowerCase() === String(row.name || "").trim().toLowerCase()); if (m) { m.status = normalizeStatus(row.status); m.note = row.note || ""; if (row.checkInAt) m.checkInAt = row.checkInAt; if (row.checkOutAt) m.checkOutAt = row.checkOutAt; } });
+        if (Array.isArray(json.data) && json.data.length) {
+          json.data.forEach(row => {
+            const m = PEOPLE.find(p => p.name.toLowerCase() === String(row.name || "").trim().toLowerCase());
+            if (m) {
+              m.status = normalizeStatus(row.status);
+              m.note = row.note || "";
+              m.checkInAt = row.checkInAt ? formatTimeOnly(row.checkInAt) : "";
+              m.checkOutAt = row.checkOutAt ? formatTimeOnly(row.checkOutAt) : "";
+            }
+          });
+        }
         if (Array.isArray(json.messages)) { chatMessages = json.messages; if (convoUnlocked) renderChatMessages(); }
         if (json.pins) { savedPinsMap = json.pins; updatePinBadgeUI(); updateActionPinStatus(); }
-        if (Array.isArray(json.todayLogs) && json.todayLogs.length) { todayLogsData = json.todayLogs; renderTodayLogTable(); }
-        renderFloor(); document.getElementById("syncPill").textContent = "Live Synced";
+        if (Array.isArray(json.todayLogs)) {
+          todayLogsData = json.todayLogs.map(r => Object.assign({}, r, { time: formatTimeOnly(r.time) }));
+          renderTodayLogTable();
+        }
+        renderFloor();
+        document.getElementById("syncPill").textContent = "Live Synced";
         if (showAlert) alert("Synced!");
       }
     } catch (e) { document.getElementById("syncPill").textContent = "Offline Cache"; }
