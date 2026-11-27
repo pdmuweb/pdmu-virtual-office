@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#030954">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>PDMU Virtual Office</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #020617; padding: 10px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #ffffff; }
+  .vo-shell { max-width: 1440px; margin: 0 auto; background: #030954; border: 2px solid #fbbf24; border-bottom: 5px solid #f59e0b; border-radius: 14px; padding: 12px; box-shadow: 0 12px 30px rgba(3, 9, 84, 0.35); position: relative; }
+  .vo-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .vo-header h2 { font-size: 18px; font-weight: 900; color: #fbbf24; }
+  .vo-top-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 10px; margin-bottom: 10px; }
+  .vo-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .vo-tools select, .vo-tools button, .vo-tools label { background: #07116e; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 6px; padding: 6px 8px; font-family: inherit; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .vo-tools button:hover { background: #fbbf24; color: #030954; }
+  .vo-tools button.dance-btn { background: #ec4899; border-color: #fde047; color: #ffffff; }
+  .vo-tools button.log-btn { background: #0ea5e9; border-color: #bae6fd; color: #ffffff; }
+  .vo-tools button.install-pwa-btn { background: #16a34a; border-color: #bbf7d0; color: #ffffff; display: none; }
+  .vo-tools button.install-pwa-btn.visible { display: inline-flex; }
+
+  .sync-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(15, 23, 42, 0.85); border: 1px solid #4ade80; color: #4ade80; font-weight: 800; }
+  .after-hours-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(88, 28, 135, 0.85); border: 1px solid #e879f9; color: #f5d0fe; font-weight: 800; display: none; }
+  .after-hours-pill.active { display: inline-flex; align-items: center; gap: 4px; }
+  .view-only-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(127, 29, 29, 0.9); border: 1px solid #fca5a5; color: #fecaca; font-weight: 800; display: none; }
+  .view-only-pill.active { display: inline-flex; align-items: center; gap: 4px; }
+
+  .summary-strip { flex: 1; min-width: 280px; background: #07116e; border: 1.5px solid #fbbf24; border-radius: 8px; padding: 5px 8px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+  .stat-card { background: #030954; border: 1px solid rgba(251, 191, 36, 0.45); border-radius: 6px; padding: 3px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+  .stat-num { font-size: 13.5px; font-weight: 900; line-height: 1.1; }
+  .stat-lbl { font-size: 8.5px; font-weight: 800; color: #e2e8f0; white-space: nowrap; }
+  .c-total { color: #fde047; } .c-online { color: #4ade80; } .c-activity { color: #fb923c; } .c-leave { color: #60a5fa; } .c-absent { color: #cbd5e1; } .c-offline { color: #e879f9; }
+
+  .vo-main-grid { display: grid; grid-template-columns: 295px 1fr; gap: 10px; align-items: stretch; }
+
+  /* Chatbox */
+  .chat-panel { background: #07116e; border: 2px solid #fbbf24; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; min-height: 540px; max-height: 680px; }
+  .chat-top { border-bottom: 1.5px solid rgba(251, 191, 36, 0.35); padding-bottom: 7px; margin-bottom: 8px; }
+  .chat-title { font-size: 13px; font-weight: 900; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+  .chat-lock-top-btn { background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 4px; padding: 2px 6px; font-family: inherit; font-size: 9.5px; font-weight: 800; cursor: pointer; }
+  .chat-sub { font-size: 10px; color: #cbd5e1; margin-top: 2px; }
+  .chat-gate-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px 12px; gap: 8px; background: #030954; border: 1.5px dashed rgba(251, 191, 36, 0.55); border-radius: 8px; margin-bottom: 8px; }
+  .chat-gate-title { font-size: 12.5px; font-weight: 900; color: #fde047; }
+  .chat-gate-desc { font-size: 10.5px; color: #cbd5e1; max-width: 220px; line-height: 1.35; }
+  .chat-gate-input { width: 100%; max-width: 210px; background: #07116e; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; text-align: center; }
+  .chat-gate-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 12px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .chat-messages { flex: 1; overflow-y: auto; display: none; flex-direction: column; gap: 8px; padding-right: 3px; margin-bottom: 8px; }
+  .chat-messages.unlocked { display: flex; }
+  .msg-row { display: flex; align-items: flex-end; gap: 6px; }
+  .msg-row.mine { flex-direction: row-reverse; }
+  .msg-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; object-position: center top; border: 1.5px solid #fbbf24; background: #030954; flex-shrink: 0; }
+  .msg-col { display: flex; flex-direction: column; max-width: 78%; }
+  .msg-row.mine .msg-col { align-items: flex-end; }
+  .msg-sender { font-size: 9.5px; font-weight: 800; color: #fde047; margin-bottom: 2px; }
+  .msg-bubble { background: #030954; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; padding: 6px 9px; font-size: 11px; line-height: 1.35; color: #ffffff; word-break: break-word; }
+  .msg-row.mine .msg-bubble { background: #1d4ed8; border-color: #93c5fd; }
+  .msg-reply-quote { background: rgba(255, 255, 255, 0.08); border-left: 2.5px solid #fbbf24; border-radius: 4px; padding: 3px 6px; margin-bottom: 4px; font-size: 9.5px; color: #e2e8f0; }
+  .msg-time { font-size: 8.5px; color: #94a3b8; margin-top: 2px; }
+  .msg-actions-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-top: 2px; }
+  .msg-act-btn { background: rgba(3, 9, 84, 0.85); color: #e2e8f0; border: 1px solid rgba(251, 191, 36, 0.35); border-radius: 999px; padding: 1px 5px; font-size: 9.5px; cursor: pointer; }
+  .msg-act-btn.reacted { background: #fbbf24; color: #030954; font-weight: 800; }
+  .reply-banner { display: none; justify-content: space-between; align-items: center; gap: 6px; background: #030954; border-left: 3px solid #fbbf24; border-radius: 5px; padding: 4px 7px; margin-bottom: 5px; font-size: 10px; color: #fde68a; }
+  .reply-banner.active { display: flex; }
+  .reply-cancel-btn { background: transparent; color: #fca5a5; border: none; font-weight: 900; font-size: 11px; cursor: pointer; }
+  .chat-form { display: flex; flex-direction: column; gap: 5px; border-top: 1.5px solid rgba(251, 191, 36, 0.35); padding-top: 7px; }
+  .chat-form.locked-ui { opacity: 0.55; pointer-events: none; }
+  .chat-user-row { display: flex; gap: 5px; align-items: center; }
+  .chat-user-select { flex: 1; background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; }
+  .chat-pin-input { width: 78px; background: #030954; color: #ffffff; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; text-align: center; }
+  .chat-pin-badge { font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 4px; background: rgba(248, 113, 113, 0.18); border: 1px solid #f87171; color: #fca5a5; white-space: nowrap; }
+  .chat-pin-badge.unlocked { background: rgba(74, 222, 128, 0.18); border-color: #4ade80; color: #4ade80; }
+  .chat-input-row { display: flex; gap: 5px; }
+  .chat-input { flex: 1; background: #030954; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 5px 8px; font-family: inherit; font-size: 11px; }
+  .chat-send-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+
+  /* Floorplan Stage */
+  .stage-wrap { position: relative; width: 100%; aspect-ratio: 16 / 10.5; min-height: 540px; border-radius: 10px; overflow: hidden; border: 2px solid #fbbf24; background: #2d3448; user-select: none; }
+  .stage-wrap.after-hours-dim .floor-base-layer { filter: brightness(0.62) saturate(0.75); transition: filter 0.4s ease; }
+  .floor-base-layer { position: relative; width: 100%; height: 100%; }
+  .floor-tile { position: absolute; background: #cfd2dc; background-image: linear-gradient(to right, rgba(148, 163, 184, 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgba(148, 163, 184, 0.45) 1px, transparent 1px); background-size: 28px 28px; }
+  .wall-h { position: absolute; height: 6px; background: #475569; z-index: 5; }
+  .wall-v { position: absolute; width: 6px; background: #475569; z-index: 5; }
+  .lounge-area { position: absolute; left: 13%; top: 75%; width: 32%; height: 20%; background: rgba(214, 196, 165, 0.55); border: 1.5px dashed #8c6d46; border-radius: 6px; z-index: 3; }
+  .lounge-bench-h { position: absolute; background: #965a2c; border: 2px solid #3b200d; border-radius: 3px; }
+  .lounge-table-mid { position: absolute; left: 40%; top: 44%; width: 20%; height: 22%; background: #965a2c; border: 2px solid #3b200d; border-radius: 50%; }
+  .coffee-station { position: absolute; left: 26.5%; top: 77.5%; width: 5.5%; height: 6.5%; background: #451a03; border: 2px solid #fbbf24; border-radius: 5px; z-index: 6; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35); }
+  .coffee-icon { font-size: 13px; line-height: 1; }
+
+  .prov-square-room { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 84%; aspect-ratio: 1 / 1; background: #cfd2dc; background-image: linear-gradient(to right, rgba(148, 163, 184, 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgba(148, 163, 184, 0.45) 1px, transparent 1px); background-size: 28px 28px; border: 7px solid #475569; border-radius: 6px; z-index: 4; }
+  .prov-square-room-label { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: #030954; color: #fde047; border: 1.5px solid #fbbf24; border-radius: 999px; padding: 3px 12px; font-size: 10.5px; font-weight: 900; white-space: nowrap; }
+  .prov-square-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #1e293b; font-size: 12px; font-weight: 800; padding: 20px; pointer-events: none; }
+
+  .stage-wrap.province-square-mode .reg-floor-part { display: none !important; }
+  .stage-wrap.province-square-mode .prov-square-room { display: block; }
+
+  .disco-overlay { position: absolute; inset: 0; z-index: 28; pointer-events: none; display: none; overflow: hidden; }
+  .disco-overlay.active { display: block; }
+  .disco-beam { position: absolute; top: -15%; width: 22%; height: 130%; opacity: 0.34; filter: blur(8px); }
+  .beam-1 { left: 12%; background: linear-gradient(180deg, #f472b6, transparent 75%); }
+  .beam-2 { left: 40%; background: linear-gradient(180deg, #38bdf8, transparent 75%); }
+  .beam-3 { left: 68%; background: linear-gradient(180deg, #facc15, transparent 75%); }
+  .dance-banner { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 45; display: none; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.94); border: 2px solid #f472b6; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 900; color: #fde047; }
+  .dance-banner.active { display: inline-flex; }
+  .dance-stop-btn { background: #ef4444; color: #ffffff; border: 1px solid #ffffff; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 900; cursor: pointer; }
+
+  .actor-node { position: absolute; transform: translate(-50%, -50%); z-index: 10; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+  .actor-node.selected .name-chip { background: #fbbf24; color: #030954; border-color: #0f172a; }
+  .actor-node.is-away { opacity: 0.78; }
+  .actor-node.hidden-out { display: none; }
+  .actor-node.is-walking-coffee .px-sprite { opacity: 0.15; }
+
+  .bubble-tag { position: relative; padding: 1.5px 6px; border-radius: 5px; border: 1.5px solid #0f172a; font-size: 8.5px; font-weight: 900; color: #0f172a; margin-bottom: 2px; white-space: nowrap; }
+  .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; }
+  .st-coffee { background: #fde047; }
+  .st-singing { background: #fde047; color: #030954; }
+
+  .mini-station-rig { position: relative; display: flex; flex-direction: column; align-items: center; }
+  .px-sprite { width: 28px; height: 28px; margin-bottom: -5px; z-index: 4; shape-rendering: crispEdges; }
+  .actor-node.is-away .px-sprite { opacity: 0.35; filter: grayscale(85%); }
+  .mini-wood-desk { width: 64px; height: 21px; background: #965a2c; border: 2px solid #3b200d; border-bottom: 4px solid #4a2810; border-radius: 3px; display: flex; align-items: center; justify-content: space-between; padding: 0 4px; z-index: 3; }
+  .actor-node.flipped-desk .mini-wood-desk { flex-direction: row-reverse; background: #854d0e; border-color: #38bdf8; }
+  .m-binders { display: flex; gap: 1px; } .m-binder { width: 3px; height: 10px; border: 0.8px solid #0f172a; }
+  .m-monitor { width: 17px; height: 13px; background: #cbd5e1; border: 1.5px solid #0f172a; border-radius: 1.5px; padding: 1.5px; margin-top: -5px; }
+  .m-screen { width: 100%; height: 100%; background: #334155; }
+  .m-mug { width: 6px; height: 6px; background: #ef4444; border: 1.2px solid #0f172a; border-radius: 1px; }
+  .name-chip { background: rgba(15, 23, 42, 0.92); color: #fef08a; border: 1px solid #fbbf24; border-radius: 4px; padding: 1.5px 5px; font-size: 9px; font-weight: 800; margin-top: 2px; white-space: nowrap; }
+
+  .coffee-walker { position: absolute; z-index: 40; display: none; flex-direction: column; align-items: center; transform: translate(-50%, -50%); pointer-events: none; }
+  .coffee-walker.active { display: flex; }
+  .walk-body-svg { width: 34px; height: 40px; shape-rendering: crispEdges; }
+  .coffee-walker.flip-left .walk-body-svg { transform: scaleX(-1); }
+
+  /* Check-In / Check-Out & Status Footer */
+  .vo-footer { margin-top: 10px; background: #07116e; border: 1px solid rgba(251, 191, 36, 0.45); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; }
+  .controls-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .controls-group.view-only-locked button,
+  .controls-group.view-only-locked input { opacity: 0.42; pointer-events: none; cursor: not-allowed; }
+  .note-input { background: #030954; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; min-width: 175px; }
+  .pin-lock-status { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
+  .checkin-btn { background: #16a34a; color: #ffffff; border: 2px solid #bbf7d0; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .checkout-btn { background: #dc2626; color: #ffffff; border: 2px solid #fecaca; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .status-btns { display: flex; flex-wrap: wrap; gap: 4px; }
+  .status-btns button { font-family: inherit; font-size: 11px; font-weight: 800; padding: 5px 8px; border-radius: 5px; border: 2px solid #0f172a; cursor: pointer; color: #0f172a; }
+  .timing-pill { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
+
+  /* PIN Pop-up Modal */
+  .pin-modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.82); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px; }
+  .pin-modal-backdrop.open { display: flex; }
+  .pin-modal-card { width: 100%; max-width: 370px; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
+  .pin-modal-title { font-size: 15px; font-weight: 900; color: #fbbf24; }
+  .pin-modal-sub { font-size: 11.5px; color: #e2e8f0; line-height: 1.4; }
+  .pin-modal-input { width: 100%; background: #07116e; color: #fde047; border: 2px solid #fbbf24; border-radius: 6px; padding: 8px 10px; font-family: inherit; font-size: 13px; font-weight: 900; text-align: center; }
+  .pin-modal-err { font-size: 10.5px; font-weight: 800; color: #fca5a5; min-height: 15px; }
+  .pin-modal-actions { display: flex; gap: 8px; justify-content: center; margin-top: 2px; }
+  .pin-confirm-btn { background: #16a34a; color: #ffffff; border: 2px solid #bbf7d0; border-radius: 6px; padding: 6px 14px; font-family: inherit; font-size: 11.5px; font-weight: 900; cursor: pointer; }
+  .pin-cancel-btn { background: #334155; color: #ffffff; border: 1.5px solid #94a3b8; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+
+  /* Today's Log Modal */
+  .log-modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78); z-index: 999; display: none; align-items: center; justify-content: center; padding: 14px; }
+  .log-modal-backdrop.open { display: flex; }
+  .log-modal-card { width: 100%; max-width: 860px; max-height: 82vh; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .log-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(251, 191, 36, 0.35); padding-bottom: 8px; }
+  .log-modal-head h3 { font-size: 15px; font-weight: 900; color: #fbbf24; }
+  .log-table-wrap { overflow: auto; flex: 1; border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px; }
+  table.log-tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+  table.log-tbl th, table.log-tbl td { padding: 6px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: left; }
+  table.log-tbl th { background: #07116e; color: #fde047; font-weight: 900; position: sticky; top: 0; }
+
+  /* Mobile Bottom Navigation Bar */
+  .mobile-bottom-nav { display: none; }
+  @media (max-width: 820px) {
+    body { padding: 6px 6px 74px 6px; }
+    .vo-shell { border-radius: 10px; padding: 8px; }
+    .summary-strip { grid-template-columns: repeat(3, 1fr); min-width: 100%; }
+    .vo-main-grid { grid-template-columns: 1fr; }
+    .chat-panel { min-height: 430px; max-height: 62vh; }
+    .stage-wrap { aspect-ratio: auto; min-height: 440px; height: 64vh; overflow: auto; }
+    .floor-base-layer { min-width: 660px; min-height: 440px; }
+    .vo-footer { margin-top: 8px; padding: 8px 10px; }
+    .note-input { min-width: 100%; }
+
+    body.mobile-tab-mode .vo-main-grid,
+    body.mobile-tab-mode .vo-footer { display: none; }
+    body.mobile-tab-mode.tab-floor .stage-wrap-slot { display: block; }
+    body.mobile-tab-mode.tab-chat .chat-panel-slot { display: block; }
+    body.mobile-tab-mode.tab-checkin .vo-footer { display: flex; }
+
+    .mobile-bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      background: #030954;
+      border-top: 2px solid #fbbf24;
+      padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+      z-index: 950;
+      gap: 4px;
+    }
+    .mob-nav-btn {
+      background: #07116e;
+      color: #e2e8f0;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      border-radius: 8px;
+      padding: 6px 4px;
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .mob-nav-btn.active { background: #fbbf24; color: #030954; border-color: #ffffff; }
+  }
+</style>
+</head>
+<body class="mobile-tab-mode tab-floor">
+
+<div class="vo-shell">
+  <div class="vo-header">
+    <div>
+      <h2>PDMU VIRTUAL OFFICE</h2>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+      <button type="button" class="install-pwa-btn" id="installPwaBtn" onclick="installPwaApp()">📲 Install App</button>
+      <span class="view-only-pill" id="viewOnlyPill">👁 VIEW ONLY (OTHER OFFICE)</span>
+      <span class="after-hours-pill" id="afterHoursPill">🌙 7:30 PM+ • AUTO-OFFLINE</span>
+      <span class="sync-pill" id="syncPill">Live Synced</span>
+    </div>
+  </div>
+
+  <div class="vo-top-bar">
+    <div class="vo-tools">
+      <button type="button" onclick="fetchFromSheet(true)">Sync Sheet</button>
+      <select id="provFilter" onchange="renderFloor()">
+        <option value="Regional">Regional Office</option>
+        <option value="ADN">ADN</option>
+        <option value="ADS">ADS</option>
+        <option value="SDN">SDN</option>
+        <option value="SDS">SDS</option>
+        <option value="PDI">PDI</option>
+      </select>
+      <select id="statusFilter" onchange="renderFloor()">
+        <option value="ALL">Show All</option>
+        <option value="online">Online / In Office</option>
+        <option value="activity">Activity / Gawas</option>
+        <option value="leave">On Leave</option>
+        <option value="absent">Absent</option>
+        <option value="offline">Offline</option>
+      </select>
+      <label><input type="checkbox" id="hideOutChk" onchange="renderFloor()"> Hide Out</label>
+      <button type="button" class="dance-btn" onclick="startDanceBreak(30)">🪩 3PM Dance</button>
+      <button type="button" class="log-btn" onclick="openTodayLogModal()">📋 Log</button>
+    </div>
+
+    <div class="summary-strip" aria-label="Team Status Counts">
+      <div class="stat-card" onclick="quickFilter('ALL')"><span class="stat-num c-total" id="cntTotal">0</span><span class="stat-lbl">TOTAL</span></div>
+      <div class="stat-card" onclick="quickFilter('online')"><span class="stat-num c-online" id="cntOnline">0</span><span class="stat-lbl">IN OFFICE</span></div>
+      <div class="stat-card" onclick="quickFilter('activity')"><span class="stat-num c-activity" id="cntActivity">0</span><span class="stat-lbl">GAWAS / ACT</span></div>
+      <div class="stat-card" onclick="quickFilter('leave')"><span class="stat-num c-leave" id="cntLeave">0</span><span class="stat-lbl">ON LEAVE</span></div>
+      <div class="stat-card" onclick="quickFilter('absent')"><span class="stat-num c-absent" id="cntAbsent">0</span><span class="stat-lbl">ABSENT</span></div>
+      <div class="stat-card" onclick="quickFilter('offline')"><span class="stat-num c-offline" id="cntOffline">0</span><span class="stat-lbl">OFFLINE</span></div>
+    </div>
+  </div>
+
+  <div class="vo-main-grid">
+    <div class="chat-panel-slot">
+      <aside class="chat-panel">
+        <div>
+          <div class="chat-top">
+            <div class="chat-title">
+              <span>PDMU CHATBOX</span>
+              <button type="button" class="chat-lock-top-btn" id="lockConvoBtn" onclick="lockConvoPanel()">🔒 Lock</button>
+            </div>
+            <div class="chat-sub" id="chatSubLabel">Enter chat passkey to view &amp; join convo</div>
+          </div>
+          <div class="chat-gate-box" id="chatGateBox">
+            <div class="chat-gate-title">PRIVATE PDMU CONVO</div>
+            <div class="chat-gate-desc">Hidden from public view. Enter the team chat passkey to read and send messages.</div>
+            <input type="password" id="convoPasskeyInput" class="chat-gate-input" placeholder="Enter Passkey" onkeydown="if(event.key==='Enter') unlockConvoPanel()">
+            <button type="button" class="chat-gate-btn" onclick="unlockConvoPanel()">Unlock Chat</button>
+            <div id="chatGateError" style="font-size:10px; color:#fca5a5; min-height:14px;"></div>
+          </div>
+          <div class="chat-messages" id="chatMessages"></div>
+        </div>
+
+        <div>
+          <div class="reply-banner" id="replyBanner">
+            <span id="replyBannerText">Replying to...</span>
+            <button type="button" class="reply-cancel-btn" onclick="clearReplyTarget()">✕</button>
+          </div>
+          <form class="chat-form locked-ui" id="chatForm" onsubmit="sendChatMessage(event)">
+            <div class="chat-user-row">
+              <select id="chatSenderSelect" class="chat-user-select" onchange="onChatSenderChange()"></select>
+              <input type="password" id="chatPinInput" class="chat-pin-input" placeholder="PIN" maxlength="12" oninput="onChatPinInput()">
+              <span class="chat-pin-badge" id="chatPinBadge">🔒 PIN</span>
+            </div>
+            <div class="chat-input-row">
+              <input type="text" id="chatInput" class="chat-input" placeholder="Type message..." maxlength="280">
+              <button type="submit" class="chat-send-btn">Send</button>
+            </div>
+          </form>
+        </div>
+      </aside>
+    </div>
+
+    <div class="stage-wrap-slot">
+      <div class="stage-wrap" id="stageWrap">
+        <div class="disco-overlay" id="discoOverlay">
+          <div class="disco-beam beam-1"></div>
+          <div class="disco-beam beam-2"></div>
+          <div class="disco-beam beam-3"></div>
+        </div>
+        <div class="dance-banner" id="danceBanner">
+          <span>🪩 3:00 PM DANCE BREAK!</span>
+          <span id="danceTimerText">30:00</span>
+          <button type="button" class="dance-stop-btn" onclick="stopDanceBreak()">End</button>
+        </div>
+
+        <div class="floor-base-layer" id="floorBaseLayer">
+          <div class="floor-tile reg-floor-part" style="left:4%; top:6%; width:48%; height:90%;"></div>
+          <div class="floor-tile reg-floor-part" style="left:52%; top:12%; width:34%; height:44%;"></div>
+          <div class="floor-tile reg-floor-part" style="left:52%; top:56%; width:22%; height:36%;"></div>
+          <div class="floor-tile reg-floor-part" style="left:74%; top:56%; width:20%; height:36%;"></div>
+
+          <div class="wall-h reg-floor-part" style="left:4%; top:6%; width:48%;"></div>
+          <div class="wall-h reg-floor-part" style="left:52%; top:12%; width:34%;"></div>
+          <div class="wall-h reg-floor-part" style="left:74%; top:56%; width:20%;"></div>
+          <div class="wall-h reg-floor-part" style="left:4%; top:96%; width:48%;"></div>
+          <div class="wall-h reg-floor-part" style="left:52%; top:92%; width:42%;"></div>
+          <div class="wall-v reg-floor-part" style="left:4%; top:6%; height:90%;"></div>
+          <div class="wall-v reg-floor-part" style="left:52%; top:6%; height:48%;"></div>
+          <div class="wall-v reg-floor-part" style="left:86%; top:12%; height:44%;"></div>
+          <div class="wall-v reg-floor-part" style="left:74%; top:56%; height:22%;"></div>
+          <div class="wall-v reg-floor-part" style="left:94%; top:56%; height:36%;"></div>
+
+          <div class="lounge-area reg-floor-part">
+            <div class="lounge-bench-h" style="left:8%; top:62%; width:24%; height:24%;"></div>
+            <div class="lounge-bench-h" style="left:68%; top:62%; width:24%; height:24%;"></div>
+            <div class="lounge-table-mid"></div>
+          </div>
+          <div class="coffee-station reg-floor-part" title="Coffee Station"><div class="coffee-icon">☕</div></div>
+
+          <div class="prov-square-room" id="provSquareRoom">
+            <div class="prov-square-room-label" id="provSquareRoomLabel">PROVINCIAL OFFICE • VIEW ONLY</div>
+            <div class="prov-square-empty" id="provSquareEmptyMsg">No staff assigned in this province office yet.<br><span style="font-size:10px; font-weight:700; color:#475569;">(View-Only Mode)</span></div>
+          </div>
+
+          <div id="actorsLayer"></div>
+        </div>
+
+        <div class="coffee-walker" id="coffeeWalker">
+          <div class="bubble-tag st-coffee" id="walkerBubble">☕ getting coffee...</div>
+          <div id="walkerBodyContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Check-In / Check-Out & Status Footer -->
+  <div class="vo-footer">
+    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+      <div id="selectedInfo">Click a member on the floorplan to select</div>
+      <span class="pin-lock-status" id="actionPinStatus">👆 Click User First</span>
+      <span class="timing-pill" id="timingBadge">--</span>
+      <span style="font-size:10.5px; color:#cbd5e1;" id="checkTimesInfo">In: -- | Out: --</span>
+    </div>
+    <div class="controls-group" id="actionControlsGroup">
+      <button type="button" class="checkin-btn" onclick="requestPinAction('CHECK_IN')">✅ Check-In</button>
+      <button type="button" class="checkout-btn" onclick="requestPinAction('CHECK_OUT')">🚪 Check-Out</button>
+      <input type="text" id="noteInput" class="note-input" placeholder="Destination / Activity / Remarks...">
+      <div class="status-btns">
+        <button type="button" style="background:#4ade80;" onclick="requestPinAction('STATUS_ONLINE')">Online</button>
+        <button type="button" style="background:#fb923c;" onclick="requestPinAction('STATUS_ACTIVITY')">Activity</button>
+        <button type="button" style="background:#60a5fa;" onclick="requestPinAction('STATUS_LEAVE')">Leave</button>
+        <button type="button" style="background:#cbd5e1;" onclick="requestPinAction('STATUS_ABSENT')">Absent</button>
+        <button type="button" style="background:#e879f9;" onclick="requestPinAction('STATUS_OFFLINE')">Offline</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Bottom Navigation Bar -->
+<nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+  <button type="button" class="mob-nav-btn active" id="mobBtnFloor" onclick="switchMobileTab('floor')">🏢<span>Floor</span></button>
+  <button type="button" class="mob-nav-btn" id="mobBtnCheckin" onclick="switchMobileTab('checkin')">✅<span>Check-In</span></button>
+  <button type="button" class="mob-nav-btn" id="mobBtnChat" onclick="switchMobileTab('chat')">💬<span>Chat</span></button>
+  <button type="button" class="mob-nav-btn" id="mobBtnLogs" onclick="openTodayLogModal()">📋<span>Logs</span></button>
+</nav>
+
+<!-- PIN Pop-up Modal -->
+<div class="pin-modal-backdrop" id="pinModalBackdrop" onclick="if(event.target===this) closePinModal()">
+  <div class="pin-modal-card">
+    <div class="pin-modal-title" id="pinModalTitle">ENTER PIN</div>
+    <div class="pin-modal-sub" id="pinModalSub">Enter your PIN to continue.</div>
+    <input type="password" id="pinModalInput" class="pin-modal-input" placeholder="Enter PIN" maxlength="12" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmPinModal();}">
+    <input type="password" id="pinModalAdminInput" class="pin-modal-input" style="display:none; font-size:11.5px;" placeholder="Admin PIN to create new user PIN" maxlength="16" autocomplete="off">
+    <div class="pin-modal-err" id="pinModalErr"></div>
+    <div class="pin-modal-actions">
+      <button type="button" class="pin-confirm-btn" id="pinModalConfirmBtn" onclick="confirmPinModal()">Confirm</button>
+      <button type="button" class="pin-cancel-btn" onclick="closePinModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Today's Log Modal -->
+<div class="log-modal-backdrop" id="logModalBackdrop" onclick="if(event.target===this) closeTodayLogModal()">
+  <div class="log-modal-card">
+    <div class="log-modal-head">
+      <h3>📋 TODAY'S ATTENDANCE LOG</h3>
+      <div style="display:flex; gap:6px;">
+        <button type="button" class="chat-lock-top-btn" onclick="exportTodayLogCsv()">⬇ CSV</button>
+        <button type="button" class="chat-lock-top-btn" onclick="archiveTodayNow()">💾 Archive</button>
+        <button type="button" class="chat-lock-top-btn" onclick="closeTodayLogModal()">✕ Close</button>
+      </div>
+    </div>
+    <div class="log-table-wrap">
+      <table class="log-tbl">
+        <thead>
+          <tr><th>Time</th><th>Name</th><th>Office</th><th>Action</th><th>Status</th><th>Timing</th><th>Remarks</th></tr>
+        </thead>
+        <tbody id="logTableBody"><tr><td colspan="7">Loading logs...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = "";
+  const CONVO_PASSKEY = "PDMU2026";
+  const ADMIN_PIN = "PDMUADMIN";
+  const DANCE_BREAK_MINUTES = 30;
+  const COFFEE_DURATION_MS = 60000;
+  const COFFEE_INTERVAL_MS = 180000;
+  const PROVINCE_CODES = ["ADN", "ADS", "SDN", "SDS", "PDI"];
+
+  let JAY_SINGING_SUBAYBAYANI = true;
+  const JAY_CENTER_POS = { x: 49.5, y: 52.0 };
+
+  const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="16" fill="#030954"/><circle cx="16" cy="12" r="5.5" fill="#fcd34d"/><path d="M7 28c0-5 4-8.5 9-8.5s9 3.5 9 8.5" fill="#2563eb"/></svg>');
+
+  const MEMBER_AVATARS = {
+    "Jojo (Chief)": "https://drive.google.com/thumbnail?id=1inSLucU7wifxYKpCtQjj66M_Ey6Hfv9j&sz=w120",
+    "Jesreel (Asst. Chief)": "https://drive.google.com/thumbnail?id=1p-v3_T9aIm8bGpPBnHKzbfzDQuNM8rdY&sz=w120",
+    "Airah": "https://drive.google.com/thumbnail?id=1Vwm7qNKtAWnI_KQVMldCJA413mKBDRGn&sz=w120",
+    "Shaira": "https://drive.google.com/thumbnail?id=1X_ZzeGR46oy_D6A2_XxoqnBsR58rWMj7&sz=w120",
+    "Nuelson": "https://drive.google.com/thumbnail?id=16X951oJSq4x5HEhYqY5O8_3s1jBZsf9Q&sz=w120",
+    "Darren": "https://drive.google.com/thumbnail?id=14bh12ADLFt37NBt1iRc_dD-V9jghZkMC&sz=w120",
+    "Rachel": "https://drive.google.com/thumbnail?id=1iioZLtnl1eDLufmPUeBBBCN64NoVmUkH&sz=w120",
+    "Carl": "https://drive.google.com/thumbnail?id=1edAGef8yv4b4ZgM-JPH5_5yMK_X4HWXa&sz=w120",
+    "Lee": "https://drive.google.com/thumbnail?id=1BwoPIds6jtxO-4tJ2jsrl4pUjfLjoMUq&sz=w120",
+    "Aisley": "https://drive.google.com/thumbnail?id=1fRZNMO1iErFFpH3d-SbJTJAKhGXrPdxE&sz=w120",
+    "AJ Boy": "https://drive.google.com/thumbnail?id=1PEnAvc55qbaWRSZEP5OVwABa0Y0XZB70&sz=w120",
+    "Jill": "https://drive.google.com/thumbnail?id=1xPwUD2Rrz8OoCTorhcoEFkXPqCNV1Fm9&sz=w120",
+    "Kiarah": "https://drive.google.com/thumbnail?id=1HdIOx4ftG8-JCn2c3EyCRsy5QBETERSL&sz=w120",
+    "Cyrus": "https://drive.google.com/thumbnail?id=1V_C3niY-Gf_yMS0lvusO2ftV2JUPPGSU&sz=w120",
+    "Jay": "https://drive.google.com/thumbnail?id=1b5fpW93DPLO0Qe2a4Tr4ZEesFgzMqTV3&sz=w120",
+    "Ian": "https://drive.google.com/thumbnail?id=1rAv7s-rEy4v7wzpSJrKlBTU_X9R02Ye_&sz=w120",
+    "Kirsten": "https://drive.google.com/thumbnail?id=1zUICo-PKQgF24Mp3BFaa90uP5oNjwH6x&sz=w120",
+    "Christian": "https://drive.google.com/thumbnail?id=1r5y8_j-xb2zUpRYTdzPVwrpyzOixDJvD&sz=w120",
+    "Alvin": "https://drive.google.com/thumbnail?id=1OynwukEyXvpJ5HCF0vr4MNn_IY_sg7e4&sz=w120"
+  };
+
+  const PEOPLE = [
+    { name: "Airah", x: 29.0, y: 14.0, hair: "#334155", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Shaira", x: 12.0, y: 27.0, hair: "#451a03", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Darren", x: 23.0, y: 27.0, hair: "#0f172a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Rachel", x: 34.0, y: 27.0, hair: "#334155", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Carl", x: 45.0, y: 27.0, hair: "#1e1b4b", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Nuelson", x: 12.0, y: 40.0, hair: "#27272a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Aisley", x: 23.0, y: 40.0, hair: "#451a03", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "AJ Boy", x: 34.0, y: 40.0, hair: "#0f172a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jill", x: 45.0, y: 40.0, hair: "#1e293b", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Lee", x: 12.0, y: 53.0, hair: "#27272a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kiarah", x: 23.0, y: 53.0, hair: "#334155", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Cyrus", x: 34.0, y: 53.0, hair: "#1e1b4b", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jay", x: 45.0, y: 53.0, hair: "#451a03", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Ian", x: 12.0, y: 66.0, hair: "#0f172a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kirsten", x: 80.5, y: 23.0, hair: "#451a03", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Christian", x: 80.5, y: 39.0, hair: "#1e293b", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jojo (Chief)", x: 81.5, y: 66.5, hair: "#1e293b", female: true, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Alvin", x: 57.5, y: 84.5, hair: "#0f172a", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jesreel (Asst. Chief)", x: 68.5, y: 84.5, hair: "#451a03", female: false, status: "online", note: "In Office", province: "Regional", checkInAt: "", checkOutAt: "" }
+  ];
+
+  let deferredInstallPrompt = null;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    document.getElementById("installPwaBtn").classList.add("visible");
+  });
+
+  async function installPwaApp() {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    document.getElementById("installPwaBtn").classList.remove("visible");
+  }
+
+  function switchMobileTab(tabName) {
+    document.body.classList.remove("tab-floor", "tab-chat", "tab-checkin");
+    document.body.classList.add("tab-" + tabName);
+    document.querySelectorAll(".mob-nav-btn").forEach(b => b.classList.remove("active"));
+    const activeBtn = document.getElementById("mobBtn" + tabName.charAt(0).toUpperCase() + tabName.slice(1));
+    if (activeBtn) activeBtn.classList.add("active");
+  }
+
+  let selectedIndex = -1;
+  let pendingPinAction = null;
+  let pendingPinIsCreate = false;
+
+  let convoUnlocked = false;
+  let currentChatUser = "";
+  let unlockedPinUser = "";
+  let savedPinsMap = {};
+  let chatMessages = [];
+  let todayLogsData = [];
+  let replyTarget = null;
+
+  let coffeeBusy = false;
+  let activeCoffeeName = "";
+  let coffeeEndsAt = 0;
+  let coffeeTimer = null;
+  let coffeeCountdownInterval = null;
+  let coffeeAnimFrame = null;
+
+  let danceEndTime = 0;
+  let danceCountdownInterval = null;
+  let isAfterHours = false;
+  let lastAutoArchiveDate = "";
+
+  function esc(v) {
+    return String(v || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function normalizeStatus(st) {
+    const s = String(st || "online").trim().toLowerCase();
+    if (s.includes("offline") || s.includes("uli")) return "offline";
+    if (s.includes("activity") || s.includes("gawas") || s.includes("field")) return "activity";
+    if (s.includes("leave")) return "leave";
+    if (s.includes("absent")) return "absent";
+    return "online";
+  }
+
+  function statusLabel(st) {
+    if (st === "offline") return "offline (uli na)";
+    if (st === "activity") return "activity / gawas";
+    if (st === "leave") return "on leave";
+    if (st === "absent") return "absent";
+    return "online";
+  }
+
+  function getTimingBadgeText(p) {
+    if (!p || !p.checkInAt) return "No Check-In Yet";
+    const m = String(p.checkInAt).match(/^(\d{1,2}):(\d{2})/);
+    if (!m) return "Checked-In";
+    let hr = parseInt(m[1], 10);
+    const min = parseInt(m[2], 10);
+    if (/pm/i.test(p.checkInAt) && hr < 12) hr += 12;
+    if (/am/i.test(p.checkInAt) && hr === 12) hr = 0;
+    const totalMins = hr * 60 + min;
+    if (totalMins <= 8 * 60) return "🟢 On-Time";
+    if (totalMins <= 8 * 60 + 15) return "🟠 Grace";
+    return "🔴 Late";
+  }
+
+  function isViewingProvinceOffice() {
+    return PROVINCE_CODES.includes(document.getElementById("provFilter").value);
+  }
+
+  function syncViewOnlyUi() {
+    const ro = isViewingProvinceOffice();
+    document.getElementById("actionControlsGroup").classList.toggle("view-only-locked", ro);
+    document.getElementById("viewOnlyPill").classList.toggle("active", ro);
+  }
+
+  function hasAnyExistingPin() {
+    return Object.keys(savedPinsMap).some(k => Boolean(String(savedPinsMap[k] || "").trim()));
+  }
+
+  function updateActionPinStatus() {
+    const badge = document.getElementById("actionPinStatus");
+    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) {
+      badge.textContent = "👆 Click User First";
+      badge.style.color = "#fde68a";
+      return;
+    }
+    const p = PEOPLE[selectedIndex];
+    const saved = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
+    if (!saved) {
+      badge.textContent = hasAnyExistingPin() ? "🔐 Admin PIN Needed (" + p.name + ")" : "✨ Create PIN (" + p.name + ")";
+      badge.style.color = "#fde047";
+    } else if (unlockedPinUser === p.name) {
+      badge.textContent = "🔓 PIN Ready (" + p.name + ")";
+      badge.style.color = "#4ade80";
+    } else {
+      badge.textContent = "🔒 Input PIN (" + p.name + ")";
+      badge.style.color = "#fca5a5";
+    }
+  }
+
+  function syncPinToChatbox(personName, pinValue) {
+    savedPinsMap[personName.toLowerCase()] = pinValue;
+    unlockedPinUser = personName;
+    currentChatUser = personName;
+    const senderSel = document.getElementById("chatSenderSelect");
+    if (senderSel) senderSel.value = personName;
+    const chatPinEl = document.getElementById("chatPinInput");
+    if (chatPinEl) chatPinEl.value = pinValue;
+    updatePinBadgeUI();
+    updateActionPinStatus();
+    if (APPS_SCRIPT_URL) {
+      fetch(APPS_SCRIPT_URL, {
+        method: "POST", mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ type: "set_pin", memberName: personName, pin: pinValue })
+      }).catch(() => {});
+    }
+  }
+
+  function requestPinAction(actionType) {
+    if (isViewingProvinceOffice()) { alert("View-only lang ni nga provincial office."); return; }
+    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { alert("I-click una sa floorplan ang user."); return; }
+    if (actionType !== "CHECK_OUT" && actionType !== "STATUS_OFFLINE" && actionType !== "STATUS_LEAVE" && actionType !== "STATUS_ABSENT" && isAfterHours) {
+      alert("7:30 PM+ na (Auto-Offline).");
+      return;
+    }
+    const p = PEOPLE[selectedIndex];
+    const savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
+    const needsAdminAuth = !savedPin && hasAnyExistingPin();
+    pendingPinAction = actionType;
+    pendingPinIsCreate = !savedPin;
+
+    document.getElementById("pinModalErr").textContent = "";
+    document.getElementById("pinModalInput").value = "";
+    document.getElementById("pinModalAdminInput").value = "";
+    document.getElementById("pinModalAdminInput").style.display = needsAdminAuth ? "block" : "none";
+    document.getElementById("pinModalTitle").textContent = (pendingPinIsCreate ? "CREATE PIN • " : "INPUT PIN • ") + p.name;
+    document.getElementById("pinModalSub").textContent = pendingPinIsCreate
+      ? (needsAdminAuth ? "Enter Admin PIN para makabuhat og PIN para kang " + p.name + "." : "Pag-create og PIN para kang " + p.name + " (magamit pud sa Chatbox).")
+      : "Isulod ang PIN ni " + p.name + " (magamit pud sa Chatbox).";
+    document.getElementById("pinModalBackdrop").classList.add("open");
+    setTimeout(() => (needsAdminAuth ? document.getElementById("pinModalAdminInput") : document.getElementById("pinModalInput")).focus(), 40);
+  }
+
+  function closePinModal() {
+    pendingPinAction = null;
+    pendingPinIsCreate = false;
+    document.getElementById("pinModalBackdrop").classList.remove("open");
+    document.getElementById("pinModalErr").textContent = "";
+  }
+
+  async function confirmPinModal() {
+    if (selectedIndex < 0 || !PEOPLE[selectedIndex] || !pendingPinAction) return;
+    const p = PEOPLE[selectedIndex];
+    const savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
+    const entered = String(document.getElementById("pinModalInput").value || "").trim();
+    const adminEntered = String(document.getElementById("pinModalAdminInput").value || "").trim();
+    const errEl = document.getElementById("pinModalErr");
+
+    if (savedPin) {
+      if (!entered) { errEl.textContent = "Palihog isulod ang PIN."; return; }
+      if (entered !== savedPin) { errEl.textContent = "Sayop ang PIN!"; return; }
+      syncPinToChatbox(p.name, entered);
+    } else {
+      if (hasAnyExistingPin() && adminEntered !== ADMIN_PIN) {
+        errEl.textContent = "Sayop o kulang ang Admin PIN.";
+        return;
+      }
+      if (!entered) { errEl.textContent = "Palihog pag-type og bag-ong PIN."; return; }
+      syncPinToChatbox(p.name, entered);
+    }
+    const act = pendingPinAction;
+    closePinModal();
+    await executeAuthorizedAction(p, act);
+  }
+
+  async function executeAuthorizedAction(p, actionType) {
+    const noteInputVal = document.getElementById("noteInput").value.trim();
+    const nowStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    if (actionType === "CHECK_IN") {
+      p.status = "online"; p.note = noteInputVal || "Checked-In at Office"; p.checkInAt = nowStr; p.checkOutAt = "";
+      appendLocalLog(p, "CHECK_IN", getTimingBadgeText(p));
+    } else if (actionType === "CHECK_OUT") {
+      p.status = "offline"; p.note = noteInputVal || "Checked-Out (Uli na)"; p.checkOutAt = nowStr;
+      appendLocalLog(p, "CHECK_OUT", "");
+    } else {
+      const map = { STATUS_ONLINE: ["online", "In Office"], STATUS_ACTIVITY: ["activity", "Activity sa Gawas"], STATUS_LEAVE: ["leave", "On Leave"], STATUS_ABSENT: ["absent", "Absent"], STATUS_OFFLINE: ["offline", "Uli na"] };
+      const [st, defNote] = map[actionType] || ["online", "In Office"];
+      p.status = st; p.note = noteInputVal || defNote;
+      if (st === "offline") p.checkOutAt = nowStr;
+      appendLocalLog(p, actionType, st === "online" ? getTimingBadgeText(p) : "");
+    }
+    renderFloor();
+    await postStatusPayload(p, actionType);
+  }
+
+  function appendLocalLog(p, action, timing) {
+    const now = new Date();
+    todayLogsData.unshift({ date: now.toISOString().slice(0, 10), time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }), name: p.name, province: p.province || "Regional", action, status: p.status, timing: timing || "", note: p.note || "" });
+    renderTodayLogTable();
+  }
+
+  function spriteDeskSvg(hair, female) {
+    const hairTop = female ? `<rect x="8" y="2" width="12" height="4" fill="${hair}"/><rect x="6" y="4" width="3" height="10" fill="${hair}"/><rect x="19" y="4" width="3" height="10" fill="${hair}"/>` : `<rect x="9" y="2" width="10" height="3" fill="${hair}"/><rect x="8" y="4" width="12" height="2" fill="${hair}"/>`;
+    return `<svg class="px-sprite" viewBox="0 0 28 28">${hairTop}<rect x="10" y="5" width="8" height="7" fill="#fcd34d"/><rect x="11" y="7" width="1.5" height="2" fill="#0f172a"/><rect x="15.5" y="7" width="1.5" height="2" fill="#0f172a"/><rect x="8" y="12" width="12" height="8" fill="#2563eb"/><rect x="6" y="13" width="2" height="5" fill="#fcd34d"/><rect x="20" y="13" width="2" height="5" fill="#fcd34d"/><rect x="9" y="20" width="4" height="6" fill="#1e293b"/><rect x="15" y="20" width="4" height="6" fill="#1e293b"/></svg>`;
+  }
+
+  function fullBodyCharacterSvg(hair, female, showMug) {
+    const hairTop = female ? `<rect x="4" y="0" width="8" height="3" fill="${hair}"/><rect x="2.5" y="2" width="2" height="7" fill="${hair}"/><rect x="9.5" y="2" width="2" height="7" fill="${hair}"/>` : `<rect x="4.5" y="0" width="7" height="2.5" fill="${hair}"/><rect x="4" y="2" width="8" height="1.5" fill="${hair}"/>`;
+    const mug = showMug ? `<rect x="10.5" y="6.5" width="3" height="3" fill="#ef4444" stroke="#0f172a" stroke-width="0.6"/>` : "";
+    return `<svg class="walk-body-svg" viewBox="0 0 14 17">${hairTop}<rect x="4.5" y="2.5" width="5" height="4.5" fill="#fcd34d"/><rect x="5.5" y="4" width="1" height="1.2" fill="#0f172a"/><rect x="7.5" y="4" width="1" height="1.2" fill="#0f172a"/><rect x="3.5" y="7" width="7" height="5.5" fill="#2563eb"/><rect x="2" y="7.5" width="1.5" height="3.5" fill="#fcd34d"/><rect x="10.5" y="7.5" width="1.5" height="3.5" fill="#fcd34d"/>${mug}<rect x="4" y="12.5" width="2.2" height="3.5" fill="#0f172a"/><rect x="7.8" y="12.5" width="2.2" height="3.5" fill="#0f172a"/></svg>`;
+  }
+
+  function populateChatSenderSelect() {
+    const sel = document.getElementById("chatSenderSelect");
+    sel.innerHTML = `<option value="" selected disabled>-- Choose your name --</option>` + PEOPLE.map(p => `<option value="${esc(p.name)}">${esc(p.name)}</option>`).join("");
+    updatePinBadgeUI();
+  }
+
+  function updatePinBadgeUI() {
+    const badge = document.getElementById("chatPinBadge");
+    const pinInput = document.getElementById("chatPinInput");
+    if (!currentChatUser) { badge.textContent = "👤 Name"; badge.className = "chat-pin-badge"; pinInput.placeholder = "PIN"; return; }
+    const hasSavedPin = Boolean(savedPinsMap[currentChatUser.toLowerCase()]);
+    if (unlockedPinUser === currentChatUser) { badge.textContent = "🔓 OK"; badge.className = "chat-pin-badge unlocked"; pinInput.placeholder = "PIN"; }
+    else if (hasSavedPin) { badge.textContent = "🔒 PIN"; badge.className = "chat-pin-badge"; pinInput.placeholder = "Enter PIN"; }
+    else { badge.textContent = "🔐 Admin"; badge.className = "chat-pin-badge"; pinInput.placeholder = "New PIN"; }
+  }
+
+  function onChatSenderChange() {
+    currentChatUser = document.getElementById("chatSenderSelect").value;
+    const saved = String(savedPinsMap[currentChatUser.toLowerCase()] || "").trim();
+    document.getElementById("chatPinInput").value = (unlockedPinUser === currentChatUser && saved) ? saved : "";
+    updatePinBadgeUI();
+    renderChatMessages();
+  }
+
+  function onChatPinInput() {
+    if (!currentChatUser) return;
+    const entered = document.getElementById("chatPinInput").value.trim();
+    const saved = savedPinsMap[currentChatUser.toLowerCase()];
+    if (saved && entered === saved) unlockedPinUser = currentChatUser;
+    else if (unlockedPinUser === currentChatUser && entered !== saved) unlockedPinUser = "";
+    updatePinBadgeUI();
+    updateActionPinStatus();
+  }
+
+  function unlockConvoPanel() {
+    if (document.getElementById("convoPasskeyInput").value.trim() === CONVO_PASSKEY) {
+      convoUnlocked = true;
+      document.getElementById("chatGateBox").style.display = "none";
+      document.getElementById("chatMessages").classList.add("unlocked");
+      document.getElementById("chatForm").classList.remove("locked-ui");
+      document.getElementById("chatSubLabel").textContent = "Unlocked • PDMU Convo";
+      renderChatMessages();
+    } else {
+      document.getElementById("chatGateError").textContent = "Invalid passkey.";
+    }
+  }
+
+  function lockConvoPanel() {
+    convoUnlocked = false; unlockedPinUser = "";
+    document.getElementById("convoPasskeyInput").value = "";
+    document.getElementById("chatGateBox").style.display = "flex";
+    document.getElementById("chatMessages").classList.remove("unlocked");
+    document.getElementById("chatForm").classList.add("locked-ui");
+    document.getElementById("chatSubLabel").textContent = "Enter chat passkey to view & join convo";
+    updatePinBadgeUI(); updateActionPinStatus();
+  }
+
+  function setReplyTarget(msgId, sender, text) {
+    replyTarget = { id: msgId, sender, text: String(text || "").slice(0, 70) };
+    document.getElementById("replyBannerText").textContent = "Replying to " + sender + ": " + replyTarget.text;
+    document.getElementById("replyBanner").classList.add("active");
+    document.getElementById("chatInput").focus();
+  }
+
+  function clearReplyTarget() {
+    replyTarget = null;
+    document.getElementById("replyBanner").classList.remove("active");
+  }
+
+  function getAvatarForSender(senderName) {
+    if (!senderName) return DEFAULT_AVATAR;
+    if (MEMBER_AVATARS[senderName]) return MEMBER_AVATARS[senderName];
+    const clean = String(senderName).replace(/\s*\(.*?\)\s*/g, "").trim().toLowerCase();
+    for (const k of Object.keys(MEMBER_AVATARS)) {
+      if (k.replace(/\s*\(.*?\)\s*/g, "").trim().toLowerCase() === clean) return MEMBER_AVATARS[k];
+    }
+    return DEFAULT_AVATAR;
+  }
+
+  function renderChatMessages() {
+    const box = document.getElementById("chatMessages");
+    if (!convoUnlocked) return;
+    if (!chatMessages.length) {
+      box.innerHTML = `<div style="font-size:11px; color:#cbd5e1; text-align:center; padding:18px 8px;">No messages yet.</div>`;
+      return;
+    }
+    const emojis = ["👍", "❤️", "😂", "👏"];
+    box.innerHTML = chatMessages.map(m => {
+      const isMine = currentChatUser && m.sender === currentChatUser;
+      const quoteHtml = m.replyTo && m.replyTo.sender ? `<div class="msg-reply-quote"><strong>${esc(m.replyTo.sender)}:</strong> ${esc(m.replyTo.text)}</div>` : "";
+      const rx = m.reactions || {};
+      const btnsHtml = emojis.map(emo => {
+        const users = Array.isArray(rx[emo]) ? rx[emo] : [];
+        const active = currentChatUser && users.includes(currentChatUser);
+        return `<button type="button" class="msg-act-btn ${active ? "reacted" : ""}" onclick="toggleReaction('${esc(m.id)}','${emo}')">${emo}${users.length ? " " + users.length : ""}</button>`;
+      }).join("") + `<button type="button" class="msg-act-btn" onclick="setReplyTarget('${esc(m.id)}','${esc(m.sender)}','${esc(m.message)}')">↩ Reply</button>`;
+      return `<div class="msg-row ${isMine ? "mine" : ""}"><img class="msg-avatar" src="${esc(getAvatarForSender(m.sender))}" alt="${esc(m.sender)}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}';"><div class="msg-col"><div class="msg-sender">${esc(m.sender)}</div><div class="msg-bubble">${quoteHtml}${esc(m.message)}</div><div class="msg-actions-bar">${btnsHtml}</div><div class="msg-time">${esc(m.sentAt || "")}</div></div></div>`;
+    }).join("");
+    box.scrollTop = box.scrollHeight;
+  }
+
+  async function sendChatMessage(e) {
+    e.preventDefault();
+    if (!convoUnlocked) return;
+    const sender = document.getElementById("chatSenderSelect").value;
+    if (!sender) { alert("Pilia una ang imong pangalan."); return; }
+    const pinVal = document.getElementById("chatPinInput").value.trim();
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    const keyLower = sender.toLowerCase();
+    const existingPin = savedPinsMap[keyLower];
+    if (existingPin) {
+      if (unlockedPinUser !== sender && pinVal !== existingPin) { alert("Enter sakto nga PIN para kang " + sender + "."); return; }
+      unlockedPinUser = sender;
+    } else {
+      if (hasAnyExistingPin()) { alert("Secured: Wala pay PIN si " + sender + "."); return; }
+      if (!pinVal) { alert("Pag-set og PIN."); return; }
+      savedPinsMap[keyLower] = pinVal; unlockedPinUser = sender;
+    }
+    updatePinBadgeUI(); updateActionPinStatus();
+    const msgId = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+    chatMessages.push({ id: msgId, sender, message: text, sentAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), replyTo: replyTarget ? { sender: replyTarget.sender, text: replyTarget.text } : null, reactions: {} });
+    input.value = ""; clearReplyTarget(); renderChatMessages();
+    if (APPS_SCRIPT_URL) {
+      fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "chat", id: msgId, sender, message: text, replyTo: replyTarget }) }).catch(() => {});
+    }
+  }
+
+  async function toggleReaction(msgId, emoji) {
+    if (!convoUnlocked || !currentChatUser) return;
+    const target = chatMessages.find(m => m.id === msgId);
+    if (target) {
+      if (!target.reactions) target.reactions = {};
+      if (!Array.isArray(target.reactions[emoji])) target.reactions[emoji] = [];
+      const pos = target.reactions[emoji].indexOf(currentChatUser);
+      if (pos > -1) target.reactions[emoji].splice(pos, 1);
+      else target.reactions[emoji].push(currentChatUser);
+      renderChatMessages();
+    }
+  }
+
+  function updateSummaryCounts() {
+    const prov = document.getElementById("provFilter").value;
+    const list = PEOPLE.filter(p => (p.province || "Regional") === prov);
+    let online = 0, activity = 0, leave = 0, absent = 0, offline = 0;
+    list.forEach(p => { if (p.status === "online") online++; else if (p.status === "activity") activity++; else if (p.status === "leave") leave++; else if (p.status === "absent") absent++; else offline++; });
+    document.getElementById("cntTotal").textContent = list.length;
+    document.getElementById("cntOnline").textContent = online;
+    document.getElementById("cntActivity").textContent = activity;
+    document.getElementById("cntLeave").textContent = leave;
+    document.getElementById("cntAbsent").textContent = absent;
+    document.getElementById("cntOffline").textContent = offline;
+  }
+
+  function quickFilter(st) { document.getElementById("statusFilter").value = st; renderFloor(); }
+  function isDancingNow() { return danceEndTime > Date.now(); }
+  function getCoffeeRemText() {
+    if (!coffeeEndsAt) return "1m";
+    const remSec = Math.max(0, Math.ceil((coffeeEndsAt - Date.now()) / 1000));
+    return Math.floor(remSec / 60) + ":" + String(remSec % 60).padStart(2, "0");
+  }
+
+  function renderFloor() {
+    updateSummaryCounts(); syncViewOnlyUi();
+    const prov = document.getElementById("provFilter").value;
+    const isProvSquare = PROVINCE_CODES.includes(prov);
+    const stFilter = document.getElementById("statusFilter").value;
+    const hideOut = document.getElementById("hideOutChk").checked;
+    const stageWrap = document.getElementById("stageWrap");
+    stageWrap.classList.toggle("province-square-mode", isProvSquare);
+
+    if (isProvSquare) {
+      document.getElementById("provSquareRoomLabel").textContent = prov + " PROVINCIAL OFFICE (SQUARE • VIEW ONLY)";
+      document.getElementById("provSquareEmptyMsg").style.display = PEOPLE.filter(p => (p.province || "Regional") === prov).length === 0 ? "flex" : "none";
+    }
+
+    const layer = document.getElementById("actorsLayer");
+    layer.innerHTML = "";
+    let provSlotIdx = 0;
+
+    PEOPLE.forEach((p, idx) => {
+      const isOut = p.status !== "online";
+      const provMatch = (p.province || "Regional") === prov;
+      const hiddenByFilter = !provMatch || (stFilter !== "ALL" && p.status !== stFilter) || (hideOut && isOut);
+      const walkingCoffee = coffeeBusy && activeCoffeeName === p.name && !isProvSquare;
+      const jaySingingNow = JAY_SINGING_SUBAYBAYANI && p.name === "Jay" && !isProvSquare;
+
+      const node = document.createElement("div");
+      node.className = "actor-node";
+      if (idx === selectedIndex) node.classList.add("selected");
+      if (isOut) node.classList.add("is-away");
+      if (hiddenByFilter) node.classList.add("hidden-out");
+      if (walkingCoffee) node.classList.add("is-walking-coffee");
+      if (p.x >= 50) node.classList.add("flipped-desk");
+
+      if (jaySingingNow) { node.style.left = JAY_CENTER_POS.x + "%"; node.style.top = JAY_CENTER_POS.y + "%"; node.style.zIndex = "25"; }
+      else if (isProvSquare && provMatch) { node.style.left = (34 + (provSlotIdx % 3) * 16) + "%"; node.style.top = (28 + Math.floor(provSlotIdx / 3) * 18) + "%"; provSlotIdx++; }
+      else { node.style.left = p.x + "%"; node.style.top = p.y + "%"; }
+
+      node.onclick = () => selectPerson(idx);
+
+      let bubbleCls = "st-" + p.status, bubbleText = statusLabel(p.status);
+      if (jaySingingNow) { bubbleCls = "st-singing"; bubbleText = "🎤 ♪ SUBAYBAYANI ♪"; }
+      else if (walkingCoffee) { bubbleCls = "st-coffee"; bubbleText = "☕ coffee (" + getCoffeeRemText() + ")"; }
+
+      node.innerHTML = `<div class="bubble-tag ${bubbleCls}">${esc(bubbleText)}</div><div class="mini-station-rig">${spriteDeskSvg(p.hair, p.female)}<div class="mini-wood-desk"><div class="m-binders"><div class="m-binder" style="background:#ef4444;"></div><div class="m-binder" style="background:#3b82f6;"></div><div class="m-binder" style="background:#22c55e;"></div></div><div class="m-monitor"><div class="m-screen"></div></div><div class="m-mug"></div></div></div><div class="name-chip">${esc(p.name)}</div>`;
+      layer.appendChild(node);
+    });
+    updateSelectedFooter();
+  }
+
+  function selectPerson(idx) {
+    selectedIndex = idx;
+    document.getElementById("noteInput").value = PEOPLE[idx].note || "";
+    renderFloor();
+  }
+
+  function updateSelectedFooter() {
+    updateActionPinStatus();
+    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) {
+      document.getElementById("selectedInfo").innerHTML = "Click a member on the floorplan to select";
+      document.getElementById("timingBadge").textContent = "--";
+      document.getElementById("checkTimesInfo").textContent = "In: -- | Out: --";
+      return;
+    }
+    const p = PEOPLE[selectedIndex];
+    const prov = document.getElementById("provFilter").value;
+    document.getElementById("selectedInfo").innerHTML = "Selected: <strong>" + esc(p.name) + "</strong> (" + esc(prov) + ") — " + esc(statusLabel(p.status)) + (isViewingProvinceOffice() ? " • [View Only]" : "");
+    document.getElementById("timingBadge").textContent = getTimingBadgeText(p);
+    document.getElementById("checkTimesInfo").textContent = "In: " + (p.checkInAt || "--") + " | Out: " + (p.checkOutAt || "--");
+  }
+
+  async function postStatusPayload(p, action) {
+    if (!APPS_SCRIPT_URL) return;
+    fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ name: p.name, status: p.status, note: p.note, province: p.province || "Regional", action }) }).catch(() => {});
+  }
+
+  function buildCoffeeWaypoints(p) {
+    return [{ x: p.x, y: p.y }, { x: p.x >= 50 ? 54.0 : 49.0, y: p.y }, { x: p.x >= 50 ? 54.0 : 49.0, y: 71.0 }, { x: 29.0, y: 71.0 }, { x: 29.0, y: 74.0 }];
+  }
+
+  function animateAlongPath(walkerEl, bodyContainer, p, waypoints, onArrive) {
+    let seg = 0, t = 0, lastX = waypoints[0].x, prevTime = performance.now();
+    function step(now) {
+      const dt = Math.min(0.05, (now - prevTime) / 1000); prevTime = now;
+      if (seg >= waypoints.length - 1) { if (onArrive) onArrive(); return; }
+      const a = waypoints[seg], b = waypoints[seg + 1], dist = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+      t += (13.5 * dt) / dist;
+      if (t >= 1) { walkerEl.style.left = b.x + "%"; walkerEl.style.top = b.y + "%"; lastX = b.x; seg++; t = 0; if (seg >= waypoints.length - 1) { if (onArrive) onArrive(); return; } }
+      else { const cx = a.x + (b.x - a.x) * t, cy = a.y + (b.y - a.y) * t; walkerEl.style.left = cx + "%"; walkerEl.style.top = cy + "%"; if (cx < lastX - 0.15) walkerEl.classList.add("flip-left"); else if (cx > lastX + 0.15) walkerEl.classList.remove("flip-left"); lastX = cx; }
+      coffeeAnimFrame = requestAnimationFrame(step);
+    }
+    bodyContainer.innerHTML = fullBodyCharacterSvg(p.hair, p.female, false);
+    walkerEl.classList.add("active");
+    coffeeAnimFrame = requestAnimationFrame(step);
+  }
+
+  function triggerCoffeeBreak() {
+    if (coffeeBusy || isDancingNow() || isAfterHours || isViewingProvinceOffice()) return;
+    const onlineList = PEOPLE.filter(p => p.status === "online" && (p.province || "Regional") === "Regional" && !(JAY_SINGING_SUBAYBAYANI && p.name === "Jay"));
+    if (!onlineList.length) return;
+    const p = onlineList[Math.floor(Math.random() * onlineList.length)];
+    coffeeBusy = true; activeCoffeeName = p.name; coffeeEndsAt = Date.now() + COFFEE_DURATION_MS;
+    renderFloor();
+    const walkerEl = document.getElementById("coffeeWalker"), bodyContainer = document.getElementById("walkerBodyContainer"), bubbleEl = document.getElementById("walkerBubble");
+    clearInterval(coffeeCountdownInterval);
+    coffeeCountdownInterval = setInterval(() => { if (!coffeeBusy) { clearInterval(coffeeCountdownInterval); return; } renderFloor(); }, 1000);
+    bubbleEl.textContent = "☕ " + p.name + " getting coffee...";
+    const toCoffee = buildCoffeeWaypoints(p);
+    animateAlongPath(walkerEl, bodyContainer, p, toCoffee, () => {
+      bodyContainer.innerHTML = fullBodyCharacterSvg(p.hair, p.female, true);
+      bubbleEl.textContent = "☕ coffee (" + getCoffeeRemText() + ")";
+      coffeeTimer = setTimeout(() => {
+        clearInterval(coffeeCountdownInterval);
+        animateAlongPath(walkerEl, bodyContainer, p, toCoffee.slice().reverse(), () => {
+          walkerEl.classList.remove("active", "flip-left"); activeCoffeeName = ""; coffeeEndsAt = 0; coffeeBusy = false; renderFloor();
+        });
+      }, COFFEE_DURATION_MS);
+    });
+  }
+
+  function startDanceBreak(mins) {
+    if (isAfterHours) return;
+    danceEndTime = Date.now() + (mins || DANCE_BREAK_MINUTES) * 60000;
+    document.getElementById("discoOverlay").classList.add("active");
+    document.getElementById("danceBanner").classList.add("active");
+    clearInterval(danceCountdownInterval);
+    danceCountdownInterval = setInterval(() => {
+      const rem = Math.max(0, Math.floor((danceEndTime - Date.now()) / 1000));
+      if (rem <= 0) { stopDanceBreak(); return; }
+      document.getElementById("danceTimerText").textContent = String(Math.floor(rem / 60)).padStart(2, "0") + ":" + String(rem % 60).padStart(2, "0");
+    }, 1000);
+  }
+
+  function stopDanceBreak() { danceEndTime = 0; clearInterval(danceCountdownInterval); document.getElementById("discoOverlay").classList.remove("active"); document.getElementById("danceBanner").classList.remove("active"); }
+
+  function checkAutoOfflineSchedule() {
+    const now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
+    const after730 = (mins >= 19 * 60 + 30) || (mins < 6 * 60);
+    isAfterHours = after730;
+    document.getElementById("stageWrap").classList.toggle("after-hours-dim", after730);
+    document.getElementById("afterHoursPill").classList.toggle("active", after730);
+  }
+
+  function openTodayLogModal() { document.getElementById("logModalBackdrop").classList.add("open"); renderTodayLogTable(); }
+  function closeTodayLogModal() { document.getElementById("logModalBackdrop").classList.remove("open"); }
+  function renderTodayLogTable() {
+    const tb = document.getElementById("logTableBody");
+    tb.innerHTML = todayLogsData.length ? todayLogsData.map(r => `<tr><td>${esc(r.time)}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.province)}</td><td>${esc(r.action)}</td><td>${esc(r.status)}</td><td>${esc(r.timing)}</td><td>${esc(r.note)}</td></tr>`).join("") : `<tr><td colspan="7">No check-in/out logs recorded yet today.</td></tr>`;
+  }
+  function exportTodayLogCsv() {
+    const lines = [["Date", "Time", "Name", "Office", "Action", "Status", "Timing", "Note"].join(",")].concat(todayLogsData.map(r => [r.date, r.time, r.name, r.province, r.action, r.status, r.timing, r.note].map(v => `"${String(v || "").replace(/"/g, '""')}"`).join(",")));
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" }), url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = "PDMU_Log_" + new Date().toISOString().slice(0, 10) + ".csv"; a.click(); URL.revokeObjectURL(url);
+  }
+  async function archiveTodayNow() { alert("Archived locally / ready for Sheet sync."); }
+
+  async function fetchFromSheet(showAlert) {
+    if (!APPS_SCRIPT_URL) { document.getElementById("syncPill").textContent = "Local Mode"; return; }
+    try {
+      const json = await (await fetch(APPS_SCRIPT_URL + "?t=" + Date.now())).json();
+      if (json && json.ok) {
+        if (Array.isArray(json.data)) json.data.forEach(row => { const m = PEOPLE.find(p => p.name.toLowerCase() === String(row.name || "").trim().toLowerCase()); if (m) { m.status = normalizeStatus(row.status); m.note = row.note || ""; if (row.checkInAt) m.checkInAt = row.checkInAt; if (row.checkOutAt) m.checkOutAt = row.checkOutAt; } });
+        if (Array.isArray(json.messages)) { chatMessages = json.messages; if (convoUnlocked) renderChatMessages(); }
+        if (json.pins) { savedPinsMap = json.pins; updatePinBadgeUI(); updateActionPinStatus(); }
+        if (Array.isArray(json.todayLogs) && json.todayLogs.length) { todayLogsData = json.todayLogs; renderTodayLogTable(); }
+        renderFloor(); document.getElementById("syncPill").textContent = "Live Synced";
+        if (showAlert) alert("Synced!");
+      }
+    } catch (e) { document.getElementById("syncPill").textContent = "Offline Cache"; }
+  }
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+  }
+
+  populateChatSenderSelect();
+  renderFloor();
+  checkAutoOfflineSchedule();
+  fetchFromSheet(false);
+  setTimeout(triggerCoffeeBreak, 1500);
+  setInterval(() => fetchFromSheet(false), 15000);
+  coffeeTimer = setInterval(triggerCoffeeBreak, COFFEE_INTERVAL_MS);
+</script>
+</body>
+</html>
