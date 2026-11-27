@@ -771,6 +771,10 @@
       if (st === "online") timingText = getTimingBadgeText(p);
     }
 
+    if (p.status !== "online" && coffeeBusy && activeCoffeeName === p.name) {
+      stopCoffeeWalk();
+    }
+
     const logEntry = {
       date: dateKey,
       time: hmStr,
@@ -979,7 +983,28 @@
     return Math.floor(remSec / 60) + ":" + String(remSec % 60).padStart(2, "0");
   }
 
+  function stopCoffeeWalk() {
+    if (coffeeAnimFrame) cancelAnimationFrame(coffeeAnimFrame);
+    coffeeAnimFrame = null;
+    clearTimeout(coffeeDrinkTimeout);
+    coffeeDrinkTimeout = null;
+    clearInterval(coffeeCountdownInterval);
+    coffeeCountdownInterval = null;
+    coffeeBusy = false;
+    activeCoffeeName = "";
+    coffeeEndsAt = 0;
+    const walkerEl = document.getElementById("coffeeWalker");
+    if (walkerEl) walkerEl.classList.remove("active", "flip-left");
+  }
+
   function renderFloor() {
+    if (coffeeBusy && activeCoffeeName) {
+      const walkerPerson = PEOPLE.find(p => p.name === activeCoffeeName);
+      if (!walkerPerson || walkerPerson.status !== "online") {
+        stopCoffeeWalk();
+      }
+    }
+
     updateSummaryCounts(); syncViewOnlyUi();
     const prov = document.getElementById("provFilter").value;
     const isProvSquare = PROVINCE_CODES.includes(prov);
@@ -1001,7 +1026,7 @@
       const isOut = p.status !== "online";
       const provMatch = (p.province || "Regional") === prov;
       const hiddenByFilter = !provMatch || (stFilter !== "ALL" && p.status !== stFilter) || (hideOut && isOut);
-      const walkingCoffee = coffeeBusy && activeCoffeeName === p.name && !isProvSquare;
+      const walkingCoffee = coffeeBusy && activeCoffeeName === p.name && p.status === "online" && !isProvSquare;
 
       const node = document.createElement("div");
       node.className = "actor-node";
@@ -1083,6 +1108,11 @@
     if (coffeeAnimFrame) cancelAnimationFrame(coffeeAnimFrame);
     let seg = 0, t = 0, lastX = waypoints[0].x, prevTime = performance.now();
     function step(now) {
+      if (!coffeeBusy || p.status !== "online") {
+        stopCoffeeWalk();
+        renderFloor();
+        return;
+      }
       const dt = Math.min(0.05, (now - prevTime) / 1000); prevTime = now;
       if (seg >= waypoints.length - 1) { if (onArrive) onArrive(); return; }
       const a = waypoints[seg], b = waypoints[seg + 1], dist = Math.hypot(b.x - a.x, b.y - a.y) || 1;
@@ -1101,6 +1131,8 @@
     const onlineList = PEOPLE.filter(p => p.status === "online" && (p.province || "Regional") === "Regional");
     if (!onlineList.length) return;
     const p = onlineList[Math.floor(Math.random() * onlineList.length)];
+    if (!p || p.status !== "online") return;
+
     coffeeBusy = true;
     activeCoffeeName = p.name;
     coffeeEndsAt = Date.now() + COFFEE_DURATION_MS;
@@ -1110,22 +1142,33 @@
 
     const walkerEl = document.getElementById("coffeeWalker"), bodyContainer = document.getElementById("walkerBodyContainer"), bubbleEl = document.getElementById("walkerBubble");
     coffeeCountdownInterval = setInterval(() => {
-      if (!coffeeBusy) { clearInterval(coffeeCountdownInterval); return; }
+      if (!coffeeBusy || p.status !== "online") {
+        stopCoffeeWalk();
+        renderFloor();
+        return;
+      }
       renderFloor();
     }, 1000);
 
     bubbleEl.textContent = "☕ " + p.name + " getting coffee...";
     const toCoffee = buildCoffeeWaypoints(p);
     animateAlongPath(walkerEl, bodyContainer, p, toCoffee, () => {
+      if (!coffeeBusy || p.status !== "online") {
+        stopCoffeeWalk();
+        renderFloor();
+        return;
+      }
       bodyContainer.innerHTML = fullBodyCharacterSvg(p.hair, p.female, true);
       bubbleEl.textContent = "☕ coffee (" + getCoffeeRemText() + ")";
       coffeeDrinkTimeout = setTimeout(() => {
+        if (!coffeeBusy || p.status !== "online") {
+          stopCoffeeWalk();
+          renderFloor();
+          return;
+        }
         clearInterval(coffeeCountdownInterval);
         animateAlongPath(walkerEl, bodyContainer, p, toCoffee.slice().reverse(), () => {
-          walkerEl.classList.remove("active", "flip-left");
-          activeCoffeeName = "";
-          coffeeEndsAt = 0;
-          coffeeBusy = false;
+          stopCoffeeWalk();
           renderFloor();
         });
       }, COFFEE_DURATION_MS);
@@ -1213,7 +1256,7 @@
   renderFloor();
   checkAutoOfflineSchedule();
   fetchFromSheet(false);
-  setTimeout(triggerCoffeeBreak, 1500);
+  setTimeout(triggerCoffeeBreak, 3500);
   setInterval(() => fetchFromSheet(false), 15000);
   let coffeeScheduleInterval = setInterval(triggerCoffeeBreak, COFFEE_INTERVAL_MS);
 </script>
