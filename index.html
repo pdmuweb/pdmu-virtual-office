@@ -42,6 +42,7 @@
   .chat-top { border-bottom: 1.5px solid rgba(251, 191, 36, 0.35); padding-bottom: 7px; margin-bottom: 8px; }
   .chat-title { font-size: 13px; font-weight: 900; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
   .chat-lock-top-btn { background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 4px; padding: 2px 6px; font-family: inherit; font-size: 9.5px; font-weight: 800; cursor: pointer; }
+  .chat-lock-top-btn:hover { background: #fbbf24; color: #030954; }
   .chat-sub { font-size: 10px; color: #cbd5e1; margin-top: 2px; }
   .chat-gate-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px 12px; gap: 8px; background: #030954; border: 1.5px dashed rgba(251, 191, 36, 0.55); border-radius: 8px; margin-bottom: 8px; }
   .chat-gate-title { font-size: 12.5px; font-weight: 900; color: #fde047; }
@@ -62,7 +63,7 @@
   .msg-time { font-size: 8.5px; color: #94a3b8; margin-top: 2px; }
   .msg-actions-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-top: 2px; }
   .msg-act-btn { background: rgba(3, 9, 84, 0.85); color: #e2e8f0; border: 1px solid rgba(251, 191, 36, 0.35); border-radius: 999px; padding: 1px 5px; font-size: 9.5px; cursor: pointer; }
-  .msg-act-btn.reacted { background: #fbbf24; color: #030954; font-weight: 800; }
+  .msg-act-btn:hover, .msg-act-btn.reacted { background: #fbbf24; color: #030954; font-weight: 800; }
   .reply-banner { display: none; justify-content: space-between; align-items: center; gap: 6px; background: #030954; border-left: 3px solid #fbbf24; border-radius: 5px; padding: 4px 7px; margin-bottom: 5px; font-size: 10px; color: #fde68a; }
   .reply-banner.active { display: flex; }
   .reply-cancel-btn { background: transparent; color: #fca5a5; border: none; font-weight: 900; font-size: 11px; cursor: pointer; }
@@ -183,10 +184,13 @@
     .vo-footer { margin-top: 8px; padding: 8px 10px; }
     .note-input { min-width: 100%; }
 
-    body.mobile-tab-mode .vo-main-grid,
+    body.mobile-tab-mode .stage-wrap-slot,
+    body.mobile-tab-mode .chat-panel-slot,
     body.mobile-tab-mode .vo-footer { display: none; }
+
     body.mobile-tab-mode.tab-floor .stage-wrap-slot { display: block; }
     body.mobile-tab-mode.tab-chat .chat-panel-slot { display: block; }
+    body.mobile-tab-mode.tab-checkin .stage-wrap-slot { display: block; }
     body.mobile-tab-mode.tab-checkin .vo-footer { display: flex; }
 
     .mobile-bottom-nav {
@@ -526,14 +530,13 @@
   let coffeeBusy = false;
   let activeCoffeeName = "";
   let coffeeEndsAt = 0;
-  let coffeeTimer = null;
+  let coffeeDrinkTimeout = null;
   let coffeeCountdownInterval = null;
   let coffeeAnimFrame = null;
 
   let danceEndTime = 0;
   let danceCountdownInterval = null;
   let isAfterHours = false;
-  let lastAutoArchiveDate = "";
 
   function esc(v) {
     return String(v || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -962,6 +965,7 @@
   }
 
   function animateAlongPath(walkerEl, bodyContainer, p, waypoints, onArrive) {
+    if (coffeeAnimFrame) cancelAnimationFrame(coffeeAnimFrame);
     let seg = 0, t = 0, lastX = waypoints[0].x, prevTime = performance.now();
     function step(now) {
       const dt = Math.min(0.05, (now - prevTime) / 1000); prevTime = now;
@@ -982,20 +986,32 @@
     const onlineList = PEOPLE.filter(p => p.status === "online" && (p.province || "Regional") === "Regional" && !(JAY_SINGING_SUBAYBAYANI && p.name === "Jay"));
     if (!onlineList.length) return;
     const p = onlineList[Math.floor(Math.random() * onlineList.length)];
-    coffeeBusy = true; activeCoffeeName = p.name; coffeeEndsAt = Date.now() + COFFEE_DURATION_MS;
-    renderFloor();
-    const walkerEl = document.getElementById("coffeeWalker"), bodyContainer = document.getElementById("walkerBodyContainer"), bubbleEl = document.getElementById("walkerBubble");
+    coffeeBusy = true;
+    activeCoffeeName = p.name;
+    coffeeEndsAt = Date.now() + COFFEE_DURATION_MS;
+    clearTimeout(coffeeDrinkTimeout);
     clearInterval(coffeeCountdownInterval);
-    coffeeCountdownInterval = setInterval(() => { if (!coffeeBusy) { clearInterval(coffeeCountdownInterval); return; } renderFloor(); }, 1000);
+    renderFloor();
+
+    const walkerEl = document.getElementById("coffeeWalker"), bodyContainer = document.getElementById("walkerBodyContainer"), bubbleEl = document.getElementById("walkerBubble");
+    coffeeCountdownInterval = setInterval(() => {
+      if (!coffeeBusy) { clearInterval(coffeeCountdownInterval); return; }
+      renderFloor();
+    }, 1000);
+
     bubbleEl.textContent = "☕ " + p.name + " getting coffee...";
     const toCoffee = buildCoffeeWaypoints(p);
     animateAlongPath(walkerEl, bodyContainer, p, toCoffee, () => {
       bodyContainer.innerHTML = fullBodyCharacterSvg(p.hair, p.female, true);
       bubbleEl.textContent = "☕ coffee (" + getCoffeeRemText() + ")";
-      coffeeTimer = setTimeout(() => {
+      coffeeDrinkTimeout = setTimeout(() => {
         clearInterval(coffeeCountdownInterval);
         animateAlongPath(walkerEl, bodyContainer, p, toCoffee.slice().reverse(), () => {
-          walkerEl.classList.remove("active", "flip-left"); activeCoffeeName = ""; coffeeEndsAt = 0; coffeeBusy = false; renderFloor();
+          walkerEl.classList.remove("active", "flip-left");
+          activeCoffeeName = "";
+          coffeeEndsAt = 0;
+          coffeeBusy = false;
+          renderFloor();
         });
       }, COFFEE_DURATION_MS);
     });
@@ -1062,7 +1078,7 @@
   fetchFromSheet(false);
   setTimeout(triggerCoffeeBreak, 1500);
   setInterval(() => fetchFromSheet(false), 15000);
-  coffeeTimer = setInterval(triggerCoffeeBreak, COFFEE_INTERVAL_MS);
+  let coffeeScheduleInterval = setInterval(triggerCoffeeBreak, COFFEE_INTERVAL_MS);
 </script>
 </body>
 </html>
