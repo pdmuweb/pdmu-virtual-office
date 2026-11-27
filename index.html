@@ -435,7 +435,7 @@
     <div class="pin-modal-title" id="pinModalTitle">ENTER PIN</div>
     <div class="pin-modal-sub" id="pinModalSub">Enter your PIN to continue.</div>
     <input type="password" id="pinModalInput" class="pin-modal-input" placeholder="Enter PIN" maxlength="12" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmPinModal();}">
-    <input type="password" id="pinModalAdminInput" class="pin-modal-input" style="display:none; font-size:11.5px;" placeholder="Admin PIN to create new user PIN" maxlength="16" autocomplete="off">
+    <input type="password" id="pinModalAdminInput" class="pin-modal-input" style="display:none; font-size:11.5px;" placeholder="Admin PIN (Ian)" maxlength="16" autocomplete="off">
     <div class="pin-modal-err" id="pinModalErr"></div>
     <div class="pin-modal-actions">
       <button type="button" class="pin-confirm-btn" id="pinModalConfirmBtn" onclick="confirmPinModal()">Confirm</button>
@@ -469,6 +469,7 @@
 <script>
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7-3e7fOJ_cNRqbFQNBmZ2K-XnU15C-MDLiYRVOrYwMJtTeF_Y-ZA04QnXmVzSkR-f/exec";
   const CONVO_PASSKEY = "PDMU2026";
+  const ADMIN_NAME = "Ian";
   const ADMIN_PIN = "PDMUADMIN";
   const DANCE_BREAK_MINUTES = 30;
   const COFFEE_DURATION_MS = 60000;
@@ -650,7 +651,7 @@
     const p = PEOPLE[selectedIndex];
     const saved = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
     if (!saved) {
-      badge.textContent = hasAnyExistingPin() ? "🔐 Admin PIN Needed (" + p.name + ")" : "✨ Create PIN (" + p.name + ")";
+      badge.textContent = "✨ Create PIN (" + p.name + ")";
       badge.style.color = "#fde047";
     } else if (unlockedPinUser === p.name) {
       badge.textContent = "🔓 PIN Ready (" + p.name + ")";
@@ -689,20 +690,19 @@
     }
     const p = PEOPLE[selectedIndex];
     const savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
-    const needsAdminAuth = !savedPin && hasAnyExistingPin();
     pendingPinAction = actionType;
     pendingPinIsCreate = !savedPin;
 
     document.getElementById("pinModalErr").textContent = "";
     document.getElementById("pinModalInput").value = "";
     document.getElementById("pinModalAdminInput").value = "";
-    document.getElementById("pinModalAdminInput").style.display = needsAdminAuth ? "block" : "none";
+    document.getElementById("pinModalAdminInput").style.display = "none";
     document.getElementById("pinModalTitle").textContent = (pendingPinIsCreate ? "CREATE PIN • " : "INPUT PIN • ") + p.name;
     document.getElementById("pinModalSub").textContent = pendingPinIsCreate
-      ? (needsAdminAuth ? "Enter Admin PIN para makabuhat og PIN para kang " + p.name + "." : "Pag-create og PIN para kang " + p.name + " (magamit pud sa Chatbox).")
+      ? "Pag-create og imong PIN para kang " + p.name + " (magamit pud sa Chatbox)."
       : "Isulod ang PIN ni " + p.name + " (magamit pud sa Chatbox).";
     document.getElementById("pinModalBackdrop").classList.add("open");
-    setTimeout(() => (needsAdminAuth ? document.getElementById("pinModalAdminInput") : document.getElementById("pinModalInput")).focus(), 40);
+    setTimeout(() => document.getElementById("pinModalInput").focus(), 40);
   }
 
   function closePinModal() {
@@ -717,7 +717,6 @@
     const p = PEOPLE[selectedIndex];
     const savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
     const entered = String(document.getElementById("pinModalInput").value || "").trim();
-    const adminEntered = String(document.getElementById("pinModalAdminInput").value || "").trim();
     const errEl = document.getElementById("pinModalErr");
 
     if (savedPin) {
@@ -725,10 +724,6 @@
       if (entered !== savedPin) { errEl.textContent = "Sayop ang PIN!"; return; }
       syncPinToChatbox(p.name, entered);
     } else {
-      if (hasAnyExistingPin() && adminEntered !== ADMIN_PIN) {
-        errEl.textContent = "Sayop o kulang ang Admin PIN.";
-        return;
-      }
       if (!entered) { errEl.textContent = "Palihog pag-type og bag-ong PIN."; return; }
       syncPinToChatbox(p.name, entered);
     }
@@ -816,7 +811,7 @@
     const hasSavedPin = Boolean(savedPinsMap[currentChatUser.toLowerCase()]);
     if (unlockedPinUser === currentChatUser) { badge.textContent = "🔓 OK"; badge.className = "chat-pin-badge unlocked"; pinInput.placeholder = "PIN"; }
     else if (hasSavedPin) { badge.textContent = "🔒 PIN"; badge.className = "chat-pin-badge"; pinInput.placeholder = "Enter PIN"; }
-    else { badge.textContent = "🔐 Admin"; badge.className = "chat-pin-badge"; pinInput.placeholder = "New PIN"; }
+    else { badge.textContent = "✨ New"; badge.className = "chat-pin-badge"; pinInput.placeholder = "Set PIN"; }
   }
 
   function onChatSenderChange() {
@@ -920,9 +915,8 @@
       if (unlockedPinUser !== sender && pinVal !== existingPin) { alert("Enter sakto nga PIN para kang " + sender + "."); return; }
       unlockedPinUser = sender;
     } else {
-      if (hasAnyExistingPin()) { alert("Secured: Wala pay PIN si " + sender + "."); return; }
-      if (!pinVal) { alert("Pag-set og PIN."); return; }
-      savedPinsMap[keyLower] = pinVal; unlockedPinUser = sender;
+      if (!pinVal) { alert("Palihog pag-type og PIN para ma-save ang imong account."); return; }
+      syncPinToChatbox(sender, pinVal);
     }
     updatePinBadgeUI(); updateActionPinStatus();
     const msgId = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
