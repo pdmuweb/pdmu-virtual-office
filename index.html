@@ -530,11 +530,17 @@
   });
 
   async function installPwaApp() {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    document.getElementById("installPwaBtn").classList.remove("visible");
+    const pwaUrl = "https://pdmuweb.github.io/pdmu-virtual-office/";
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      if (choice && choice.outcome === "accepted") {
+        document.getElementById("installPwaBtn").classList.remove("visible");
+        return;
+      }
+    }
+    window.open(pwaUrl, "_blank", "noopener,noreferrer");
   }
 
   function switchMobileTab(tabName) {
