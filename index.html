@@ -7,19 +7,22 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
-<title>PDMU Virtual Office</title>
+<title>PDMU Virtual Office 3D</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: transparent; margin: 0; padding: 0; width: 100%; overflow-x: hidden; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #ffffff; }
   .vo-shell { width: 100%; max-width: 1440px; margin: 0 auto; background: #030954; border: 2px solid #fbbf24; border-bottom: 5px solid #f59e0b; border-radius: 14px; padding: 12px; box-shadow: 0 12px 30px rgba(3, 9, 84, 0.35); position: relative; }
   .vo-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .vo-header h2 { font-size: 18px; font-weight: 900; color: #fbbf24; }
+  .vo-header h2 { font-size: 18px; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px; }
+  .badge-3d { background: #f97316; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fde047; }
   .vo-top-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 10px; margin-bottom: 10px; }
   .vo-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .vo-tools select, .vo-tools button, .vo-tools label { background: #07116e; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 6px; padding: 6px 8px; font-family: inherit; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
   .vo-tools button:hover { background: #fbbf24; color: #030954; }
   .vo-tools button.dance-btn { background: #ec4899; border-color: #fde047; color: #ffffff; }
   .vo-tools button.log-btn { background: #0ea5e9; border-color: #bae6fd; color: #ffffff; }
+  .vo-tools button.cam-btn { background: #4f46e5; border-color: #c7d2fe; color: #ffffff; }
   .vo-tools button.install-pwa-btn { background: #16a34a; border-color: #bbf7d0; color: #ffffff; display: none; }
   .vo-tools button.install-pwa-btn.visible { display: inline-flex; }
 
@@ -39,7 +42,7 @@
   .chat-panel-slot, .stage-wrap-slot { min-width: 0; width: 100%; }
 
   /* Chatbox */
-  .chat-panel { background: #07116e; border: 2px solid #fbbf24; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; height: 560px; overflow: hidden; }
+  .chat-panel { background: #07116e; border: 2px solid #fbbf24; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; height: 580px; overflow: hidden; }
   .chat-top { border-bottom: 1.5px solid rgba(251, 191, 36, 0.35); padding-bottom: 7px; margin-bottom: 8px; }
   .chat-title { font-size: 13px; font-weight: 900; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
   .chat-lock-top-btn { background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 4px; padding: 2px 6px; font-family: inherit; font-size: 9.5px; font-weight: 800; cursor: pointer; }
@@ -79,61 +82,117 @@
   .chat-input { flex: 1; background: #030954; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 5px 8px; font-family: inherit; font-size: 11px; }
   .chat-send-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
 
-  /* Floorplan Stage */
-  .stage-wrap { position: relative; width: 100%; aspect-ratio: 16 / 10.5; min-height: 540px; border-radius: 10px; overflow: hidden; border: 2px solid #fbbf24; background: #2d3448; user-select: none; }
-  .stage-wrap.after-hours-dim .floor-base-layer { filter: brightness(0.62) saturate(0.75); transition: filter 0.4s ease; }
-  .floor-base-layer { position: relative; width: 100%; height: 100%; }
-  .floor-tile { position: absolute; background: #cfd2dc; background-image: linear-gradient(to right, rgba(148, 163, 184, 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgba(148, 163, 184, 0.45) 1px, transparent 1px); background-size: 28px 28px; }
-  .wall-h { position: absolute; height: 6px; background: #475569; z-index: 5; }
-  .wall-v { position: absolute; width: 6px; background: #475569; z-index: 5; }
-  .lounge-area { position: absolute; left: 13%; top: 75%; width: 32%; height: 20%; background: rgba(214, 196, 165, 0.55); border: 1.5px dashed #8c6d46; border-radius: 6px; z-index: 3; }
-  .lounge-bench-h { position: absolute; background: #965a2c; border: 2px solid #3b200d; border-radius: 3px; }
-  .lounge-table-mid { position: absolute; left: 40%; top: 44%; width: 20%; height: 22%; background: #965a2c; border: 2px solid #3b200d; border-radius: 50%; }
-  .coffee-station { position: absolute; left: 26.5%; top: 77.5%; width: 5.5%; height: 6.5%; background: #451a03; border: 2px solid #fbbf24; border-radius: 5px; z-index: 6; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35); }
-  .coffee-icon { font-size: 13px; line-height: 1; }
+  /* 3D Isometric Stage */
+  .stage-wrap {
+    position: relative;
+    width: 100%;
+    height: 580px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #fbbf24;
+    background: radial-gradient(circle at 50% 25%, #fffbeb 0%, #fef3c7 52%, #fde68a 100%);
+    user-select: none;
+    touch-action: none;
+  }
+  .stage-wrap.after-hours-dim {
+    background: radial-gradient(circle at 50% 25%, #1e1b4b 0%, #0f172a 70%, #020617 100%);
+  }
+  #threeCanvasHost { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; }
+  #threeCanvasHost:active { cursor: grabbing; }
 
-  .prov-square-room { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 84%; aspect-ratio: 1 / 1; background: #cfd2dc; background-image: linear-gradient(to right, rgba(148, 163, 184, 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgba(148, 163, 184, 0.45) 1px, transparent 1px); background-size: 28px 28px; border: 7px solid #475569; border-radius: 6px; z-index: 4; }
-  .prov-square-room-label { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: #030954; color: #fde047; border: 1.5px solid #fbbf24; border-radius: 999px; padding: 3px 12px; font-size: 10.5px; font-weight: 900; white-space: nowrap; }
-  .prov-square-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #1e293b; font-size: 12px; font-weight: 800; padding: 20px; pointer-events: none; }
-
-  .stage-wrap.province-square-mode .reg-floor-part { display: none !important; }
-  .stage-wrap.province-square-mode .prov-square-room { display: block; }
-
-  .disco-overlay { position: absolute; inset: 0; z-index: 28; pointer-events: none; display: none; overflow: hidden; }
-  .disco-overlay.active { display: block; }
-  .disco-beam { position: absolute; top: -15%; width: 22%; height: 130%; opacity: 0.34; filter: blur(8px); }
-  .beam-1 { left: 12%; background: linear-gradient(180deg, #f472b6, transparent 75%); }
-  .beam-2 { left: 40%; background: linear-gradient(180deg, #38bdf8, transparent 75%); }
-  .beam-3 { left: 68%; background: linear-gradient(180deg, #facc15, transparent 75%); }
-  .dance-banner { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 45; display: none; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.94); border: 2px solid #f472b6; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 900; color: #fde047; }
-  .dance-banner.active { display: inline-flex; }
-  .dance-stop-btn { background: #ef4444; color: #ffffff; border: 1px solid #ffffff; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 900; cursor: pointer; }
-
-  .actor-node { position: absolute; transform: translate(-50%, -50%); z-index: 10; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-  .actor-node.selected .name-chip { background: #fbbf24; color: #030954; border-color: #0f172a; }
-  .actor-node.is-away { opacity: 0.78; }
-  .actor-node.hidden-out { display: none; }
-  .actor-node.is-walking-coffee .px-sprite { opacity: 0.15; }
-
-  .bubble-tag { position: relative; padding: 1.5px 6px; border-radius: 5px; border: 1.5px solid #0f172a; font-size: 8.5px; font-weight: 900; color: #0f172a; margin-bottom: 2px; white-space: nowrap; }
+  .labels-3d-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 15; }
+  .tag-3d-card {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .tag-3d-card.hidden-out { display: none !important; }
+  .tag-3d-card.selected .name-chip-3d {
+    background: #fbbf24;
+    color: #030954;
+    border-color: #0f172a;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.65);
+  }
+  .bubble-tag-3d {
+    padding: 1.5px 6px;
+    border-radius: 999px;
+    border: 1.5px solid #0f172a;
+    font-size: 8.5px;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+  }
   .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-passlip { background: #facc15; } .st-ptl { background: #2dd4bf; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; }
   .st-coffee { background: #fde047; }
 
-  .mini-station-rig { position: relative; display: flex; flex-direction: column; align-items: center; }
-  .px-sprite { width: 28px; height: 28px; margin-bottom: -5px; z-index: 4; shape-rendering: crispEdges; }
-  .actor-node.is-away .px-sprite { opacity: 0.35; filter: grayscale(85%); }
-  .mini-wood-desk { width: 64px; height: 21px; background: #965a2c; border: 2px solid #3b200d; border-bottom: 4px solid #4a2810; border-radius: 3px; display: flex; align-items: center; justify-content: space-between; padding: 0 4px; z-index: 3; }
-  .actor-node.flipped-desk .mini-wood-desk { flex-direction: row-reverse; background: #854d0e; border-color: #38bdf8; }
-  .m-binders { display: flex; gap: 1px; } .m-binder { width: 3px; height: 10px; border: 0.8px solid #0f172a; }
-  .m-monitor { width: 17px; height: 13px; background: #cbd5e1; border: 1.5px solid #0f172a; border-radius: 1.5px; padding: 1.5px; margin-top: -5px; }
-  .m-screen { width: 100%; height: 100%; background: #334155; }
-  .m-mug { width: 6px; height: 6px; background: #ef4444; border: 1.2px solid #0f172a; border-radius: 1px; }
-  .name-chip { background: rgba(15, 23, 42, 0.92); color: #fef08a; border: 1px solid #fbbf24; border-radius: 4px; padding: 1.5px 5px; font-size: 9px; font-weight: 800; margin-top: 2px; white-space: nowrap; }
+  .name-chip-3d {
+    background: rgba(255, 255, 255, 0.96);
+    color: #0f172a;
+    border: 1.5px solid #334155;
+    border-radius: 6px;
+    padding: 1.5px 6px;
+    font-size: 9px;
+    font-weight: 900;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
+  }
 
-  .coffee-walker { position: absolute; z-index: 40; display: none; flex-direction: column; align-items: center; transform: translate(-50%, -50%); pointer-events: none; }
-  .coffee-walker.active { display: flex; }
-  .walk-body-svg { width: 34px; height: 40px; shape-rendering: crispEdges; }
-  .coffee-walker.flip-left .walk-body-svg { transform: scaleX(-1); }
+  .hud-3d-corner {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    z-index: 25;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    background: rgba(3, 9, 84, 0.86);
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #fde68a;
+  }
+  .hud-3d-btn {
+    background: #fbbf24;
+    color: #030954;
+    border: none;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-family: inherit;
+    font-size: 9.5px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .prov-3d-banner {
+    display: none;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 25;
+    background: #030954;
+    color: #fde047;
+    border: 1.5px solid #fbbf24;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 10.5px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  .prov-3d-banner.active { display: block; }
+
+  .dance-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 45; display: none; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.94); border: 2px solid #f472b6; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 900; color: #fde047; }
+  .dance-banner.active { display: inline-flex; }
+  .dance-stop-btn { background: #ef4444; color: #ffffff; border: 1px solid #ffffff; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 900; cursor: pointer; }
 
   /* Check-In / Check-Out & Status Footer */
   .vo-footer { margin-top: 10px; background: #07116e; border: 1px solid rgba(251, 191, 36, 0.45); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; }
@@ -196,17 +255,13 @@
     .stage-wrap {
       width: 100%;
       max-width: 100%;
-      aspect-ratio: auto;
       height: calc(100dvh - 235px);
       min-height: 340px;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
     }
     body.tab-checkin .stage-wrap {
       height: calc(100dvh - 385px);
       min-height: 240px;
     }
-    .floor-base-layer { width: 660px; height: 435px; }
     .vo-footer { margin-top: 8px; padding: 8px 10px; }
     .note-input { min-width: 100%; }
 
@@ -254,7 +309,7 @@
 <div class="vo-shell">
   <div class="vo-header">
     <div>
-      <h2>PDMU VIRTUAL OFFICE</h2>
+      <h2>PDMU VIRTUAL OFFICE <span class="badge-3d">3D</span></h2>
     </div>
     <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
       <button type="button" class="install-pwa-btn" id="installPwaBtn" onclick="installPwaApp()">📲 Install App</button>
@@ -288,6 +343,7 @@
       <label><input type="checkbox" id="hideOutChk" onchange="renderFloor()"> Hide Out</label>
       <button type="button" class="dance-btn" onclick="startDanceBreak(30)">🪩 3PM Dance</button>
       <button type="button" class="log-btn" onclick="openTodayLogModal()">📋 Log</button>
+      <button type="button" class="cam-btn" onclick="reset3DCamera()">🎥 Reset Cam</button>
     </div>
 
     <div class="summary-strip" aria-label="Team Status Counts">
@@ -345,52 +401,19 @@
 
     <div class="stage-wrap-slot">
       <div class="stage-wrap" id="stageWrap">
-        <div class="disco-overlay" id="discoOverlay">
-          <div class="disco-beam beam-1"></div>
-          <div class="disco-beam beam-2"></div>
-          <div class="disco-beam beam-3"></div>
-        </div>
         <div class="dance-banner" id="danceBanner">
           <span>🪩 3:00 PM DANCE BREAK!</span>
           <span id="danceTimerText">30:00</span>
           <button type="button" class="dance-stop-btn" onclick="stopDanceBreak()">End</button>
         </div>
+        <div class="prov-3d-banner" id="prov3dBanner">PROVINCIAL OFFICE • VIEW ONLY</div>
 
-        <div class="floor-base-layer" id="floorBaseLayer">
-          <div class="floor-tile reg-floor-part" style="left:4%; top:6%; width:48%; height:90%;"></div>
-          <div class="floor-tile reg-floor-part" style="left:52%; top:12%; width:34%; height:44%;"></div>
-          <div class="floor-tile reg-floor-part" style="left:52%; top:56%; width:22%; height:36%;"></div>
-          <div class="floor-tile reg-floor-part" style="left:74%; top:56%; width:20%; height:36%;"></div>
+        <div id="threeCanvasHost"></div>
+        <div class="labels-3d-overlay" id="labels3dOverlay"></div>
 
-          <div class="wall-h reg-floor-part" style="left:4%; top:6%; width:48%;"></div>
-          <div class="wall-h reg-floor-part" style="left:52%; top:12%; width:34%;"></div>
-          <div class="wall-h reg-floor-part" style="left:74%; top:56%; width:20%;"></div>
-          <div class="wall-h reg-floor-part" style="left:4%; top:96%; width:48%;"></div>
-          <div class="wall-h reg-floor-part" style="left:52%; top:92%; width:42%;"></div>
-          <div class="wall-v reg-floor-part" style="left:4%; top:6%; height:90%;"></div>
-          <div class="wall-v reg-floor-part" style="left:52%; top:6%; height:48%;"></div>
-          <div class="wall-v reg-floor-part" style="left:86%; top:12%; height:44%;"></div>
-          <div class="wall-v reg-floor-part" style="left:74%; top:56%; height:22%;"></div>
-          <div class="wall-v reg-floor-part" style="left:94%; top:56%; height:36%;"></div>
-
-          <div class="lounge-area reg-floor-part">
-            <div class="lounge-bench-h" style="left:8%; top:62%; width:24%; height:24%;"></div>
-            <div class="lounge-bench-h" style="left:68%; top:62%; width:24%; height:24%;"></div>
-            <div class="lounge-table-mid"></div>
-          </div>
-          <div class="coffee-station reg-floor-part" title="Coffee Station"><div class="coffee-icon">☕</div></div>
-
-          <div class="prov-square-room" id="provSquareRoom">
-            <div class="prov-square-room-label" id="provSquareRoomLabel">PROVINCIAL OFFICE • VIEW ONLY</div>
-            <div class="prov-square-empty" id="provSquareEmptyMsg">No staff assigned in this province office yet.<br><span style="font-size:10px; font-weight:700; color:#475569;">(View-Only Mode)</span></div>
-          </div>
-
-          <div id="actorsLayer"></div>
-
-          <div class="coffee-walker" id="coffeeWalker">
-            <div class="bubble-tag st-coffee" id="walkerBubble">☕ getting coffee...</div>
-            <div id="walkerBodyContainer"></div>
-          </div>
+        <div class="hud-3d-corner">
+          <span>🖱 Drag to Rotate • Scroll to Zoom • Click Staff</span>
+          <button type="button" class="hud-3d-btn" onclick="reset3DCamera()">Reset</button>
         </div>
       </div>
     </div>
@@ -399,7 +422,7 @@
   <!-- Check-In / Check-Out & Status Footer -->
   <div class="vo-footer">
     <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
-      <div id="selectedInfo">Click a member on the floorplan to select</div>
+      <div id="selectedInfo">Click a member on the 3D office to select</div>
       <span class="pin-lock-status" id="actionPinStatus">👆 Click User First</span>
       <span class="timing-pill" id="timingBadge">--</span>
       <span style="font-size:10.5px; color:#cbd5e1;" id="checkTimesInfo">In: -- | Out: --</span>
@@ -423,7 +446,7 @@
 
 <!-- Mobile Bottom Navigation Bar -->
 <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
-  <button type="button" class="mob-nav-btn active" id="mobBtnFloor" onclick="switchMobileTab('floor')">🏢<span>Floor</span></button>
+  <button type="button" class="mob-nav-btn active" id="mobBtnFloor" onclick="switchMobileTab('floor')">🏢<span>3D Office</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnCheckin" onclick="switchMobileTab('checkin')">✅<span>Check-In</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnChat" onclick="switchMobileTab('chat')">💬<span>Chat</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnLogs" onclick="openTodayLogModal()">📋<span>Logs</span></button>
@@ -435,7 +458,6 @@
     <div class="pin-modal-title" id="pinModalTitle">ENTER PIN</div>
     <div class="pin-modal-sub" id="pinModalSub">Enter your PIN to continue.</div>
     <input type="password" id="pinModalInput" class="pin-modal-input" placeholder="Enter PIN" maxlength="12" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmPinModal();}">
-    <input type="password" id="pinModalAdminInput" class="pin-modal-input" style="display:none; font-size:11.5px;" placeholder="Admin PIN (Ian)" maxlength="16" autocomplete="off">
     <div class="pin-modal-err" id="pinModalErr"></div>
     <div class="pin-modal-actions">
       <button type="button" class="pin-confirm-btn" id="pinModalConfirmBtn" onclick="confirmPinModal()">Confirm</button>
@@ -500,26 +522,27 @@
     "Alvin": "https://drive.google.com/thumbnail?id=1OynwukEyXvpJ5HCF0vr4MNn_IY_sg7e4&sz=w120"
   };
 
+  // Jojo (Chief) centered on the red carpet area
   const PEOPLE = [
-    { name: "Airah", x: 29.0, y: 14.0, hair: "#334155", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Shaira", x: 12.0, y: 27.0, hair: "#451a03", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Darren", x: 23.0, y: 27.0, hair: "#0f172a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Rachel", x: 34.0, y: 27.0, hair: "#334155", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Carl", x: 45.0, y: 27.0, hair: "#1e1b4b", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Nuelson", x: 12.0, y: 40.0, hair: "#27272a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Aisley", x: 23.0, y: 40.0, hair: "#451a03", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "AJ Boy", x: 34.0, y: 40.0, hair: "#0f172a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jill", x: 45.0, y: 40.0, hair: "#1e293b", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Lee", x: 12.0, y: 53.0, hair: "#27272a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Kiarah", x: 23.0, y: 53.0, hair: "#334155", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Cyrus", x: 34.0, y: 53.0, hair: "#1e1b4b", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jay", x: 45.0, y: 53.0, hair: "#451a03", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Ian", x: 12.0, y: 66.0, hair: "#0f172a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Kirsten", x: 80.5, y: 23.0, hair: "#451a03", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Christian", x: 80.5, y: 39.0, hair: "#1e293b", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jojo (Chief)", x: 81.5, y: 66.5, hair: "#1e293b", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Alvin", x: 57.5, y: 84.5, hair: "#0f172a", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jesreel (Asst. Chief)", x: 68.5, y: 84.5, hair: "#451a03", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" }
+    { name: "Airah", x: 30.0, y: 12.0, hair: "#5c3a21", shirt: "#f472b6", pigtails: true, hairtie: "#ec4899", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Shaira", x: 10.0, y: 26.0, hair: "#27272a", shirt: "#fb923c", pigtails: false, hairtie: "", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Darren", x: 23.0, y: 26.0, hair: "#5c3a21", shirt: "#f97316", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Rachel", x: 36.0, y: 26.0, hair: "#4a2c18", shirt: "#ec4899", pigtails: true, hairtie: "#38bdf8", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Carl", x: 49.0, y: 26.0, hair: "#1e1b4b", shirt: "#3b82f6", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Nuelson", x: 10.0, y: 42.0, hair: "#18181b", shirt: "#10b981", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Aisley", x: 23.0, y: 42.0, hair: "#451a03", shirt: "#eab308", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "AJ Boy", x: 36.0, y: 42.0, hair: "#0f172a", shirt: "#6366f1", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jill", x: 49.0, y: 42.0, hair: "#27272a", shirt: "#ec4899", pigtails: true, hairtie: "#facc15", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Lee", x: 10.0, y: 58.0, hair: "#27272a", shirt: "#14b8a6", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kiarah", x: 23.0, y: 58.0, hair: "#3b2314", shirt: "#a855f7", pigtails: true, hairtie: "#f472b6", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Cyrus", x: 36.0, y: 58.0, hair: "#1e1b4b", shirt: "#f97316", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jay", x: 49.0, y: 58.0, hair: "#451a03", shirt: "#22c55e", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Ian", x: 10.0, y: 74.0, hair: "#27272a", shirt: "#2563eb", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kirsten", x: 83.0, y: 20.0, hair: "#4a2c18", shirt: "#f43f5e", pigtails: true, hairtie: "#fbbf24", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Christian", x: 83.0, y: 38.0, hair: "#1e293b", shirt: "#0ea5e9", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jojo (Chief)", x: 80.5, y: 72.0, hair: "#1e293b", shirt: "#ec4899", pigtails: true, hairtie: "#fbbf24", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Alvin", x: 56.0, y: 86.0, hair: "#0f172a", shirt: "#0284c7", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jesreel (Asst. Chief)", x: 68.0, y: 86.0, hair: "#451a03", shirt: "#d97706", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" }
   ];
 
   let deferredInstallPrompt = null;
@@ -549,6 +572,7 @@
     document.querySelectorAll(".mob-nav-btn").forEach(b => b.classList.remove("active"));
     const activeBtn = document.getElementById("mobBtn" + tabName.charAt(0).toUpperCase() + tabName.slice(1));
     if (activeBtn) activeBtn.classList.add("active");
+    setTimeout(onWindowResize3D, 50);
   }
 
   let selectedIndex = -1;
@@ -566,9 +590,10 @@
   let coffeeBusy = false;
   let activeCoffeeName = "";
   let coffeeEndsAt = 0;
+  let coffeePhase = "idle";
+  let coffeeProgress = 0;
   let coffeeDrinkTimeout = null;
   let coffeeCountdownInterval = null;
-  let coffeeAnimFrame = null;
 
   let danceEndTime = 0;
   let danceCountdownInterval = null;
@@ -641,10 +666,13 @@
     const ro = isViewingProvinceOffice();
     document.getElementById("actionControlsGroup").classList.toggle("view-only-locked", ro);
     document.getElementById("viewOnlyPill").classList.toggle("active", ro);
-  }
-
-  function hasAnyExistingPin() {
-    return Object.keys(savedPinsMap).some(k => Boolean(String(savedPinsMap[k] || "").trim()));
+    const provBanner = document.getElementById("prov3dBanner");
+    if (ro) {
+      provBanner.textContent = document.getElementById("provFilter").value + " PROVINCIAL OFFICE (3D • VIEW ONLY)";
+      provBanner.classList.add("active");
+    } else {
+      provBanner.classList.remove("active");
+    }
   }
 
   function updateActionPinStatus() {
@@ -689,7 +717,7 @@
 
   function requestPinAction(actionType) {
     if (isViewingProvinceOffice()) { alert("View-only lang ni nga provincial office."); return; }
-    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { alert("I-click una sa floorplan ang user."); return; }
+    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { alert("I-click una sa 3D office ang user."); return; }
     if (actionType !== "CHECK_OUT" && actionType !== "STATUS_OFFLINE" && actionType !== "STATUS_LEAVE" && actionType !== "STATUS_ABSENT" && isAfterHours) {
       alert("7:30 PM+ na (Auto-Offline).");
       return;
@@ -701,8 +729,6 @@
 
     document.getElementById("pinModalErr").textContent = "";
     document.getElementById("pinModalInput").value = "";
-    document.getElementById("pinModalAdminInput").value = "";
-    document.getElementById("pinModalAdminInput").style.display = "none";
     document.getElementById("pinModalTitle").textContent = (pendingPinIsCreate ? "CREATE PIN • " : "INPUT PIN • ") + p.name;
     document.getElementById("pinModalSub").textContent = pendingPinIsCreate
       ? "Pag-create og imong PIN para kang " + p.name + " (magamit pud sa Chatbox)."
@@ -791,17 +817,6 @@
     renderTodayLogTable();
     renderFloor();
     await postStatusPayload(p, actionType, logEntry);
-  }
-
-  function spriteDeskSvg(hair, female) {
-    const hairTop = female ? `<rect x="8" y="2" width="12" height="4" fill="${hair}"/><rect x="6" y="4" width="3" height="10" fill="${hair}"/><rect x="19" y="4" width="3" height="10" fill="${hair}"/>` : `<rect x="9" y="2" width="10" height="3" fill="${hair}"/><rect x="8" y="4" width="12" height="2" fill="${hair}"/>`;
-    return `<svg class="px-sprite" viewBox="0 0 28 28">${hairTop}<rect x="10" y="5" width="8" height="7" fill="#fcd34d"/><rect x="11" y="7" width="1.5" height="2" fill="#0f172a"/><rect x="15.5" y="7" width="1.5" height="2" fill="#0f172a"/><rect x="8" y="12" width="12" height="8" fill="#2563eb"/><rect x="6" y="13" width="2" height="5" fill="#fcd34d"/><rect x="20" y="13" width="2" height="5" fill="#fcd34d"/><rect x="9" y="20" width="4" height="6" fill="#1e293b"/><rect x="15" y="20" width="4" height="6" fill="#1e293b"/></svg>`;
-  }
-
-  function fullBodyCharacterSvg(hair, female, showMug) {
-    const hairTop = female ? `<rect x="4" y="0" width="8" height="3" fill="${hair}"/><rect x="2.5" y="2" width="2" height="7" fill="${hair}"/><rect x="9.5" y="2" width="2" height="7" fill="${hair}"/>` : `<rect x="4.5" y="0" width="7" height="2.5" fill="${hair}"/><rect x="4" y="2" width="8" height="1.5" fill="${hair}"/>`;
-    const mug = showMug ? `<rect x="10.5" y="6.5" width="3" height="3" fill="#ef4444" stroke="#0f172a" stroke-width="0.6"/>` : "";
-    return `<svg class="walk-body-svg" viewBox="0 0 14 17">${hairTop}<rect x="4.5" y="2.5" width="5" height="4.5" fill="#fcd34d"/><rect x="5.5" y="4" width="1" height="1.2" fill="#0f172a"/><rect x="7.5" y="4" width="1" height="1.2" fill="#0f172a"/><rect x="3.5" y="7" width="7" height="5.5" fill="#2563eb"/><rect x="2" y="7.5" width="1.5" height="3.5" fill="#fcd34d"/><rect x="10.5" y="7.5" width="1.5" height="3.5" fill="#fcd34d"/>${mug}<rect x="4" y="12.5" width="2.2" height="3.5" fill="#0f172a"/><rect x="7.8" y="12.5" width="2.2" height="3.5" fill="#0f172a"/></svg>`;
   }
 
   function populateChatSenderSelect() {
@@ -984,8 +999,6 @@
   }
 
   function stopCoffeeWalk() {
-    if (coffeeAnimFrame) cancelAnimationFrame(coffeeAnimFrame);
-    coffeeAnimFrame = null;
     clearTimeout(coffeeDrinkTimeout);
     coffeeDrinkTimeout = null;
     clearInterval(coffeeCountdownInterval);
@@ -993,8 +1006,577 @@
     coffeeBusy = false;
     activeCoffeeName = "";
     coffeeEndsAt = 0;
-    const walkerEl = document.getElementById("coffeeWalker");
-    if (walkerEl) walkerEl.classList.remove("active", "flip-left");
+    coffeePhase = "idle";
+    coffeeProgress = 0;
+  }
+
+  /* ================= 3D THREE.JS OFFICE ENGINE ================= */
+  let scene3D, camera3D, renderer3D;
+  let staff3DObjects = [];
+  let camSpherical = { theta: 0.44, phi: 0.94, radius: 32.0 };
+  let camTarget = { x: 0, y: 1.0, z: 0.4 };
+  let isDragging3D = false, dragMoved3D = false, prevPointer3D = { x: 0, y: 0 };
+  let raycaster3D, pointerNDC3D;
+  let discoLights3D = [];
+  const COFFEE_3D_SPOT = { x: -7.2, z: 8.6 };
+  const CARPET_3D_CENTER = { x: 8.4, z: 7.4 };
+
+  function map2Dto3D(px, py) {
+    const wx = ((px - 50) / 50) * 14.2;
+    const wz = ((py - 50) / 50) * 10.2;
+    return { x: wx, z: wz };
+  }
+
+  // Detailed & clean 3D chibi character inspired by image_a7b7bd.jpg (no box mask!)
+  function buildDetailedChibiCharacter3D(p) {
+    const charGroup = new THREE.Group();
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xfcd5b5, roughness: 0.42 });
+    const shirtMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(p.shirt || "#3b82f6"), roughness: 0.45 });
+    const hairMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(p.hair || "#27272a"), roughness: 0.58 });
+    const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.65 });
+    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const irisMat = new THREE.MeshBasicMaterial({ color: 0x3b1d0e });
+    const pupilMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+    const lipMat = new THREE.MeshBasicMaterial({ color: 0xe11d48 });
+    const cheekMat = new THREE.MeshBasicMaterial({ color: 0xfba5a5 });
+
+    // Seated Legs bent horizontally forward on chair
+    const legGeo = new THREE.CylinderGeometry(0.075, 0.072, 0.34, 12);
+    const legL = new THREE.Mesh(legGeo, pantsMat);
+    legL.rotation.x = Math.PI / 2;
+    legL.position.set(-0.14, 0.02, 0.16);
+    legL.castShadow = true;
+
+    const legR = new THREE.Mesh(legGeo, pantsMat);
+    legR.rotation.x = Math.PI / 2;
+    legR.position.set(0.14, 0.02, 0.16);
+    legR.castShadow = true;
+    charGroup.add(legL, legR);
+
+    // Shirt Torso + optional stripe
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.27, 0.44, 18), shirtMat);
+    torso.position.set(0, 0.28, 0);
+    torso.castShadow = true;
+    charGroup.add(torso);
+
+    if (p.stripe) {
+      const band = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.256, 0.26, 0.11, 18),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45 })
+      );
+      band.position.set(0, 0.28, 0);
+      charGroup.add(band);
+    }
+
+    // Animated Typing Arms (pivoting from shoulder)
+    const armLGroup = new THREE.Group();
+    armLGroup.position.set(-0.28, 0.42, 0.02);
+    const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.34, 12), skinMat);
+    armL.position.set(0, -0.12, 0.14);
+    armL.rotation.x = Math.PI * 0.42;
+    armL.castShadow = true;
+    armLGroup.add(armL);
+
+    const armRGroup = new THREE.Group();
+    armRGroup.position.set(0.28, 0.42, 0.02);
+    const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.34, 12), skinMat);
+    armR.position.set(0, -0.12, 0.14);
+    armR.rotation.x = Math.PI * 0.42;
+    armR.castShadow = true;
+    armRGroup.add(armR);
+
+    charGroup.add(armLGroup, armRGroup);
+
+    // Head Group (so head tilts/nods naturally while working)
+    const headGroup = new THREE.Group();
+    headGroup.position.set(0, 0.92, 0.04);
+
+    // Smooth Chibi Face Sphere (clean, no flat square box over face)
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.44, 28, 24), skinMat);
+    head.scale.set(1.04, 1.0, 0.98);
+    head.castShadow = true;
+    headGroup.add(head);
+
+    // Cute Ears
+    const earGeo = new THREE.SphereGeometry(0.09, 12, 12);
+    const earL = new THREE.Mesh(earGeo, skinMat); earL.position.set(-0.44, -0.02, 0);
+    const earR = new THREE.Mesh(earGeo, skinMat); earR.position.set(0.44, -0.02, 0);
+    headGroup.add(earL, earR);
+
+    // Hair Crown + Swept Bangs (only top/back/sides, leaving face front open)
+    const crown = new THREE.Mesh(new THREE.SphereGeometry(0.465, 28, 20), hairMat);
+    crown.scale.set(1.06, 1.02, 1.04);
+    crown.position.set(0, 0.07, -0.04);
+    crown.castShadow = true;
+    headGroup.add(crown);
+
+    // Swept side bangs on forehead
+    const bangL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.12, 0.14), hairMat);
+    bangL.position.set(-0.22, 0.27, 0.36);
+    bangL.rotation.z = -0.18;
+    const bangR = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.11, 0.14), hairMat);
+    bangR.position.set(0.18, 0.28, 0.37);
+    bangR.rotation.z = 0.14;
+    headGroup.add(bangL, bangR);
+
+    if (p.pigtails) {
+      const tieMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(p.hairtie || "#ec4899"), roughness: 0.4 });
+      [-1, 1].forEach(side => {
+        const tie = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.032, 8, 16), tieMat);
+        tie.position.set(side * 0.45, 0.18, -0.06);
+        tie.rotation.y = side * 0.6;
+        const tail = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.48, 14), hairMat);
+        tail.position.set(side * 0.56, -0.06, -0.12);
+        tail.rotation.z = side * 0.36;
+        tail.castShadow = true;
+        headGroup.add(tie, tail);
+      });
+    }
+
+    // Detailed Eyes (White + Iris + Pupil)
+    [-0.155, 0.155].forEach(ex => {
+      const ew = new THREE.Mesh(new THREE.SphereGeometry(0.072, 14, 14), eyeWhiteMat);
+      ew.scale.set(1.0, 1.15, 0.45);
+      ew.position.set(ex, 0.01, 0.41);
+
+      const ir = new THREE.Mesh(new THREE.SphereGeometry(0.048, 12, 12), irisMat);
+      ir.scale.set(1.0, 1.1, 0.45);
+      ir.position.set(ex + (ex < 0 ? 0.008 : -0.008), 0.005, 0.435);
+
+      const pu = new THREE.Mesh(new THREE.SphereGeometry(0.024, 10, 10), pupilMat);
+      pu.position.set(ex + (ex < 0 ? 0.012 : -0.012), 0.005, 0.45);
+
+      headGroup.add(ew, ir, pu);
+    });
+
+    // Arched Eyebrows + Rosy Cheeks + Cute Smile
+    const browGeo = new THREE.BoxGeometry(0.12, 0.028, 0.03);
+    const browL = new THREE.Mesh(browGeo, hairMat); browL.position.set(-0.155, 0.14, 0.41); browL.rotation.z = 0.08;
+    const browR = new THREE.Mesh(browGeo, hairMat); browR.position.set(0.155, 0.14, 0.41); browR.rotation.z = -0.08;
+
+    const cheekGeo = new THREE.SphereGeometry(0.048, 10, 10);
+    cheekGeo.scale(1.2, 0.7, 0.4);
+    const cheekL = new THREE.Mesh(cheekGeo, cheekMat); cheekL.position.set(-0.25, -0.08, 0.38);
+    const cheekR = new THREE.Mesh(cheekGeo, cheekMat); cheekR.position.set(0.25, -0.08, 0.38);
+
+    const smile = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.032, 0.03), lipMat);
+    smile.position.set(0, -0.14, 0.42);
+    smile.rotation.x = -0.15;
+
+    headGroup.add(browL, browR, cheekL, cheekR, smile);
+    charGroup.add(headGroup);
+
+    return { charGroup, headGroup, armLGroup, armRGroup };
+  }
+
+  function buildWorkstation3D(p, idx) {
+    const unitGroup = new THREE.Group();
+    const pos = map2Dto3D(p.x, p.y);
+    unitGroup.position.set(pos.x, 0, pos.z);
+
+    const isChief = p.name.includes("Chief");
+    const deskMat = new THREE.MeshStandardMaterial({ color: isChief ? 0xf59e0b : 0xfef3c7, roughness: 0.45 });
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6 });
+
+    // Desk in front (+z) while character sits at (-z) facing front (+z toward camera)
+    const deskTop = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.11, 0.85), deskMat);
+    deskTop.position.set(0, 0.70, 0.44);
+    deskTop.castShadow = true;
+    deskTop.receiveShadow = true;
+    unitGroup.add(deskTop);
+
+    [[-0.78, 0.35, 0.08], [0.78, 0.35, 0.08], [-0.78, 0.35, 0.80], [0.78, 0.35, 0.80]].forEach(([lx, ly, lz]) => {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.70, 0.08), legMat);
+      leg.position.set(lx, ly, lz);
+      leg.castShadow = true;
+      unitGroup.add(leg);
+    });
+
+    // Open Laptop on desk (base + screen facing user)
+    const lapMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.35 });
+    const lapScreenMat = new THREE.MeshStandardMaterial({ color: 0x7dd3fc, emissive: 0x0284c7, emissiveIntensity: 0.5 });
+    const lapGroup = new THREE.Group();
+    lapGroup.position.set(0, 0.76, 0.36);
+
+    const lapBase = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.03, 0.38), lapMat);
+    lapBase.position.set(0, 0.015, 0);
+    lapBase.castShadow = true;
+
+    const lapLid = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.36, 0.025), lapMat);
+    lapLid.position.set(0, 0.19, 0.17);
+    lapLid.rotation.x = -0.22;
+    lapLid.castShadow = true;
+
+    const lapScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.30), lapScreenMat);
+    lapScreen.position.set(0, 0.19, 0.155);
+    lapScreen.rotation.x = -0.22;
+    lapScreen.rotation.y = Math.PI;
+
+    lapGroup.add(lapBase, lapLid, lapScreen);
+    unitGroup.add(lapGroup);
+
+    // Cute Mug on right corner of desk
+    const mug = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.065, 0.06, 0.11, 12),
+      new THREE.MeshStandardMaterial({ color: 0xfb7185 })
+    );
+    mug.position.set(0.62, 0.81, 0.42);
+    unitGroup.add(mug);
+
+    // Chair / Stool behind desk (-z)
+    const chairMat = new THREE.MeshStandardMaterial({ color: isChief ? 0xd97706 : 0x64748b, roughness: 0.6 });
+    const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.26, 0.09, 16), chairMat);
+    seat.position.set(0, 0.44, -0.34);
+    seat.castShadow = true;
+    const chairStem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.18, 0.4, 12), legMat);
+    chairStem.position.set(0, 0.2, -0.34);
+    unitGroup.add(seat, chairStem);
+
+    // Detailed Character sitting on chair facing +z (toward camera)
+    const parts = buildDetailedChibiCharacter3D(p);
+    parts.charGroup.position.set(0, 0.49, -0.34);
+    unitGroup.add(parts.charGroup);
+
+    // Hitbox for Easy Clicking
+    const hitBox = new THREE.Mesh(
+      new THREE.BoxGeometry(1.9, 2.0, 1.7),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
+    hitBox.position.set(0, 1.0, 0.05);
+    hitBox.userData = { personIdx: idx };
+    unitGroup.add(hitBox);
+
+    scene3D.add(unitGroup);
+
+    const overlayHost = document.getElementById("labels3dOverlay");
+    const tagEl = document.createElement("div");
+    tagEl.className = "tag-3d-card";
+    tagEl.onclick = (ev) => { ev.stopPropagation(); selectPerson(idx); };
+    const bubbleEl = document.createElement("div");
+    bubbleEl.className = "bubble-tag-3d st-offline";
+    const nameEl = document.createElement("div");
+    nameEl.className = "name-chip-3d";
+    nameEl.textContent = p.name;
+    tagEl.appendChild(bubbleEl);
+    tagEl.appendChild(nameEl);
+    overlayHost.appendChild(tagEl);
+
+    staff3DObjects.push({
+      person: p,
+      idx,
+      group: unitGroup,
+      avatarGroup: parts.charGroup,
+      headGroup: parts.headGroup,
+      armLGroup: parts.armLGroup,
+      armRGroup: parts.armRGroup,
+      lapScreenMat,
+      homePos: { x: pos.x, z: pos.z },
+      tagEl,
+      bubbleEl,
+      nameEl,
+      hitBox
+    });
+  }
+
+  function createWoodFloorTexture() {
+    const c = document.createElement("canvas");
+    c.width = 256; c.height = 256;
+    const ctx = c.getContext("2d");
+    ctx.fillStyle = "#deb07a";
+    ctx.fillRect(0, 0, 256, 256);
+    const shades = ["#d4a26a", "#e5ba86", "#cb985e", "#ebc494"];
+    for (let y = 0; y < 256; y += 32) {
+      ctx.fillStyle = shades[(y / 32) % shades.length];
+      ctx.fillRect(0, y, 256, 30);
+      ctx.fillStyle = "rgba(120, 72, 32, 0.22)";
+      ctx.fillRect(0, y + 30, 256, 2);
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(9, 7);
+    return tex;
+  }
+
+  function init3DOffice() {
+    const host = document.getElementById("threeCanvasHost");
+    if (!host || typeof THREE === "undefined") return;
+
+    scene3D = new THREE.Scene();
+    camera3D = new THREE.PerspectiveCamera(36, host.clientWidth / Math.max(1, host.clientHeight), 0.1, 160);
+
+    renderer3D = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer3D.setSize(host.clientWidth, host.clientHeight);
+    renderer3D.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer3D.shadowMap.enabled = true;
+    renderer3D.shadowMap.type = THREE.PCFSoftShadowMap;
+    host.appendChild(renderer3D.domElement);
+
+    raycaster3D = new THREE.Raycaster();
+    pointerNDC3D = new THREE.Vector2();
+
+    const hemiLight = new THREE.HemisphereLight(0xfffbeb, 0xd97706, 0.92);
+    scene3D.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    dirLight.position.set(14, 24, 16);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
+    const d = 20;
+    dirLight.shadow.camera.left = -d; dirLight.shadow.camera.right = d;
+    dirLight.shadow.camera.top = d; dirLight.shadow.camera.bottom = -d;
+    scene3D.add(dirLight);
+
+    [0xf472b6, 0x38bdf8, 0xfacc15].forEach((col, i) => {
+      const pl = new THREE.PointLight(col, 0, 22);
+      pl.position.set((i - 1) * 9, 6, 0);
+      scene3D.add(pl);
+      discoLights3D.push(pl);
+    });
+
+    const floorGeo = new THREE.BoxGeometry(32.0, 0.4, 23.5);
+    const floorMat = new THREE.MeshStandardMaterial({ map: createWoodFloorTexture(), roughness: 0.65 });
+    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+    floorMesh.position.set(0, -0.2, 0);
+    floorMesh.receiveShadow = true;
+    scene3D.add(floorMesh);
+
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.7 });
+    const backWall = new THREE.Mesh(new THREE.BoxGeometry(32.0, 3.6, 0.35), wallMat);
+    backWall.position.set(0, 1.6, -11.6);
+    backWall.receiveShadow = true;
+    scene3D.add(backWall);
+
+    const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.35, 3.6, 23.5), wallMat);
+    leftWall.position.set(-15.8, 1.6, 0);
+    leftWall.receiveShadow = true;
+    scene3D.add(leftWall);
+
+    const winGlassMat = new THREE.MeshStandardMaterial({ color: 0xbae6fd, emissive: 0x38bdf8, emissiveIntensity: 0.25 });
+    [-4.5, 0.0, 4.5, 9.0].forEach(wx => {
+      const win = new THREE.Mesh(new THREE.BoxGeometry(3.8, 1.9, 0.12), winGlassMat);
+      win.position.set(wx, 1.95, -11.4);
+      scene3D.add(win);
+    });
+
+    const boardFrame = new THREE.Mesh(new THREE.BoxGeometry(4.6, 2.0, 0.14), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+    boardFrame.position.set(-11.2, 1.95, -11.38);
+    scene3D.add(boardFrame);
+
+    [-3.0, 2.5, 8.0].forEach(bx => {
+      const shelf = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.95, 0.45), new THREE.MeshStandardMaterial({ color: 0xb45309 }));
+      shelf.position.set(bx, 0.48, -11.0);
+      shelf.castShadow = true;
+      scene3D.add(shelf);
+    });
+
+    // Red Carpet centered around Jojo (Chief)
+    const carpet = new THREE.Mesh(
+      new THREE.BoxGeometry(6.8, 0.04, 5.2),
+      new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.85 })
+    );
+    carpet.position.set(CARPET_3D_CENTER.x, 0.02, CARPET_3D_CENTER.z);
+    carpet.receiveShadow = true;
+    scene3D.add(carpet);
+
+    const sofaMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.7 });
+    const sofaBase = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.45, 1.15), sofaMat);
+    sofaBase.position.set(-11.5, 0.22, 9.4);
+    sofaBase.castShadow = true;
+    const sofaBack = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.6, 0.25), sofaMat);
+    sofaBack.position.set(-11.5, 0.65, 9.85);
+    scene3D.add(sofaBase, sofaBack);
+
+    const coffeeCounter = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.85, 1.0), new THREE.MeshStandardMaterial({ color: 0x451a03 }));
+    coffeeCounter.position.set(COFFEE_3D_SPOT.x, 0.42, COFFEE_3D_SPOT.z + 0.8);
+    coffeeCounter.castShadow = true;
+    const coffeeMachine = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.55, 0.48), new THREE.MeshStandardMaterial({ color: 0xfbbf24 }));
+    coffeeMachine.position.set(COFFEE_3D_SPOT.x, 1.12, COFFEE_3D_SPOT.z + 0.8);
+    scene3D.add(coffeeCounter, coffeeMachine);
+
+    [[-14.5, -10.3], [14.5, -10.3], [-14.5, 10.3], [14.5, 10.3]].forEach(([px, pz]) => {
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.28, 0.48, 12), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
+      pot.position.set(px, 0.24, pz);
+      const bush = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55), new THREE.MeshStandardMaterial({ color: 0x16a34a }));
+      bush.position.set(px, 0.82, pz);
+      bush.castShadow = true;
+      scene3D.add(pot, bush);
+    });
+
+    PEOPLE.forEach((p, idx) => buildWorkstation3D(p, idx));
+
+    update3DCameraTransform();
+    bind3DInteractions(host);
+    animate3DLoop();
+  }
+
+  function update3DCameraTransform() {
+    if (!camera3D) return;
+    const sinPhi = Math.sin(camSpherical.phi);
+    camera3D.position.set(
+      camTarget.x + camSpherical.radius * sinPhi * Math.sin(camSpherical.theta),
+      camTarget.y + camSpherical.radius * Math.cos(camSpherical.phi),
+      camTarget.z + camSpherical.radius * sinPhi * Math.cos(camSpherical.theta)
+    );
+    camera3D.lookAt(camTarget.x, camTarget.y, camTarget.z);
+  }
+
+  function reset3DCamera() {
+    camSpherical = { theta: 0.44, phi: 0.94, radius: 32.0 };
+    camTarget = { x: 0, y: 1.0, z: 0.4 };
+    update3DCameraTransform();
+  }
+
+  function bind3DInteractions(host) {
+    host.addEventListener("pointerdown", (e) => {
+      isDragging3D = true;
+      dragMoved3D = false;
+      prevPointer3D = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener("pointermove", (e) => {
+      if (!isDragging3D) return;
+      const dx = e.clientX - prevPointer3D.x;
+      const dy = e.clientY - prevPointer3D.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragMoved3D = true;
+      prevPointer3D = { x: e.clientX, y: e.clientY };
+      camSpherical.theta -= dx * 0.0075;
+      camSpherical.phi = Math.max(0.35, Math.min(1.32, camSpherical.phi - dy * 0.0065));
+      update3DCameraTransform();
+    });
+
+    window.addEventListener("pointerup", (e) => {
+      if (isDragging3D && !dragMoved3D) {
+        const rect = renderer3D.domElement.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+          pointerNDC3D.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+          pointerNDC3D.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+          raycaster3D.setFromCamera(pointerNDC3D, camera3D);
+          const hitTargets = staff3DObjects.filter(o => o.group.visible).map(o => o.hitBox);
+          const hits = raycaster3D.intersectObjects(hitTargets, false);
+          if (hits.length > 0 && typeof hits[0].object.userData.personIdx === "number") {
+            selectPerson(hits[0].object.userData.personIdx);
+          }
+        }
+      }
+      isDragging3D = false;
+    });
+
+    host.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      camSpherical.radius = Math.max(14, Math.min(46, camSpherical.radius + e.deltaY * 0.016));
+      update3DCameraTransform();
+    }, { passive: false });
+
+    window.addEventListener("resize", onWindowResize3D);
+  }
+
+  function onWindowResize3D() {
+    const host = document.getElementById("threeCanvasHost");
+    if (!host || !renderer3D || !camera3D) return;
+    const w = host.clientWidth;
+    const h = host.clientHeight;
+    if (w > 0 && h > 0) {
+      camera3D.aspect = w / h;
+      camera3D.updateProjectionMatrix();
+      renderer3D.setSize(w, h);
+    }
+  }
+
+  function project3DToScreen(worldVec) {
+    const host = document.getElementById("threeCanvasHost");
+    const v = worldVec.clone().project(camera3D);
+    return {
+      x: (v.x * 0.5 + 0.5) * host.clientWidth,
+      y: (-(v.y * 0.5) + 0.5) * host.clientHeight,
+      visible: v.z < 1
+    };
+  }
+
+  const tempWorldVec3 = new THREE.Vector3();
+
+  function animate3DLoop() {
+    requestAnimationFrame(animate3DLoop);
+    if (!renderer3D || !scene3D || !camera3D) return;
+
+    const nowSec = performance.now() * 0.001;
+    const dancing = isDancingNow();
+
+    discoLights3D.forEach((pl, i) => {
+      pl.intensity = dancing ? (1.6 + Math.sin(nowSec * 6 + i * 2) * 1.1) : 0;
+    });
+
+    staff3DObjects.forEach((obj) => {
+      const p = obj.person;
+      const isOnline = p.status === "online";
+      const isCoffeeWalker = coffeeBusy && activeCoffeeName === p.name && isOnline;
+
+      if (!obj.group.visible) {
+        obj.tagEl.classList.add("hidden-out");
+        return;
+      }
+
+      if (isCoffeeWalker) {
+        const targetLocalX = COFFEE_3D_SPOT.x - obj.homePos.x;
+        const targetLocalZ = COFFEE_3D_SPOT.z - obj.homePos.z;
+        let ratio = 1;
+        if (coffeePhase === "to") {
+          coffeeProgress = Math.min(1, coffeeProgress + 0.012);
+          ratio = coffeeProgress;
+          if (coffeeProgress >= 1) coffeePhase = "drink";
+        } else if (coffeePhase === "back") {
+          coffeeProgress = Math.max(0, coffeeProgress - 0.012);
+          ratio = coffeeProgress;
+          if (coffeeProgress <= 0) {
+            stopCoffeeWalk();
+            renderFloor();
+          }
+        }
+        obj.avatarGroup.position.set(
+          targetLocalX * ratio,
+          0.49 + Math.abs(Math.sin(nowSec * 12)) * 0.12,
+          -0.34 + (targetLocalZ + 0.34) * ratio
+        );
+        obj.avatarGroup.rotation.y = coffeePhase === "back" ? Math.PI : 0;
+      } else {
+        // Active typing & head motion when online; calm when offline
+        const bob = isOnline ? (dancing ? Math.abs(Math.sin(nowSec * 9 + obj.idx)) * 0.22 : Math.sin(nowSec * 4 + obj.idx) * 0.025) : 0;
+        obj.avatarGroup.position.set(0, 0.49 + bob, -0.34);
+        obj.avatarGroup.rotation.y = dancing && isOnline ? Math.sin(nowSec * 7 + obj.idx) * 0.45 : 0;
+
+        if (obj.armLGroup && obj.armRGroup && obj.headGroup) {
+          if (isOnline) {
+            obj.armLGroup.rotation.x = Math.sin(nowSec * 11 + obj.idx) * 0.28;
+            obj.armRGroup.rotation.x = Math.cos(nowSec * 11 + obj.idx) * 0.28;
+            obj.headGroup.rotation.x = Math.sin(nowSec * 3.5 + obj.idx) * 0.06;
+            obj.headGroup.rotation.y = Math.cos(nowSec * 2.4 + obj.idx) * 0.12;
+          } else {
+            obj.armLGroup.rotation.x = 0;
+            obj.armRGroup.rotation.x = 0;
+            obj.headGroup.rotation.x = 0.12;
+            obj.headGroup.rotation.y = 0;
+          }
+        }
+      }
+
+      if (obj.lapScreenMat) {
+        obj.lapScreenMat.emissiveIntensity = isOnline ? (0.45 + Math.sin(nowSec * 5 + obj.idx) * 0.15) : 0.05;
+      }
+
+      const scaleTarget = isOnline ? 1.06 : 0.92;
+      obj.avatarGroup.scale.set(scaleTarget, scaleTarget, scaleTarget);
+
+      obj.avatarGroup.getWorldPosition(tempWorldVec3);
+      tempWorldVec3.y += 1.38;
+      const screenPos = project3DToScreen(tempWorldVec3);
+      if (screenPos.visible) {
+        obj.tagEl.style.left = screenPos.x.toFixed(1) + "px";
+        obj.tagEl.style.top = screenPos.y.toFixed(1) + "px";
+      }
+    });
+
+    renderer3D.render(scene3D, camera3D);
   }
 
   function renderFloor() {
@@ -1005,54 +1587,52 @@
       }
     }
 
-    updateSummaryCounts(); syncViewOnlyUi();
+    updateSummaryCounts();
+    syncViewOnlyUi();
+
     const prov = document.getElementById("provFilter").value;
     const isProvSquare = PROVINCE_CODES.includes(prov);
     const stFilter = document.getElementById("statusFilter").value;
     const hideOut = document.getElementById("hideOutChk").checked;
-    const stageWrap = document.getElementById("stageWrap");
-    stageWrap.classList.toggle("province-square-mode", isProvSquare);
-
-    if (isProvSquare) {
-      document.getElementById("provSquareRoomLabel").textContent = prov + " PROVINCIAL OFFICE (SQUARE • VIEW ONLY)";
-      document.getElementById("provSquareEmptyMsg").style.display = PEOPLE.filter(p => (p.province || "Regional") === prov).length === 0 ? "flex" : "none";
-    }
-
-    const layer = document.getElementById("actorsLayer");
-    layer.innerHTML = "";
     let provSlotIdx = 0;
 
-    PEOPLE.forEach((p, idx) => {
+    staff3DObjects.forEach((obj) => {
+      const p = obj.person;
       const isOut = p.status !== "online";
       const provMatch = (p.province || "Regional") === prov;
       const hiddenByFilter = !provMatch || (stFilter !== "ALL" && p.status !== stFilter) || (hideOut && isOut);
       const walkingCoffee = coffeeBusy && activeCoffeeName === p.name && p.status === "online" && !isProvSquare;
 
-      const node = document.createElement("div");
-      node.className = "actor-node";
-      if (idx === selectedIndex) node.classList.add("selected");
-      if (isOut) node.classList.add("is-away");
-      if (hiddenByFilter) node.classList.add("hidden-out");
-      if (walkingCoffee) node.classList.add("is-walking-coffee");
-      if (p.x >= 50) node.classList.add("flipped-desk");
+      obj.group.visible = !hiddenByFilter;
+      obj.tagEl.classList.toggle("hidden-out", hiddenByFilter);
+      obj.tagEl.classList.toggle("selected", obj.idx === selectedIndex);
 
       if (isProvSquare && provMatch) {
-        node.style.left = (34 + (provSlotIdx % 3) * 16) + "%";
-        node.style.top = (28 + Math.floor(provSlotIdx / 3) * 18) + "%";
+        const gx = (provSlotIdx % 3 - 1) * 4.4;
+        const gz = (Math.floor(provSlotIdx / 3) - 1) * 3.8;
+        obj.group.position.set(gx, 0, gz);
+        obj.homePos = { x: gx, z: gz };
         provSlotIdx++;
+      } else if (p.name === "Jojo (Chief)" && prov === "Regional") {
+        // Center Jojo on the red carpet
+        obj.group.position.set(CARPET_3D_CENTER.x, 0, CARPET_3D_CENTER.z);
+        obj.homePos = { x: CARPET_3D_CENTER.x, z: CARPET_3D_CENTER.z };
       } else {
-        node.style.left = p.x + "%";
-        node.style.top = p.y + "%";
+        const pos = map2Dto3D(p.x, p.y);
+        obj.group.position.set(pos.x, 0, pos.z);
+        obj.homePos = { x: pos.x, z: pos.z };
       }
 
-      node.onclick = () => selectPerson(idx);
-
-      let bubbleCls = "st-" + p.status, bubbleText = statusLabel(p.status);
-      if (walkingCoffee) { bubbleCls = "st-coffee"; bubbleText = "☕ coffee (" + getCoffeeRemText() + ")"; }
-
-      node.innerHTML = `<div class="bubble-tag ${bubbleCls}">${esc(bubbleText)}</div><div class="mini-station-rig">${spriteDeskSvg(p.hair, p.female)}<div class="mini-wood-desk"><div class="m-binders"><div class="m-binder" style="background:#ef4444;"></div><div class="m-binder" style="background:#3b82f6;"></div><div class="m-binder" style="background:#22c55e;"></div></div><div class="m-monitor"><div class="m-screen"></div></div><div class="m-mug"></div></div></div><div class="name-chip">${esc(p.name)}</div>`;
-      layer.appendChild(node);
+      let bubbleCls = "st-" + p.status;
+      let bubbleText = statusLabel(p.status);
+      if (walkingCoffee) {
+        bubbleCls = "st-coffee";
+        bubbleText = "☕ coffee (" + getCoffeeRemText() + ")";
+      }
+      obj.bubbleEl.className = "bubble-tag-3d " + bubbleCls;
+      obj.bubbleEl.textContent = bubbleText;
     });
+
     updateSelectedFooter();
   }
 
@@ -1065,7 +1645,7 @@
   function updateSelectedFooter() {
     updateActionPinStatus();
     if (selectedIndex < 0 || !PEOPLE[selectedIndex]) {
-      document.getElementById("selectedInfo").innerHTML = "Click a member on the floorplan to select";
+      document.getElementById("selectedInfo").innerHTML = "Click a member on the 3D office to select";
       document.getElementById("timingBadge").textContent = "--";
       document.getElementById("checkTimesInfo").textContent = "In: -- | Out: --";
       return;
@@ -1100,32 +1680,6 @@
     } catch (_) {}
   }
 
-  function buildCoffeeWaypoints(p) {
-    return [{ x: p.x, y: p.y }, { x: p.x >= 50 ? 54.0 : 49.0, y: p.y }, { x: p.x >= 50 ? 54.0 : 49.0, y: 71.0 }, { x: 29.0, y: 71.0 }, { x: 29.0, y: 74.0 }];
-  }
-
-  function animateAlongPath(walkerEl, bodyContainer, p, waypoints, onArrive) {
-    if (coffeeAnimFrame) cancelAnimationFrame(coffeeAnimFrame);
-    let seg = 0, t = 0, lastX = waypoints[0].x, prevTime = performance.now();
-    function step(now) {
-      if (!coffeeBusy || p.status !== "online") {
-        stopCoffeeWalk();
-        renderFloor();
-        return;
-      }
-      const dt = Math.min(0.05, (now - prevTime) / 1000); prevTime = now;
-      if (seg >= waypoints.length - 1) { if (onArrive) onArrive(); return; }
-      const a = waypoints[seg], b = waypoints[seg + 1], dist = Math.hypot(b.x - a.x, b.y - a.y) || 1;
-      t += (13.5 * dt) / dist;
-      if (t >= 1) { walkerEl.style.left = b.x + "%"; walkerEl.style.top = b.y + "%"; lastX = b.x; seg++; t = 0; if (seg >= waypoints.length - 1) { if (onArrive) onArrive(); return; } }
-      else { const cx = a.x + (b.x - a.x) * t, cy = a.y + (b.y - a.y) * t; walkerEl.style.left = cx + "%"; walkerEl.style.top = cy + "%"; if (cx < lastX - 0.15) walkerEl.classList.add("flip-left"); else if (cx > lastX + 0.15) walkerEl.classList.remove("flip-left"); lastX = cx; }
-      coffeeAnimFrame = requestAnimationFrame(step);
-    }
-    bodyContainer.innerHTML = fullBodyCharacterSvg(p.hair, p.female, false);
-    walkerEl.classList.add("active");
-    coffeeAnimFrame = requestAnimationFrame(step);
-  }
-
   function triggerCoffeeBreak() {
     if (coffeeBusy || isDancingNow() || isAfterHours || isViewingProvinceOffice()) return;
     const onlineList = PEOPLE.filter(p => p.status === "online" && (p.province || "Regional") === "Regional");
@@ -1136,11 +1690,13 @@
     coffeeBusy = true;
     activeCoffeeName = p.name;
     coffeeEndsAt = Date.now() + COFFEE_DURATION_MS;
+    coffeePhase = "to";
+    coffeeProgress = 0;
+
     clearTimeout(coffeeDrinkTimeout);
     clearInterval(coffeeCountdownInterval);
     renderFloor();
 
-    const walkerEl = document.getElementById("coffeeWalker"), bodyContainer = document.getElementById("walkerBodyContainer"), bubbleEl = document.getElementById("walkerBubble");
     coffeeCountdownInterval = setInterval(() => {
       if (!coffeeBusy || p.status !== "online") {
         stopCoffeeWalk();
@@ -1150,35 +1706,19 @@
       renderFloor();
     }, 1000);
 
-    bubbleEl.textContent = "☕ " + p.name + " getting coffee...";
-    const toCoffee = buildCoffeeWaypoints(p);
-    animateAlongPath(walkerEl, bodyContainer, p, toCoffee, () => {
+    coffeeDrinkTimeout = setTimeout(() => {
       if (!coffeeBusy || p.status !== "online") {
         stopCoffeeWalk();
         renderFloor();
         return;
       }
-      bodyContainer.innerHTML = fullBodyCharacterSvg(p.hair, p.female, true);
-      bubbleEl.textContent = "☕ coffee (" + getCoffeeRemText() + ")";
-      coffeeDrinkTimeout = setTimeout(() => {
-        if (!coffeeBusy || p.status !== "online") {
-          stopCoffeeWalk();
-          renderFloor();
-          return;
-        }
-        clearInterval(coffeeCountdownInterval);
-        animateAlongPath(walkerEl, bodyContainer, p, toCoffee.slice().reverse(), () => {
-          stopCoffeeWalk();
-          renderFloor();
-        });
-      }, COFFEE_DURATION_MS);
-    });
+      coffeePhase = "back";
+    }, COFFEE_DURATION_MS);
   }
 
   function startDanceBreak(mins) {
     if (isAfterHours) return;
     danceEndTime = Date.now() + (mins || DANCE_BREAK_MINUTES) * 60000;
-    document.getElementById("discoOverlay").classList.add("active");
     document.getElementById("danceBanner").classList.add("active");
     clearInterval(danceCountdownInterval);
     danceCountdownInterval = setInterval(() => {
@@ -1188,7 +1728,11 @@
     }, 1000);
   }
 
-  function stopDanceBreak() { danceEndTime = 0; clearInterval(danceCountdownInterval); document.getElementById("discoOverlay").classList.remove("active"); document.getElementById("danceBanner").classList.remove("active"); }
+  function stopDanceBreak() {
+    danceEndTime = 0;
+    clearInterval(danceCountdownInterval);
+    document.getElementById("danceBanner").classList.remove("active");
+  }
 
   function checkAutoOfflineSchedule() {
     const now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
@@ -1253,6 +1797,7 @@
   }
 
   populateChatSenderSelect();
+  init3DOffice();
   renderFloor();
   checkAutoOfflineSchedule();
   fetchFromSheet(false);
