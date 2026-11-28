@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0b2e1f">
-<title>PDMU Virtual Office 3D • Christmas Edition</title>
+<meta name="theme-color" content="#030954">
+<title>PDMU Virtual Office 3D</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -90,7 +90,6 @@
   .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-passlip { background: #facc15; } .st-ptl { background: #2dd4bf; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; } .st-coffee { background: #fde047; }
   .name-chip-3d { background: rgba(255,255,255,.96); color: #0f172a; border: 1.5px solid #334155; border-radius: 6px; padding: 1.5px 6px; font-size: 9px; font-weight: 900; white-space: nowrap; }
 
-  .xmas-corner-tag { position: absolute; top: 10px; left: 10px; z-index: 24; background: rgba(3,9,84,.88); border: 1.5px solid #fbbf24; border-radius: 999px; padding: 4px 10px; font-size: 10px; font-weight: 900; color: #fde047; pointer-events: none; }
   .hud-3d-corner { position: absolute; bottom: 8px; right: 8px; z-index: 25; display: flex; gap: 5px; align-items: center; background: rgba(3,9,84,.86); border: 1px solid #fbbf24; border-radius: 8px; padding: 4px 8px; font-size: 9.5px; font-weight: 800; color: #fde68a; }
   .hud-3d-btn { background: #fbbf24; color: #030954; border: none; border-radius: 5px; padding: 2px 7px; font-family: inherit; font-size: 9.5px; font-weight: 900; cursor: pointer; }
   .prov-3d-banner { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 25; background: #030954; color: #fde047; border: 1.5px solid #fbbf24; border-radius: 999px; padding: 4px 12px; font-size: 10.5px; font-weight: 900; white-space: nowrap; }
@@ -157,7 +156,7 @@
 
 <div class="vo-shell">
   <div class="vo-header">
-    <h2>🎄 PDMU VIRTUAL OFFICE <span class="badge-3d">3D CHRISTMAS</span></h2>
+    <h2>PDMU VIRTUAL OFFICE <span class="badge-3d">3D</span></h2>
     <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
       <button type="button" class="install-pwa-btn" id="installPwaBtn" onclick="installPwaApp()">📲 Install App</button>
       <span class="view-only-pill" id="viewOnlyPill">👁 VIEW ONLY (OTHER OFFICE)</span>
@@ -188,8 +187,8 @@
         <option value="offline">Offline</option>
       </select>
       <label><input type="checkbox" id="hideOutChk" onchange="renderFloor()"> Hide Out</label>
-      <button type="button" class="snow-btn" id="snowToggleBtn" onclick="toggleSnowEffect()">❄️ Snow: ON</button>
-      <button type="button" class="dance-btn" onclick="startDanceBreak(30)">🎅 3PM Party</button>
+      <button type="button" class="snow-btn" id="snowToggleBtn" onclick="toggleSnowEffect()">❄️ Snow</button>
+      <button type="button" class="dance-btn" onclick="startDanceBreak(30)">🪩 3PM Dance</button>
       <button type="button" class="log-btn" onclick="openTodayLogModal()">📋 Log</button>
       <button type="button" class="cam-btn" onclick="reset3DCamera()">🎥 Reset Cam</button>
     </div>
@@ -212,13 +211,13 @@
         <div style="display:flex; flex-direction:column; flex:1; min-height:0;">
           <div class="chat-top">
             <div class="chat-title">
-              <span>🎄 PDMU CHATBOX</span>
+              <span>PDMU CHATBOX</span>
               <button type="button" class="chat-lock-top-btn" id="lockConvoBtn" onclick="lockConvoPanel()">🔒 Lock</button>
             </div>
             <div class="chat-sub" id="chatSubLabel">Enter chat passkey to view &amp; join convo</div>
           </div>
           <div class="chat-gate-box" id="chatGateBox">
-            <div class="chat-gate-title">🎅 PRIVATE PDMU CONVO</div>
+            <div class="chat-gate-title">PRIVATE PDMU CONVO</div>
             <div class="chat-gate-desc">Hidden from public view. Enter the team chat passkey to read and send messages.</div>
             <input type="password" id="convoPasskeyInput" class="chat-gate-input" placeholder="Enter Passkey" onkeydown="if(event.key==='Enter') unlockConvoPanel()">
             <button type="button" class="chat-gate-btn" onclick="unlockConvoPanel()">Unlock Chat</button>
@@ -238,7 +237,7 @@
               <span class="chat-pin-badge" id="chatPinBadge">🔒 PIN</span>
             </div>
             <div class="chat-input-row">
-              <input type="text" id="chatInput" class="chat-input" placeholder="Type holiday greeting..." maxlength="280">
+              <input type="text" id="chatInput" class="chat-input" placeholder="Type message..." maxlength="280">
               <button type="submit" class="chat-send-btn">Send</button>
             </div>
           </form>
@@ -248,9 +247,8 @@
 
     <div class="stage-wrap-slot">
       <div class="stage-wrap" id="stageWrap">
-        <div class="xmas-corner-tag">🎄 Happy Holidays, PDMU Caraga!</div>
         <div class="dance-banner" id="danceBanner">
-          <span>🎅 3:00 PM CHRISTMAS DANCE BREAK!</span>
+          <span>🪩 3:00 PM DANCE BREAK!</span>
           <span id="danceTimerText">30:00</span>
           <button type="button" class="dance-stop-btn" onclick="stopDanceBreak()">End</button>
         </div>
@@ -291,7 +289,7 @@
 </div>
 
 <nav class="mobile-bottom-nav">
-  <button type="button" class="mob-nav-btn active" id="mobBtnFloor" onclick="switchMobileTab('floor')">🎄<span>3D Office</span></button>
+  <button type="button" class="mob-nav-btn active" id="mobBtnFloor" onclick="switchMobileTab('floor')">🏢<span>3D Office</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnCheckin" onclick="switchMobileTab('checkin')">✅<span>Check-In</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnChat" onclick="switchMobileTab('chat')">💬<span>Chat</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnLogs" onclick="openTodayLogModal()">📋<span>Logs</span></button>
@@ -344,7 +342,7 @@
     "https://pdmuweb.github.io/pdmu-virtual-office/wall3.jpeg",
     "https://pdmuweb.github.io/pdmu-virtual-office/wall4.png"
   ];
-  const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="16" fill="#07241b"/><circle cx="16" cy="12" r="5.5" fill="#fcd34d"/><path d="M7 28c0-5 4-8.5 9-8.5s9 3.5 9 8.5" fill="#dc2626"/></svg>');
+  const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="16" fill="#030954"/><circle cx="16" cy="12" r="5.5" fill="#fcd34d"/><path d="M7 28c0-5 4-8.5 9-8.5s9 3.5 9 8.5" fill="#2563eb"/></svg>');
 
   const MEMBER_AVATARS = {
     "Jojo (Chief)": "https://drive.google.com/thumbnail?id=1inSLucU7wifxYKpCtQjj66M_Ey6Hfv9j&sz=w120",
@@ -423,7 +421,7 @@
   function toggleSnowEffect() {
     snowEnabled = !snowEnabled;
     if (snowPoints3D) snowPoints3D.visible = snowEnabled;
-    document.getElementById("snowToggleBtn").textContent = snowEnabled ? "❄️ Snow: ON" : "❄️ Snow: OFF";
+    document.getElementById("snowToggleBtn").textContent = snowEnabled ? "❄️ Snow" : "❄️ Snow Off";
   }
   function switchMobileTab(tabName) {
     document.body.classList.remove("tab-floor", "tab-chat", "tab-checkin"); document.body.classList.add("tab-" + tabName);
@@ -452,9 +450,9 @@
   function getCoffeeChatterLine(p) {
     const cleanTask = String((p && p.note) || "").trim().replace(/^i['’]?m\s+/i,"").replace(/\s+right now!?$/i,"").trim();
     if (cleanTask && !/^(checked-in|in office|online|uli na)$/i.test(cleanTask)) {
-      return ["☕ sip sa kape while " + cleanTask + "!", "☕ nag-kape kadiyot—balik dayon sa '" + cleanTask + "'", "🎄 lami ang kape! Padayon ta sa " + cleanTask][coffeeChatterIndex % 3];
+      return ["☕ sip sa kape while " + cleanTask + "!", "☕ nag-kape kadiyot—balik dayon sa '" + cleanTask + "'", "☕ lami ang kape! Padayon ta sa " + cleanTask][coffeeChatterIndex % 3];
     }
-    return ["☕ nag-kape kadiyot para fresh sa trabaho!", "🎄 merry Christmas! Sip sa kape!", "☕ lami kaayo ang kape karon!"][coffeeChatterIndex % 3];
+    return ["☕ nag-kape kadiyot para fresh sa trabaho!", "☕ sip sa kape—daghan pa og i-update sa PDMU!", "☕ lami kaayo ang kape karon!"][coffeeChatterIndex % 3];
   }
   function getTimingBadgeText(p) {
     const ct = formatTimeOnly(p && p.checkInAt); if (!ct) return "No Check-In Yet";
@@ -568,7 +566,7 @@
       const isMine = currentChatUser && m.sender === currentChatUser;
       const q = m.replyTo && m.replyTo.sender ? `<div class="msg-reply-quote"><strong>${esc(m.replyTo.sender)}:</strong> ${esc(m.replyTo.text)}</div>` : "";
       const rx = m.reactions || {};
-      const btns = ["👍","❤️","😂","🎄"].map(emo => { const u = Array.isArray(rx[emo]) ? rx[emo] : []; const act = currentChatUser && u.includes(currentChatUser); return `<button type="button" class="msg-act-btn ${act?"reacted":""}" onclick="toggleReaction('${esc(m.id)}','${emo}')">${emo}${u.length?" "+u.length:""}</button>`; }).join("") + `<button type="button" class="msg-act-btn" onclick="setReplyTarget('${esc(m.id)}','${esc(m.sender)}','${esc(m.message)}')">↩ Reply</button>`;
+      const btns = ["👍","❤️","😂","👏"].map(emo => { const u = Array.isArray(rx[emo]) ? rx[emo] : []; const act = currentChatUser && u.includes(currentChatUser); return `<button type="button" class="msg-act-btn ${act?"reacted":""}" onclick="toggleReaction('${esc(m.id)}','${emo}')">${emo}${u.length?" "+u.length:""}</button>`; }).join("") + `<button type="button" class="msg-act-btn" onclick="setReplyTarget('${esc(m.id)}','${esc(m.sender)}','${esc(m.message)}')">↩ Reply</button>`;
       return `<div class="msg-row ${isMine?"mine":""}"><img class="msg-avatar" src="${esc(getAvatarForSender(m.sender))}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}';"><div class="msg-col"><div class="msg-sender">${esc(m.sender)}</div><div class="msg-bubble">${q}${esc(m.message)}</div><div class="msg-actions-bar">${btns}</div><div class="msg-time">${esc(formatTimeOnly(m.sentAt||""))}</div></div></div>`;
     }).join("");
     box.scrollTop = box.scrollHeight;
@@ -611,8 +609,8 @@
   function map2Dto3D(px, py) { return { x: ((px-50)/50)*14.2, z: ((py-50)/50)*10.2 }; }
   function createFallbackFrameTexture(labelText, bgColor) {
     const c = document.createElement("canvas"); c.width = 512; c.height = 256; const ctx = c.getContext("2d");
-    ctx.fillStyle = bgColor || "#07241b"; ctx.fillRect(0,0,512,256); ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 8; ctx.strokeRect(12,12,488,232);
-    ctx.fillStyle = "#fde047"; ctx.font = "bold 28px Inter, sans-serif"; ctx.textAlign = "center"; ctx.fillText("🎄 PDMU REGIONAL WALL", 256, 112);
+    ctx.fillStyle = bgColor || "#030954"; ctx.fillRect(0,0,512,256); ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 8; ctx.strokeRect(12,12,488,232);
+    ctx.fillStyle = "#fde047"; ctx.font = "bold 28px Inter, sans-serif"; ctx.textAlign = "center"; ctx.fillText("PDMU REGIONAL WALL", 256, 112);
     ctx.fillStyle = "#fff"; ctx.font = "bold 22px Inter, sans-serif"; ctx.fillText(labelText, 256, 152);
     return new THREE.CanvasTexture(c);
   }
@@ -650,7 +648,6 @@
       treeGroup.add(orb);
     }
 
-    // Gift boxes under the tree
     [[-0.75, 0.22, 0.65, 0xdc2626], [0.72, 0.25, 0.62, 0x2563eb], [0.05, 0.18, 0.92, 0xf59e0b]].forEach(([gx, gy, gz, col]) => {
       const box = new THREE.Mesh(new THREE.BoxGeometry(0.46, gy*2, 0.46), new THREE.MeshStandardMaterial({ color: col }));
       box.position.set(gx, gy, gz); box.castShadow = true; treeGroup.add(box);
@@ -692,7 +689,6 @@
     const bangR = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.11, 0.14), hairMat); bangR.position.set(0.18, 0.28, 0.37); bangR.rotation.z = 0.14;
     headGroup.add(bangL, bangR);
 
-    // Cute Christmas Santa Hat on every character
     const hatGroup = new THREE.Group();
     hatGroup.position.set(0, 0.44, -0.02);
     hatGroup.rotation.z = -0.14;
@@ -781,7 +777,7 @@
     scene3D.add(new THREE.HemisphereLight(0xfffbeb, 0xd97706, 0.92));
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.85); dirLight.position.set(14,24,16); dirLight.castShadow = true; dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 1024;
     const d = 20; dirLight.shadow.camera.left = dirLight.shadow.camera.bottom = -d; dirLight.shadow.camera.right = dirLight.shadow.camera.top = d; scene3D.add(dirLight);
-    [0xdc2626, 0x16a34a, 0xfacc15].forEach((col,i) => { const pl = new THREE.PointLight(col, 0, 22); pl.position.set((i-1)*9, 6, 0); scene3D.add(pl); discoLights3D.push(pl); });
+    [0xf472b6, 0x38bdf8, 0xfacc15].forEach((col,i) => { const pl = new THREE.PointLight(col, 0, 22); pl.position.set((i-1)*9, 6, 0); scene3D.add(pl); discoLights3D.push(pl); });
 
     const floorMesh = new THREE.Mesh(new THREE.BoxGeometry(32,0.4,23.5), new THREE.MeshStandardMaterial({ map: createWoodFloorTexture(), roughness:0.65 })); floorMesh.position.set(0,-0.2,0); floorMesh.receiveShadow = true; scene3D.add(floorMesh);
     const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness:0.7 });
@@ -789,7 +785,6 @@
     const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.35,3.6,23.5), wallMat); leftWall.position.set(-15.8,1.6,0); leftWall.receiveShadow = true;
     scene3D.add(backWall, leftWall);
 
-    // Twinkling Christmas Fairy Lights along the top of the back wall
     const bulbColors = [0xef4444, 0x22c55e, 0xfacc15, 0x38bdf8];
     for (let bx = -14.5; bx <= 14.5; bx += 1.45) {
       const idx = fairyBulbs3D.length;
@@ -801,10 +796,9 @@
       fairyBulbs3D.push({ mesh: bulb, mat, phase: idx * 0.8 });
     }
 
-    // 4 Framed Wall Photos (Regional Office only)
     regionalWallFramesGroup = new THREE.Group();
-    const frameBorderMat = new THREE.MeshStandardMaterial({ color: 0x7f1d1d, roughness:0.5 });
-    const cardColors = ["#07241b","#0f3d2e","#7f1d1d","#06213e"], cardLabels = ["PHOTO 1","PHOTO 2","PHOTO 3","PHOTO 4"];
+    const frameBorderMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness:0.5 });
+    const cardColors = ["#030954","#1e3a8a","#0f172a","#172554"], cardLabels = ["PHOTO 1","PHOTO 2","PHOTO 3","PHOTO 4"];
     [-4.5, 0.0, 4.5, 9.0].forEach((wx, idx) => {
       const frame = new THREE.Mesh(new THREE.BoxGeometry(3.96,2.06,0.10), frameBorderMat); frame.position.set(wx,1.95,-11.41); frame.castShadow = true; regionalWallFramesGroup.add(frame);
       const photoMat = new THREE.MeshBasicMaterial({ map: createFallbackFrameTexture(cardLabels[idx], cardColors[idx]) });
@@ -824,10 +818,8 @@
     const coffeeCounter = new THREE.Mesh(new THREE.BoxGeometry(1.8,0.85,1.0), new THREE.MeshStandardMaterial({ color: 0x451a03 })); coffeeCounter.position.set(COFFEE_3D_SPOT.x,0.42,COFFEE_3D_SPOT.z+0.8); coffeeCounter.castShadow = true;
     const coffeeMachine = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.55,0.48), new THREE.MeshStandardMaterial({ color: 0xfbbf24 })); coffeeMachine.position.set(COFFEE_3D_SPOT.x,1.12,COFFEE_3D_SPOT.z+0.8); scene3D.add(coffeeCounter, coffeeMachine);
 
-    // Christmas Tree in back-right corner
     buildChristmasTree3D(13.8, -9.6);
 
-    // Gentle Snowfall Particles
     const snowCount = 240;
     const snowPositions = new Float32Array(snowCount * 3);
     for (let i = 0; i < snowCount; i++) {
@@ -843,7 +835,7 @@
     scene3D.add(snowPoints3D);
 
     [[-14.5,-10.3],[-14.5,10.3],[14.5,10.3]].forEach(([px,pz]) => {
-      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.28,0.48,12), new THREE.MeshStandardMaterial({ color: 0xdc2626 })); pot.position.set(px,0.24,pz);
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.28,0.48,12), new THREE.MeshStandardMaterial({ color: 0xd97706 })); pot.position.set(px,0.24,pz);
       const bush = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55), new THREE.MeshStandardMaterial({ color: 0x16a34a })); bush.position.set(px,0.82,pz); bush.castShadow = true; scene3D.add(pot, bush);
     });
 
@@ -989,7 +981,6 @@
     } catch (_) { document.getElementById("syncPill").textContent = "Offline Cache"; }
   }
 
-  if ("serviceWorker" in navigator) window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(()=>{}); });
   populateChatSenderSelect(); init3DOffice(); renderFloor(); checkAutoOfflineSchedule(); fetchFromSheet(false);
   setTimeout(triggerCoffeeBreak, 3500); setInterval(() => fetchFromSheet(false), 15000); setInterval(triggerCoffeeBreak, COFFEE_INTERVAL_MS);
 </script>
