@@ -83,10 +83,10 @@
   #threeCanvasHost { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; }
   #threeCanvasHost:active { cursor: grabbing; }
   .labels-3d-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 15; }
-  .tag-3d-card { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; cursor: pointer; max-width: 240px; }
+  .tag-3d-card { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; cursor: pointer; max-width: 250px; }
   .tag-3d-card.hidden-out { display: none !important; }
   .tag-3d-card.selected .name-chip-3d { background: #fbbf24; color: #030954; border-color: #0f172a; transform: scale(1.08); }
-  .bubble-tag-3d { padding: 2px 7px; border-radius: 9px; border: 1.5px solid #0f172a; font-size: 8.5px; font-weight: 900; color: #0f172a; margin-bottom: 2px; white-space: normal; text-align: center; line-height: 1.2; max-width: 225px; }
+  .bubble-tag-3d { padding: 2px 7px; border-radius: 9px; border: 1.5px solid #0f172a; font-size: 8.5px; font-weight: 900; color: #0f172a; margin-bottom: 2px; white-space: normal; text-align: center; line-height: 1.2; max-width: 235px; }
   .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-passlip { background: #facc15; } .st-ptl { background: #2dd4bf; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; } .st-coffee { background: #fde047; }
   .name-chip-3d { background: rgba(255,255,255,.96); color: #0f172a; border: 1.5px solid #334155; border-radius: 6px; padding: 1.5px 6px; font-size: 9px; font-weight: 900; white-space: nowrap; }
 
@@ -112,11 +112,16 @@
 
   .pin-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.82); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px; }
   .pin-modal-backdrop.open { display: flex; }
-  .pin-modal-card { width: 100%; max-width: 395px; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
+  .pin-modal-card { width: 100%; max-width: 440px; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
   .pin-modal-title { font-size: 15px; font-weight: 900; color: #fbbf24; }
   .pin-modal-sub { font-size: 11.5px; color: #e2e8f0; line-height: 1.4; }
   .honor-rule-box { background: rgba(251,191,36,.14); border: 1px solid #fbbf24; border-radius: 8px; padding: 7px 10px; font-size: 10.5px; font-weight: 800; color: #fde68a; line-height: 1.35; }
-  .pin-modal-input { width: 100%; background: #07116e; color: #fde047; border: 2px solid #fbbf24; border-radius: 6px; padding: 8px 10px; font-family: inherit; font-size: 12.5px; font-weight: 800; text-align: center; }
+  .field-details-box { display: none; flex-direction: column; gap: 6px; text-align: left; background: #07116e; border: 1px solid rgba(251,191,36,.5); border-radius: 8px; padding: 8px; }
+  .field-details-box.visible { display: flex; }
+  .field-row-wrap.hidden-field { display: none; }
+  .field-lbl { font-size: 10px; font-weight: 800; color: #fde047; margin-bottom: 2px; }
+  .pin-modal-input { width: 100%; background: #07116e; color: #fde047; border: 2px solid #fbbf24; border-radius: 6px; padding: 7px 10px; font-family: inherit; font-size: 12px; font-weight: 800; text-align: center; }
+  .pin-modal-input.left-txt { text-align: left; color: #fff; font-weight: 600; font-size: 11.5px; }
   .pin-modal-err { font-size: 10.5px; font-weight: 800; color: #fca5a5; min-height: 15px; }
   .pin-modal-actions { display: flex; gap: 8px; justify-content: center; margin-top: 2px; }
   .pin-confirm-btn { background: #16a34a; color: #fff; border: 2px solid #bbf7d0; border-radius: 6px; padding: 6px 14px; font-family: inherit; font-size: 11.5px; font-weight: 900; cursor: pointer; }
@@ -124,7 +129,7 @@
 
   .log-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.78); z-index: 999; display: none; align-items: center; justify-content: center; padding: 14px; }
   .log-modal-backdrop.open { display: flex; }
-  .log-modal-card { width: 100%; max-width: 920px; max-height: 84vh; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .log-modal-card { width: 100%; max-width: 960px; max-height: 84vh; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
   .log-modal-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(251,191,36,.35); padding-bottom: 8px; }
   .log-modal-head h3 { font-size: 14px; font-weight: 900; color: #fbbf24; }
   .log-table-wrap { overflow: auto; flex: 1; border: 1px solid rgba(251,191,36,.3); border-radius: 8px; }
@@ -273,7 +278,7 @@
     <div class="controls-group" id="actionControlsGroup">
       <button type="button" class="checkin-btn" onclick="requestPinAction('CHECK_IN')">✅ Check-In</button>
       <button type="button" class="checkout-btn" onclick="requestPinAction('CHECK_OUT')">🚪 Check-Out</button>
-      <input type="text" id="noteInput" class="note-input" placeholder="Current task (e.g. I'm creating FB Posting right now!)...">
+      <input type="text" id="noteInput" class="note-input" placeholder="Current task or seminar/training title...">
       <button type="button" class="task-set-btn" onclick="openQuickTaskModal()">✏️ Set Task</button>
       <div class="status-btns">
         <button type="button" style="background:#4ade80;" onclick="requestPinAction('STATUS_ONLINE')">Online</button>
@@ -299,8 +304,23 @@
   <div class="pin-modal-card">
     <div class="pin-modal-title" id="pinModalTitle">ENTER PIN</div>
     <div class="pin-modal-sub" id="pinModalSub">Enter your PIN to continue.</div>
-    <div class="honor-rule-box" id="honorRuleBox">⚠️ Honor Rule: Check-in only when physically at the office / on duty, and set accurate status &amp; current task.</div>
-    <input type="text" id="taskModalInput" class="pin-modal-input" style="display:none; color:#fff;" placeholder="e.g. I'm creating FB Posting right now!" maxlength="140">
+    <div class="honor-rule-box" id="honorRuleBox">⚠️ Honor Rule: Check-in only when physically at the office / on duty, and set accurate status &amp; activity details.</div>
+
+    <div class="field-details-box" id="fieldDetailsBox">
+      <div class="field-row-wrap">
+        <div class="field-lbl">Activity Title / Seminar / Training / Task:</div>
+        <input type="text" id="taskModalInput" class="pin-modal-input left-txt" placeholder="e.g. Subaybayan Training / Field Inspection / FB Posting" maxlength="160">
+      </div>
+      <div class="field-row-wrap" id="projectIdRowWrap">
+        <div class="field-lbl">Project ID(s) <span style="color:#cbd5e1; font-weight:400;">(optional • on-field only • comma-separated if multiple)</span>:</div>
+        <input type="text" id="projectIdModalInput" class="pin-modal-input left-txt" placeholder="e.g. FA-OI-22-16-67-14-000-1, FA-OI-22-16-67-14-000-2" maxlength="180">
+      </div>
+      <div class="field-row-wrap">
+        <div class="field-lbl">Location(s) / Venue / Brgy / Mun. <span style="color:#cbd5e1; font-weight:400;">(optional • comma-separated if multiple)</span>:</div>
+        <input type="text" id="locationModalInput" class="pin-modal-input left-txt" placeholder="e.g. Butuan City / Brgy. Roxas, Brgy. San Isidro" maxlength="180">
+      </div>
+    </div>
+
     <input type="password" id="pinModalInput" class="pin-modal-input" placeholder="Enter PIN" maxlength="12" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmPinModal();}">
     <div class="pin-modal-err" id="pinModalErr"></div>
     <div class="pin-modal-actions">
@@ -327,7 +347,7 @@
     </div>
     <div class="log-table-wrap">
       <table class="log-tbl">
-        <thead><tr><th>Date</th><th>Time</th><th>Name</th><th>Office</th><th>Status</th><th>Timing</th><th>Task / Remarks</th></tr></thead>
+        <thead><tr><th>Date</th><th>Time</th><th>Name</th><th>Status</th><th>Activity Title / Task</th><th>Project ID(s)</th><th>Location(s)</th></tr></thead>
         <tbody id="logTableBody"><tr><td colspan="7">Loading logs...</td></tr></tbody>
       </table>
     </div>
@@ -372,43 +392,43 @@
   };
 
   const PEOPLE = [
-    { name: "Airah", x: 30, y: 12, hair: "#5c3a21", shirt: "#f472b6", pigtails: true, hairtie: "#ec4899", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Shaira", x: 10, y: 26, hair: "#27272a", shirt: "#fb923c", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Darren", x: 23, y: 26, hair: "#5c3a21", shirt: "#f97316", stripe: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Rachel", x: 36, y: 26, hair: "#4a2c18", shirt: "#ec4899", pigtails: true, hairtie: "#38bdf8", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Carl", x: 49, y: 26, hair: "#1e1b4b", shirt: "#3b82f6", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Nuelson", x: 10, y: 42, hair: "#18181b", shirt: "#10b981", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Aisley", x: 23, y: 42, hair: "#451a03", shirt: "#eab308", stripe: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "AJ Boy", x: 36, y: 42, hair: "#0f172a", shirt: "#6366f1", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jill", x: 49, y: 42, hair: "#27272a", shirt: "#ec4899", pigtails: true, hairtie: "#facc15", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Lee", x: 10, y: 58, hair: "#27272a", shirt: "#14b8a6", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Kiarah", x: 23, y: 58, hair: "#3b2314", shirt: "#a855f7", pigtails: true, hairtie: "#f472b6", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Cyrus", x: 36, y: 58, hair: "#1e1b4b", shirt: "#f97316", stripe: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jay", x: 49, y: 58, hair: "#451a03", shirt: "#22c55e", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Ian", x: 10, y: 74, hair: "#27272a", shirt: "#2563eb", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Kirsten", x: 83, y: 20, hair: "#4a2c18", shirt: "#f43f5e", pigtails: true, hairtie: "#fbbf24", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Christian", x: 83, y: 38, hair: "#1e293b", shirt: "#0ea5e9", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jojo (Chief)", x: 86, y: 74, hair: "#1e293b", shirt: "#ec4899", pigtails: true, hairtie: "#fbbf24", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Alvin", x: 49, y: 86, hair: "#0f172a", shirt: "#0284c7", stripe: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jesreel (Asst. Chief)", x: 61.5, y: 86, hair: "#451a03", shirt: "#d97706", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Welmer", x: 32, y: 36, hair: "#1e293b", shirt: "#2563eb", status: "offline", note: "", province: "PDI", checkInAt: "", checkOutAt: "" },
-    { name: "Nitcheban", x: 68, y: 36, hair: "#3b2314", shirt: "#0ea5e9", status: "offline", note: "", province: "PDI", checkInAt: "", checkOutAt: "" },
-    { name: "Quennie", x: 24, y: 34, hair: "#4a2c18", shirt: "#f472b6", pigtails: true, hairtie: "#38bdf8", status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
-    { name: "Jermalyn", x: 50, y: 34, hair: "#27272a", shirt: "#a855f7", pigtails: true, hairtie: "#facc15", status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
-    { name: "Camz", x: 76, y: 34, hair: "#1e1b4b", shirt: "#14b8a6", status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
-    { name: "Niña", x: 32, y: 36, hair: "#3b2314", shirt: "#fb7185", pigtails: true, hairtie: "#fbbf24", status: "offline", note: "", province: "ADN", checkInAt: "", checkOutAt: "" },
-    { name: "Sheena", x: 68, y: 36, hair: "#27272a", shirt: "#38bdf8", pigtails: true, hairtie: "#ec4899", status: "offline", note: "", province: "ADN", checkInAt: "", checkOutAt: "" },
-    { name: "Gen", x: 24, y: 34, hair: "#0f172a", shirt: "#10b981", status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
-    { name: "Hermie", x: 50, y: 34, hair: "#451a03", shirt: "#f97316", stripe: true, status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
-    { name: "Jassy", x: 76, y: 34, hair: "#3b2314", shirt: "#f472b6", pigtails: true, hairtie: "#a855f7", status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
-    { name: "Ace", x: 24, y: 30, hair: "#1e293b", shirt: "#2563eb", status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
-    { name: "Mark", x: 50, y: 30, hair: "#0f172a", shirt: "#0ea5e9", stripe: true, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
-    { name: "Joxin", x: 76, y: 30, hair: "#451a03", shirt: "#eab308", status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
-    { name: "Jae Wayne", x: 36, y: 66, hair: "#27272a", shirt: "#22c55e", status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
-    { name: "Jeunesse", x: 64, y: 66, hair: "#3b2314", shirt: "#3b82f6", status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" }
+    { name: "Airah", x: 30, y: 12, hair: "#5c3a21", shirt: "#f472b6", pigtails: true, hairtie: "#ec4899", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Shaira", x: 10, y: 26, hair: "#27272a", shirt: "#fb923c", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Darren", x: 23, y: 26, hair: "#5c3a21", shirt: "#f97316", stripe: true, status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Rachel", x: 36, y: 26, hair: "#4a2c18", shirt: "#ec4899", pigtails: true, hairtie: "#38bdf8", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Carl", x: 49, y: 26, hair: "#1e1b4b", shirt: "#3b82f6", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Nuelson", x: 10, y: 42, hair: "#18181b", shirt: "#10b981", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Aisley", x: 23, y: 42, hair: "#451a03", shirt: "#eab308", stripe: true, status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "AJ Boy", x: 36, y: 42, hair: "#0f172a", shirt: "#6366f1", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jill", x: 49, y: 42, hair: "#27272a", shirt: "#ec4899", pigtails: true, hairtie: "#facc15", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Lee", x: 10, y: 58, hair: "#27272a", shirt: "#14b8a6", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kiarah", x: 23, y: 58, hair: "#3b2314", shirt: "#a855f7", pigtails: true, hairtie: "#f472b6", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Cyrus", x: 36, y: 58, hair: "#1e1b4b", shirt: "#f97316", stripe: true, status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jay", x: 49, y: 58, hair: "#451a03", shirt: "#22c55e", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Ian", x: 10, y: 74, hair: "#27272a", shirt: "#2563eb", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kirsten", x: 83, y: 20, hair: "#4a2c18", shirt: "#f43f5e", pigtails: true, hairtie: "#fbbf24", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Christian", x: 83, y: 38, hair: "#1e293b", shirt: "#0ea5e9", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jojo (Chief)", x: 86, y: 74, hair: "#1e293b", shirt: "#ec4899", pigtails: true, hairtie: "#fbbf24", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Alvin", x: 49, y: 86, hair: "#0f172a", shirt: "#0284c7", stripe: true, status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jesreel (Asst. Chief)", x: 61.5, y: 86, hair: "#451a03", shirt: "#d97706", status: "offline", note: "", projectId: "", location: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Welmer", x: 32, y: 36, hair: "#1e293b", shirt: "#2563eb", status: "offline", note: "", projectId: "", location: "", province: "PDI", checkInAt: "", checkOutAt: "" },
+    { name: "Nitcheban", x: 68, y: 36, hair: "#3b2314", shirt: "#0ea5e9", status: "offline", note: "", projectId: "", location: "", province: "PDI", checkInAt: "", checkOutAt: "" },
+    { name: "Quennie", x: 24, y: 34, hair: "#4a2c18", shirt: "#f472b6", pigtails: true, hairtie: "#38bdf8", status: "offline", note: "", projectId: "", location: "", province: "SDN", checkInAt: "", checkOutAt: "" },
+    { name: "Jermalyn", x: 50, y: 34, hair: "#27272a", shirt: "#a855f7", pigtails: true, hairtie: "#facc15", status: "offline", note: "", projectId: "", location: "", province: "SDN", checkInAt: "", checkOutAt: "" },
+    { name: "Camz", x: 76, y: 34, hair: "#1e1b4b", shirt: "#14b8a6", status: "offline", note: "", projectId: "", location: "", province: "SDN", checkInAt: "", checkOutAt: "" },
+    { name: "Niña", x: 32, y: 36, hair: "#3b2314", shirt: "#fb7185", pigtails: true, hairtie: "#fbbf24", status: "offline", note: "", projectId: "", location: "", province: "ADN", checkInAt: "", checkOutAt: "" },
+    { name: "Sheena", x: 68, y: 36, hair: "#27272a", shirt: "#38bdf8", pigtails: true, hairtie: "#ec4899", status: "offline", note: "", projectId: "", location: "", province: "ADN", checkInAt: "", checkOutAt: "" },
+    { name: "Gen", x: 24, y: 34, hair: "#0f172a", shirt: "#10b981", status: "offline", note: "", projectId: "", location: "", province: "ADS", checkInAt: "", checkOutAt: "" },
+    { name: "Hermie", x: 50, y: 34, hair: "#451a03", shirt: "#f97316", stripe: true, status: "offline", note: "", projectId: "", location: "", province: "ADS", checkInAt: "", checkOutAt: "" },
+    { name: "Jassy", x: 76, y: 34, hair: "#3b2314", shirt: "#f472b6", pigtails: true, hairtie: "#a855f7", status: "offline", note: "", projectId: "", location: "", province: "ADS", checkInAt: "", checkOutAt: "" },
+    { name: "Ace", x: 24, y: 30, hair: "#1e293b", shirt: "#2563eb", status: "offline", note: "", projectId: "", location: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Mark", x: 50, y: 30, hair: "#0f172a", shirt: "#0ea5e9", stripe: true, status: "offline", note: "", projectId: "", location: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Joxin", x: 76, y: 30, hair: "#451a03", shirt: "#eab308", status: "offline", note: "", projectId: "", location: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Jae Wayne", x: 36, y: 66, hair: "#27272a", shirt: "#22c55e", status: "offline", note: "", projectId: "", location: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Jeunesse", x: 64, y: 66, hair: "#3b2314", shirt: "#3b82f6", status: "offline", note: "", projectId: "", location: "", province: "SDS", checkInAt: "", checkOutAt: "" }
   ];
 
-  let deferredInstallPrompt = null, selectedIndex = -1, pendingPinAction = null, pendingPinIsCreate = false, pendingTaskText = "";
+  let deferredInstallPrompt = null, selectedIndex = -1, pendingPinAction = null, pendingPinIsCreate = false, pendingTaskText = "", pendingProjectId = "", pendingLocation = "";
   let convoUnlocked = false, currentChatUser = "", unlockedPinUser = "", savedPinsMap = {}, chatMessages = [], todayLogsData = [], allLogsData = [], replyTarget = null;
   let coffeeBusy = false, activeCoffeeName = "", coffeePhase = "idle", coffeeProgress = 0, coffeeChatterIndex = 0, coffeeDrinkTimeout = null, coffeeChatterInterval = null;
   let danceEndTime = 0, danceCountdownInterval = null, isAfterHours = false, snowEnabled = true;
@@ -451,6 +471,13 @@
   }
   function statusLabel(st) {
     return { online:"online", activity:"activity / gawas", passlip:"passlip", ptl:"ptl", leave:"on leave", absent:"absent" }[st] || "offline (uli na)";
+  }
+  function formatBubbleText(p) {
+    const base = (p.note && !/^(checked-in|in office|online)$/i.test(p.note.trim())) ? p.note.trim() : statusLabel(p.status);
+    const extras = [];
+    if (p.status === "activity" && p.projectId) extras.push("Proj: " + p.projectId);
+    if (p.location) extras.push("Loc: " + p.location);
+    return extras.length ? (base + " • " + extras.join(" | ")) : base;
   }
   function getCoffeeChatterLine(p) {
     const cleanTask = String((p && p.note) || "").trim().replace(/^i['’]?m\s+/i,"").replace(/\s+right now!?$/i,"").trim();
@@ -500,46 +527,84 @@
     const p = PEOPLE[selectedIndex], savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
     pendingPinAction = actionType; pendingPinIsCreate = !savedPin;
     pendingTaskText = typeof presetTask === "string" ? presetTask : document.getElementById("noteInput").value.trim();
+
+    const isFieldActivity = (actionType === "STATUS_ACTIVITY") || (actionType === "UPDATE_TASK" && p.status === "activity");
+    pendingProjectId = isFieldActivity ? (p.projectId || "") : "";
+    pendingLocation = p.location || "";
+
     document.getElementById("pinModalErr").textContent = ""; document.getElementById("pinModalInput").value = "";
     document.getElementById("honorRuleBox").textContent = (actionType === "CHECK_OUT" || actionType === "STATUS_OFFLINE")
       ? "ℹ️ Check-Out / Offline: Record accurate departure time when leaving duty."
-      : "⚠️ Honor Rule: Check-in only when physically at the office / on duty, and set accurate status & current task.";
-    const taskEl = document.getElementById("taskModalInput");
-    taskEl.style.display = actionType === "UPDATE_TASK" ? "block" : "none";
-    taskEl.value = actionType === "UPDATE_TASK" ? (pendingTaskText || "I'm creating FB Posting right now!") : "";
-    document.getElementById("pinModalTitle").textContent = (actionType === "UPDATE_TASK" ? "SET TASK • " : (pendingPinIsCreate ? "CREATE PIN • " : "INPUT PIN • ")) + p.name;
-    document.getElementById("pinModalSub").textContent = actionType === "UPDATE_TASK" ? "Ibutang ang current task ni " + p.name + " ug isulod ang PIN." : (pendingPinIsCreate ? "Pag-create og imong PIN para kang " + p.name + "." : "Isulod ang PIN ni " + p.name + ".");
+      : "⚠️ Honor Rule: Check-in only when physically at the office / on duty, and set accurate activity title, Project ID (if on-field) & location.";
+
+    const showDetails = (actionType === "UPDATE_TASK" || actionType === "STATUS_ACTIVITY");
+    document.getElementById("fieldDetailsBox").classList.toggle("visible", showDetails);
+    document.getElementById("projectIdRowWrap").classList.toggle("hidden-field", !isFieldActivity);
+
+    document.getElementById("taskModalInput").value = pendingTaskText || (actionType === "STATUS_ACTIVITY" ? "On-Field Inspection" : "");
+    document.getElementById("projectIdModalInput").value = pendingProjectId;
+    document.getElementById("locationModalInput").value = pendingLocation;
+
+    document.getElementById("pinModalTitle").textContent = (actionType === "UPDATE_TASK" ? "SET ACTIVITY / TASK • " : (actionType === "STATUS_ACTIVITY" ? "ON-FIELD ACTIVITY • " : (pendingPinIsCreate ? "CREATE PIN • " : "INPUT PIN • "))) + p.name;
+    document.getElementById("pinModalSub").textContent = showDetails
+      ? (isFieldActivity
+          ? "Ibutang ang Activity/Seminar/Training title, optional Project ID(s) (on-field), ug Location(s) ni " + p.name + "."
+          : "Ibutang ang Activity/Seminar/Training title o task ug optional Location(s)/Venue ni " + p.name + ".")
+      : (pendingPinIsCreate ? "Pag-create og imong PIN para kang " + p.name + "." : "Isulod ang PIN ni " + p.name + ".");
+
     document.getElementById("pinModalBackdrop").classList.add("open");
-    setTimeout(() => { if (actionType === "UPDATE_TASK") taskEl.focus(); else document.getElementById("pinModalInput").focus(); }, 40);
+    setTimeout(() => { if (showDetails) document.getElementById("taskModalInput").focus(); else document.getElementById("pinModalInput").focus(); }, 40);
   }
-  function closePinModal() { pendingPinAction = null; pendingPinIsCreate = false; pendingTaskText = ""; document.getElementById("pinModalBackdrop").classList.remove("open"); document.getElementById("pinModalErr").textContent = ""; }
+  function closePinModal() { pendingPinAction = null; pendingPinIsCreate = false; pendingTaskText = ""; pendingProjectId = ""; pendingLocation = ""; document.getElementById("pinModalBackdrop").classList.remove("open"); document.getElementById("pinModalErr").textContent = ""; }
   async function confirmPinModal() {
     if (selectedIndex < 0 || !PEOPLE[selectedIndex] || !pendingPinAction) return;
     const p = PEOPLE[selectedIndex], savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
     const entered = String(document.getElementById("pinModalInput").value || "").trim(), errEl = document.getElementById("pinModalErr");
-    if (pendingPinAction === "UPDATE_TASK") {
+    const showDetails = (pendingPinAction === "UPDATE_TASK" || pendingPinAction === "STATUS_ACTIVITY");
+    const isFieldActivity = (pendingPinAction === "STATUS_ACTIVITY") || (pendingPinAction === "UPDATE_TASK" && p.status === "activity");
+
+    if (showDetails) {
       const tVal = String(document.getElementById("taskModalInput").value || "").trim();
-      if (!tVal) { errEl.textContent = "Palihog isulod ang task."; return; }
-      pendingTaskText = tVal; document.getElementById("noteInput").value = tVal;
+      if (!tVal) { errEl.textContent = "Palihog isulod ang Activity Title / Seminar / Task."; return; }
+      pendingTaskText = tVal;
+      pendingProjectId = isFieldActivity ? String(document.getElementById("projectIdModalInput").value || "").trim() : "";
+      pendingLocation = String(document.getElementById("locationModalInput").value || "").trim();
+      document.getElementById("noteInput").value = tVal;
     }
     if (savedPin) { if (!entered) { errEl.textContent = "Palihog isulod ang PIN."; return; } if (entered !== savedPin) { errEl.textContent = "Sayop ang PIN!"; return; } syncPinToChatbox(p.name, entered); }
     else { if (!entered) { errEl.textContent = "Palihog pag-type og bag-ong PIN."; return; } syncPinToChatbox(p.name, entered); }
-    const act = pendingPinAction, customTask = pendingTaskText; closePinModal(); await executeAuthorizedAction(p, act, customTask);
+    const act = pendingPinAction, customTask = pendingTaskText, projId = pendingProjectId, loc = pendingLocation;
+    closePinModal();
+    await executeAuthorizedAction(p, act, customTask, projId, loc);
   }
-  async function executeAuthorizedAction(p, actionType, customTask) {
+  async function executeAuthorizedAction(p, actionType, customTask, projId, loc) {
     const noteVal = (typeof customTask === "string" && customTask.trim()) ? customTask.trim() : document.getElementById("noteInput").value.trim();
     const now = new Date(), hmStr = String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"), dateKey = now.toLocaleDateString("en-CA");
     let timingText = "";
-    if (actionType === "UPDATE_TASK") { p.note = noteVal; if (p.status === "offline") p.status = "online"; timingText = getTimingBadgeText(p); }
-    else if (actionType === "CHECK_IN") { p.status = "online"; p.note = noteVal || "Checked-In at Office"; p.checkInAt = hmStr; p.checkOutAt = ""; timingText = getTimingBadgeText(p); }
-    else if (actionType === "CHECK_OUT") { p.status = "offline"; p.note = noteVal || "Checked-Out (Uli na)"; p.checkOutAt = hmStr; }
-    else {
+    p.location = typeof loc === "string" ? loc : (p.location || "");
+
+    if (actionType === "UPDATE_TASK") {
+      p.note = noteVal;
+      if (p.status === "offline") p.status = "online";
+      p.projectId = p.status === "activity" ? (typeof projId === "string" ? projId : (p.projectId || "")) : "";
+      timingText = getTimingBadgeText(p);
+    } else if (actionType === "CHECK_IN") {
+      p.status = "online"; p.note = noteVal || "Checked-In at Office"; p.projectId = ""; p.location = ""; p.checkInAt = hmStr; p.checkOutAt = ""; timingText = getTimingBadgeText(p);
+    } else if (actionType === "CHECK_OUT") {
+      p.status = "offline"; p.note = noteVal || "Checked-Out (Uli na)"; p.projectId = ""; p.location = ""; p.checkOutAt = hmStr;
+    } else {
       const map = { STATUS_ONLINE:["online","In Office"], STATUS_ACTIVITY:["activity","Activity sa Gawas"], STATUS_PASSLIP:["passlip","Passlip"], STATUS_PTL:["ptl","PTL"], STATUS_LEAVE:["leave","On Leave"], STATUS_ABSENT:["absent","Absent"], STATUS_OFFLINE:["offline","Uli na"] };
-      const [st, defNote] = map[actionType] || ["online","In Office"]; p.status = st; p.note = noteVal || defNote;
-      if (st === "offline") p.checkOutAt = hmStr; if (st === "online") timingText = getTimingBadgeText(p);
+      const [st, defNote] = map[actionType] || ["online","In Office"];
+      p.status = st;
+      p.note = noteVal || defNote;
+      p.projectId = st === "activity" ? (typeof projId === "string" ? projId : (p.projectId || "")) : "";
+      if (st !== "activity" && st !== "online") p.location = "";
+      if (st === "offline") p.checkOutAt = hmStr;
+      if (st === "online") timingText = getTimingBadgeText(p);
     }
+
     if (p.status !== "online" && coffeeBusy && activeCoffeeName === p.name) stopCoffeeWalk();
-    const logEntry = { date: dateKey, time: hmStr, name: p.name, province: p.province || "Regional", action: actionType, status: p.status, timing: timingText, note: p.note || "" };
+    const logEntry = { date: dateKey, time: hmStr, name: p.name, province: p.province || "Regional", action: actionType, status: p.status, timing: timingText, note: p.note || "", projectId: p.status === "activity" ? (p.projectId || "") : "", location: p.location || "" };
     todayLogsData.unshift(logEntry);
     allLogsData.unshift(logEntry);
     renderTodayLogTable(); renderFloor(); await postStatusPayload(p, actionType, logEntry);
@@ -924,9 +989,8 @@
       obj.group.visible = !hidden; obj.tagEl.classList.toggle("hidden-out", hidden); obj.tagEl.classList.toggle("selected", obj.idx === selectedIndex);
       if (p.name === "Jojo (Chief)" && prov === "Regional") { obj.group.position.set(CARPET_3D_CENTER.x,0,CARPET_3D_CENTER.z); obj.homePos = {x:CARPET_3D_CENTER.x,z:CARPET_3D_CENTER.z}; }
       else { const pos = map2Dto3D(p.x, p.y); obj.group.position.set(pos.x,0,pos.z); obj.homePos = {x:pos.x,z:pos.z}; }
-      let cls = "st-" + p.status, txt = statusLabel(p.status);
+      let cls = "st-" + p.status, txt = formatBubbleText(p);
       if (walkingCoffee) { cls = "st-coffee"; txt = getCoffeeChatterLine(p); }
-      else if (p.status === "online" && p.note && !/^(checked-in|in office|online)$/i.test(p.note.trim())) txt = p.note.trim();
       obj.bubbleEl.className = "bubble-tag-3d " + cls; obj.bubbleEl.textContent = txt;
     });
     updateSelectedFooter();
@@ -943,7 +1007,7 @@
   }
   async function postStatusPayload(p, action, logEntry) {
     if (!APPS_SCRIPT_URL) return;
-    try { await fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ type:"status", name:p.name, status:p.status, note:p.note, province:p.province||"Regional", action, time:logEntry?formatTimeOnly(logEntry.time):"", timing:logEntry?logEntry.timing:"", checkInAt:formatTimeOnly(p.checkInAt)||"", checkOutAt:formatTimeOnly(p.checkOutAt)||"" }) }); } catch(_){}
+    try { await fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ type:"status", name:p.name, status:p.status, note:p.note, projectId:p.status==="activity"?(p.projectId||""):"", location:p.location||"", province:p.province||"Regional", action, time:logEntry?formatTimeOnly(logEntry.time):"", timing:logEntry?logEntry.timing:"", checkInAt:formatTimeOnly(p.checkInAt)||"", checkOutAt:formatTimeOnly(p.checkOutAt)||"" }) }); } catch(_){}
   }
   function triggerCoffeeBreak() {
     if (coffeeBusy || isDancingNow() || isAfterHours || isViewingProvinceOffice()) return;
@@ -1005,7 +1069,7 @@
   function renderTodayLogTable() {
     const rows = getFilteredLogsForPrint();
     document.getElementById("logTableBody").innerHTML = rows.length
-      ? rows.map(r => `<tr><td>${esc(r.date || "")}</td><td>${esc(formatTimeOnly(r.time))}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.province)}</td><td>${esc(r.status)}</td><td>${esc(r.timing)}</td><td>${esc(r.note)}</td></tr>`).join("")
+      ? rows.map(r => `<tr><td>${esc(r.date || "")}</td><td>${esc(formatTimeOnly(r.time))}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.status)}</td><td>${esc(r.note)}</td><td>${esc(r.status === "activity" ? (r.projectId || "-") : "N/A")}</td><td>${esc(r.location || "-")}</td></tr>`).join("")
       : `<tr><td colspan="7">No task logs found for selected filter.</td></tr>`;
   }
 
@@ -1029,8 +1093,9 @@
         <td>${esc(formatTimeOnly(r.time))}</td>
         <td>${esc(r.name)}</td>
         <td>${esc(r.status)}</td>
-        <td>${esc(r.timing)}</td>
         <td>${esc(r.note)}</td>
+        <td>${esc(r.status === "activity" ? (r.projectId || "-") : "N/A")}</td>
+        <td>${esc(r.location || "-")}</td>
       </tr>`).join("");
 
     const docHtml = `
@@ -1039,7 +1104,7 @@
         body { font-family: Arial, sans-serif; padding: 24px; color: #111; }
         h2, h4 { margin: 0; text-align: center; }
         .meta { margin: 14px 0; font-size: 13px; display: flex; justify-content: space-between; border-bottom: 2px solid #030954; padding-bottom: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: 10px; }
         th, td { border: 1px solid #333; padding: 6px 8px; text-align: left; }
         th { background: #f1f5f9; font-weight: bold; }
         .sign-box { margin-top: 42px; display: flex; justify-content: space-between; font-size: 12px; }
@@ -1048,13 +1113,13 @@
       </style></head><body>
       <button onclick="window.print()" style="padding:8px 14px; font-weight:bold; margin-bottom:12px; cursor:pointer;">🖨️ Print / Save PDF</button>
       <h4>DILG CARAGA • PROJECT DEVELOPMENT AND MANAGEMENT UNIT (PDMU)</h4>
-      <h2>INDIVIDUAL DAILY TASK &amp; ATTENDANCE LOG</h2>
+      <h2>INDIVIDUAL DAILY TASK, SEMINAR &amp; ON-FIELD LOG</h2>
       <div class="meta">
         <div><strong>Personnel:</strong> ${esc(member === "ALL" ? "All PDMU Personnel" : member)}</div>
         <div><strong>Period:</strong> ${esc(dFrom)} to ${esc(dTo)}</div>
       </div>
       <table>
-        <thead><tr><th style="width:36px;">#</th><th>Date</th><th>Time</th><th>Name</th><th>Status</th><th>Timing</th><th>Task / Accomplishment Remarks</th></tr></thead>
+        <thead><tr><th style="width:32px;">#</th><th>Date</th><th>Time</th><th>Name</th><th>Status</th><th>Activity Title / Task</th><th>Project ID(s)</th><th>Location(s) / Venue</th></tr></thead>
         <tbody>${trHtml}</tbody>
       </table>
       <div class="sign-box">
@@ -1063,7 +1128,7 @@
       </div>
       </body></html>`;
 
-    const win = window.open("", "_blank", "width=900,height=700");
+    const win = window.open("", "_blank", "width=960,height=720");
     if (win && win.document) {
       win.document.open();
       win.document.write(docHtml);
@@ -1071,7 +1136,6 @@
       return;
     }
 
-    // Fallback kung gi-block sa Google Sites iframe ang window.open
     const printFrame = document.createElement("iframe");
     printFrame.style.position = "fixed";
     printFrame.style.right = "0";
@@ -1092,11 +1156,9 @@
 
   function exportTodayLogCsv() {
     const rows = getFilteredLogsForPrint();
-    const lines = [["Date","Time","Name","Office","Status","Timing","Task / Remarks"].join(",")].concat(rows.map(r => [r.date||"",formatTimeOnly(r.time),r.name,r.province,r.status,r.timing,r.note].map(v => `"${String(v||"").replace(/"/g,'""')}"`).join(",")));
+    const lines = [["Date","Time","Name","Office","Status","Activity Title / Task","Project ID(s)","Location(s)"].join(",")].concat(rows.map(r => [r.date||"",formatTimeOnly(r.time),r.name,r.province,r.status,r.note,r.status==="activity"?(r.projectId||""):"N/A",r.location||""].map(v => `"${String(v||"").replace(/"/g,'""')}"`).join(",")));
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type:"text/csv;charset=utf-8;" })); a.download = "PDMU_Task_Log_" + new Date().toISOString().slice(0,10) + ".csv"; a.click();
   }
-
-  async function archiveTodayNow() { if (!APPS_SCRIPT_URL) { alert("Ibutang una ang APPS_SCRIPT_URL."); return; } await fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({type:"archive_day"}) }).catch(()=>{}); alert("Na-archive na sa VO_Daily_History!"); }
 
   async function fetchFromSheet(showAlert) {
     if (!APPS_SCRIPT_URL) { document.getElementById("syncPill").textContent = "Local Mode"; return; }
@@ -1106,7 +1168,14 @@
         if (Array.isArray(json.data)) json.data.forEach(row => { const m = PEOPLE.find(p => p.name.toLowerCase() === String(row.name||"").trim().toLowerCase()); if (m) { m.status = normalizeStatus(row.status); m.note = row.note || ""; m.checkInAt = row.checkInAt ? formatTimeOnly(row.checkInAt) : ""; m.checkOutAt = row.checkOutAt ? formatTimeOnly(row.checkOutAt) : ""; } });
         if (Array.isArray(json.messages)) { chatMessages = json.messages; if (convoUnlocked) renderChatMessages(); }
         if (json.pins) { savedPinsMap = json.pins; updatePinBadgeUI(); updateActionPinStatus(); }
-        if (Array.isArray(json.allLogs)) { allLogsData = json.allLogs.map(r => Object.assign({}, r, { time: formatTimeOnly(r.time) })); }
+        if (Array.isArray(json.allLogs)) {
+          allLogsData = json.allLogs.map(r => Object.assign({}, r, { time: formatTimeOnly(r.time) }));
+          allLogsData.forEach(l => {
+            const m = PEOPLE.find(p => p.name.toLowerCase() === String(l.name||"").trim().toLowerCase());
+            if (m && m.status === "activity" && !m.projectId && l.projectId) m.projectId = l.projectId;
+            if (m && !m.location && l.location) m.location = l.location;
+          });
+        }
         if (Array.isArray(json.todayLogs)) { todayLogsData = json.todayLogs.map(r => Object.assign({}, r, { time: formatTimeOnly(r.time) })); renderTodayLogTable(); }
         renderFloor(); document.getElementById("syncPill").textContent = "Live Synced"; if (showAlert) alert("Synced!");
       }
