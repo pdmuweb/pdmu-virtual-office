@@ -1015,7 +1015,12 @@
     const dTo = (document.getElementById("logDateTo") && document.getElementById("logDateTo").value) || "All Dates";
     const rows = getFilteredLogsForPrint();
 
-    if (!rows.length) { alert("Walay log records nga ma-print sa napili nga petsa/pangalan."); return; }
+    if (!rows.length) {
+      const tb = document.getElementById("logTableBody");
+      if (tb) tb.innerHTML = `<tr><td colspan="7" style="color:#fde047; font-weight:800;">Walay log records nga ma-print sa napili nga petsa (${esc(dFrom)} to ${esc(dTo)}) o pangalan (${esc(member)}).</td></tr>`;
+      try { alert("Walay log records nga ma-print sa napili nga petsa/pangalan."); } catch (_) {}
+      return;
+    }
 
     const trHtml = rows.map((r, i) => `
       <tr>
@@ -1028,8 +1033,7 @@
         <td>${esc(r.note)}</td>
       </tr>`).join("");
 
-    const win = window.open("", "_blank", "width=900,height=700");
-    win.document.write(`
+    const docHtml = `
       <html><head><title>PDMU Task Log - ${esc(member)}</title>
       <style>
         body { font-family: Arial, sans-serif; padding: 24px; color: #111; }
@@ -1057,9 +1061,33 @@
         <div class="sign-line">Prepared by:<br><strong>${esc(member === "ALL" ? "PDMU Staff" : member)}</strong></div>
         <div class="sign-line">Noted by:<br><strong>JOJO / JESREEL (PDMU Chief / Asst. Chief)</strong></div>
       </div>
-      </body></html>
-    `);
-    win.document.close();
+      </body></html>`;
+
+    const win = window.open("", "_blank", "width=900,height=700");
+    if (win && win.document) {
+      win.document.open();
+      win.document.write(docHtml);
+      win.document.close();
+      return;
+    }
+
+    // Fallback kung gi-block sa Google Sites iframe ang window.open
+    const printFrame = document.createElement("iframe");
+    printFrame.style.position = "fixed";
+    printFrame.style.right = "0";
+    printFrame.style.bottom = "0";
+    printFrame.style.width = "0";
+    printFrame.style.height = "0";
+    printFrame.style.border = "0";
+    document.body.appendChild(printFrame);
+    const fDoc = printFrame.contentWindow.document;
+    fDoc.open();
+    fDoc.write(docHtml);
+    fDoc.close();
+    setTimeout(() => {
+      try { printFrame.contentWindow.focus(); printFrame.contentWindow.print(); } catch (_) {}
+      setTimeout(() => { if (printFrame.parentNode) printFrame.parentNode.removeChild(printFrame); }, 1500);
+    }, 250);
   }
 
   function exportTodayLogCsv() {
