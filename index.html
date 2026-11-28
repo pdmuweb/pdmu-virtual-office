@@ -9,13 +9,18 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: transparent; width: 100%; overflow-x: hidden; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #fff; }
-  .vo-shell { width: 100%; max-width: 1440px; margin: 0 auto; background: #030954; border: 2px solid #fbbf24; border-bottom: 5px solid #f59e0b; border-radius: 14px; padding: 12px; position: relative; box-shadow: 0 12px 30px rgba(3, 9, 84, 0.35); }
-  .vo-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .vo-header h2 { font-size: 18px; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px; }
+  body.standalone-full { background: #020617; min-height: 100vh; padding: 10px; }
+
+  .vo-shell { width: 100%; max-width: 1360px; margin: 0 auto; background: #030954; border: 2px solid #fbbf24; border-bottom: 5px solid #f59e0b; border-radius: 14px; padding: 10px; position: relative; box-shadow: 0 12px 30px rgba(3, 9, 84, 0.35); }
+  body.standalone-full .vo-shell { max-width: 100%; min-height: calc(100vh - 20px); display: flex; flex-direction: column; justify-content: space-between; }
+
+  .vo-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .vo-header h2 { font-size: 17px; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px; }
   .badge-3d { background: #f97316; color: #fff; font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fde047; }
-  .vo-top-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 10px; margin-bottom: 10px; }
-  .vo-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .vo-tools select, .vo-tools button, .vo-tools label { background: #07116e; color: #fff; border: 1.5px solid #fbbf24; border-radius: 6px; padding: 6px 8px; font-family: inherit; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+
+  .vo-top-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 8px; margin-bottom: 8px; }
+  .vo-tools { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+  .vo-tools select, .vo-tools button, .vo-tools label { background: #07116e; color: #fff; border: 1.5px solid #fbbf24; border-radius: 6px; padding: 5px 7px; font-family: inherit; font-size: 10.5px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
   .vo-tools button:hover { background: #fbbf24; color: #030954; }
   .vo-tools button.dance-btn { background: #ec4899; border-color: #fde047; }
   .vo-tools button.snow-btn { background: #0284c7; border-color: #bae6fd; }
@@ -23,41 +28,48 @@
   .vo-tools button.cam-btn { background: #4f46e5; border-color: #c7d2fe; }
   .vo-tools button.install-pwa-btn { background: #16a34a; border-color: #bbf7d0; display: none; }
   .vo-tools button.install-pwa-btn.visible { display: inline-flex; }
-  .sync-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(15,23,42,.85); border: 1px solid #4ade80; color: #4ade80; font-weight: 800; }
-  .after-hours-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(88,28,135,.85); border: 1px solid #e879f9; color: #f5d0fe; font-weight: 800; display: none; }
+  .sync-pill { font-size: 10px; padding: 4px 8px; border-radius: 999px; background: rgba(15,23,42,.85); border: 1px solid #4ade80; color: #4ade80; font-weight: 800; }
+  .after-hours-pill { font-size: 10px; padding: 4px 8px; border-radius: 999px; background: rgba(88,28,135,.85); border: 1px solid #e879f9; color: #f5d0fe; font-weight: 800; display: none; }
   .after-hours-pill.active { display: inline-flex; }
-  .view-only-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(127,29,29,.9); border: 1px solid #fca5a5; color: #fecaca; font-weight: 800; display: none; }
+  .view-only-pill { font-size: 10px; padding: 4px 8px; border-radius: 999px; background: rgba(127,29,29,.9); border: 1px solid #fca5a5; color: #fecaca; font-weight: 800; display: none; }
   .view-only-pill.active { display: inline-flex; }
 
-  .summary-strip { flex: 1; min-width: 0; background: #07116e; border: 1.5px solid #fbbf24; border-radius: 8px; padding: 5px 8px; display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
-  .stat-card { background: #030954; border: 1px solid rgba(251,191,36,.45); border-radius: 6px; padding: 3px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
-  .stat-num { font-size: 13px; font-weight: 900; line-height: 1.1; }
-  .stat-lbl { font-size: 8px; font-weight: 800; color: #e2e8f0; white-space: nowrap; }
+  .summary-strip { flex: 1 1 360px; min-width: 0; background: #07116e; border: 1.5px solid #fbbf24; border-radius: 8px; padding: 5px 6px; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; }
+  .stat-card { background: #030954; border: 1px solid rgba(251,191,36,.45); border-radius: 6px; padding: 3px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; min-width: 0; }
+  .stat-num { font-size: 12.5px; font-weight: 900; line-height: 1.1; }
+  .stat-lbl { font-size: 7.5px; font-weight: 800; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   .c-total { color: #fde047; } .c-online { color: #4ade80; } .c-activity { color: #fb923c; } .c-passlip { color: #facc15; } .c-ptl { color: #2dd4bf; } .c-leave { color: #60a5fa; } .c-absent { color: #cbd5e1; } .c-offline { color: #e879f9; }
 
-  .vo-main-grid { display: grid; grid-template-columns: 295px minmax(0, 1fr); gap: 10px; align-items: stretch; }
+  @media (max-width: 1180px) {
+    .summary-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .stat-lbl { font-size: 8px; }
+  }
+
+  .vo-main-grid { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 8px; align-items: stretch; }
+  body.standalone-full .vo-main-grid { grid-template-columns: 310px minmax(0, 1fr); flex: 1; }
   .chat-panel-slot, .stage-wrap-slot { min-width: 0; width: 100%; }
 
-  .chat-panel { background: #07116e; border: 2px solid #fbbf24; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; height: 580px; overflow: hidden; }
-  .chat-top { border-bottom: 1.5px solid rgba(251,191,36,.35); padding-bottom: 7px; margin-bottom: 8px; }
-  .chat-title { font-size: 13px; font-weight: 900; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+  .chat-panel { background: #07116e; border: 2px solid #fbbf24; border-radius: 10px; padding: 9px; display: flex; flex-direction: column; justify-content: space-between; height: 540px; overflow: hidden; }
+  body.standalone-full .chat-panel { height: calc(100vh - 215px); min-height: 500px; }
+  .chat-top { border-bottom: 1.5px solid rgba(251,191,36,.35); padding-bottom: 6px; margin-bottom: 7px; }
+  .chat-title { font-size: 12.5px; font-weight: 900; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
   .chat-lock-top-btn { background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 4px; padding: 2px 6px; font-family: inherit; font-size: 9.5px; font-weight: 800; cursor: pointer; }
   .chat-lock-top-btn:hover { background: #fbbf24; color: #030954; }
   .chat-sub { font-size: 10px; color: #cbd5e1; margin-top: 2px; }
-  .chat-gate-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px 12px; gap: 8px; background: #030954; border: 1.5px dashed rgba(251,191,36,.55); border-radius: 8px; margin-bottom: 8px; }
-  .chat-gate-title { font-size: 12.5px; font-weight: 900; color: #fde047; }
-  .chat-gate-desc { font-size: 10.5px; color: #cbd5e1; max-width: 220px; line-height: 1.35; }
-  .chat-gate-input { width: 100%; max-width: 210px; background: #07116e; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; text-align: center; }
+  .chat-gate-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 14px 10px; gap: 8px; background: #030954; border: 1.5px dashed rgba(251,191,36,.55); border-radius: 8px; margin-bottom: 8px; }
+  .chat-gate-title { font-size: 12px; font-weight: 900; color: #fde047; }
+  .chat-gate-desc { font-size: 10px; color: #cbd5e1; max-width: 210px; line-height: 1.35; }
+  .chat-gate-input { width: 100%; max-width: 200px; background: #07116e; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; text-align: center; }
   .chat-gate-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 12px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
   .chat-messages { flex: 1; min-height: 0; overflow-y: auto; display: none; flex-direction: column; gap: 8px; padding-right: 3px; margin-bottom: 8px; }
   .chat-messages.unlocked { display: flex; }
   .msg-row { display: flex; align-items: flex-end; gap: 6px; }
   .msg-row.mine { flex-direction: row-reverse; }
-  .msg-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; object-position: center top; border: 1.5px solid #fbbf24; background: #030954; flex-shrink: 0; }
+  .msg-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: center top; border: 1.5px solid #fbbf24; background: #030954; flex-shrink: 0; }
   .msg-col { display: flex; flex-direction: column; max-width: 78%; }
   .msg-row.mine .msg-col { align-items: flex-end; }
   .msg-sender { font-size: 9.5px; font-weight: 800; color: #fde047; margin-bottom: 2px; }
-  .msg-bubble { background: #030954; border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: 6px 9px; font-size: 11px; line-height: 1.35; color: #fff; word-break: break-word; }
+  .msg-bubble { background: #030954; border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: 6px 8px; font-size: 11px; line-height: 1.35; color: #fff; word-break: break-word; }
   .msg-row.mine .msg-bubble { background: #1d4ed8; border-color: #93c5fd; }
   .msg-reply-quote { background: rgba(255,255,255,.08); border-left: 2.5px solid #fbbf24; border-radius: 4px; padding: 3px 6px; margin-bottom: 4px; font-size: 9.5px; color: #e2e8f0; }
   .msg-time { font-size: 8.5px; color: #94a3b8; margin-top: 2px; }
@@ -67,65 +79,65 @@
   .reply-banner { display: none; justify-content: space-between; align-items: center; gap: 6px; background: #030954; border-left: 3px solid #fbbf24; border-radius: 5px; padding: 4px 7px; margin-bottom: 5px; font-size: 10px; color: #fde68a; }
   .reply-banner.active { display: flex; }
   .reply-cancel-btn { background: transparent; color: #fca5a5; border: none; font-weight: 900; font-size: 11px; cursor: pointer; }
-  .chat-form { display: flex; flex-direction: column; gap: 5px; border-top: 1.5px solid rgba(251,191,36,.35); padding-top: 7px; }
+  .chat-form { display: flex; flex-direction: column; gap: 5px; border-top: 1.5px solid rgba(251,191,36,.35); padding-top: 6px; }
   .chat-form.locked-ui { opacity: .55; pointer-events: none; }
-  .chat-user-row { display: flex; gap: 5px; align-items: center; }
-  .chat-user-select { flex: 1; background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; }
-  .chat-pin-input { width: 78px; background: #030954; color: #fff; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; text-align: center; }
-  .chat-pin-badge { font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 4px; background: rgba(248,113,113,.18); border: 1px solid #f87171; color: #fca5a5; white-space: nowrap; }
+  .chat-user-row { display: flex; gap: 4px; align-items: center; }
+  .chat-user-select { flex: 1; min-width: 0; background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 5px; font-family: inherit; font-size: 10px; font-weight: 800; }
+  .chat-pin-input { width: 64px; background: #030954; color: #fff; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 5px; font-family: inherit; font-size: 10px; font-weight: 800; text-align: center; }
+  .chat-pin-badge { font-size: 8.5px; font-weight: 800; padding: 2px 5px; border-radius: 4px; background: rgba(248,113,113,.18); border: 1px solid #f87171; color: #fca5a5; white-space: nowrap; }
   .chat-pin-badge.unlocked { background: rgba(74,222,128,.18); border-color: #4ade80; color: #4ade80; }
   .chat-input-row { display: flex; gap: 5px; }
-  .chat-input { flex: 1; background: #030954; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 5px 8px; font-family: inherit; font-size: 11px; }
-  .chat-send-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .chat-input { flex: 1; min-width: 0; background: #030954; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 5px 7px; font-family: inherit; font-size: 10.5px; }
+  .chat-send-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 9px; font-family: inherit; font-size: 10.5px; font-weight: 900; cursor: pointer; }
 
-  .stage-wrap { position: relative; width: 100%; height: 580px; border-radius: 10px; overflow: hidden; border: 2px solid #fbbf24; background: radial-gradient(circle at 50% 25%, #fffbeb 0%, #fef3c7 52%, #fde68a 100%); user-select: none; touch-action: none; }
+  .stage-wrap { position: relative; width: 100%; height: 540px; border-radius: 10px; overflow: hidden; border: 2px solid #fbbf24; background: radial-gradient(circle at 50% 25%, #fffbeb 0%, #fef3c7 52%, #fde68a 100%); user-select: none; touch-action: none; }
+  body.standalone-full .stage-wrap { height: calc(100vh - 215px); min-height: 500px; }
   .stage-wrap.after-hours-dim { background: radial-gradient(circle at 50% 25%, #1e1b4b 0%, #0f172a 70%, #020617 100%); }
   #threeCanvasHost { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; }
   #threeCanvasHost:active { cursor: grabbing; }
   .labels-3d-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 15; }
-  .tag-3d-card { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; cursor: pointer; max-width: 250px; }
+  .tag-3d-card { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; cursor: pointer; max-width: 240px; }
   .tag-3d-card.hidden-out { display: none !important; }
   .tag-3d-card.selected .name-chip-3d { background: #fbbf24; color: #030954; border-color: #0f172a; transform: scale(1.08); }
-  .bubble-tag-3d { padding: 2px 7px; border-radius: 9px; border: 1.5px solid #0f172a; font-size: 8.5px; font-weight: 900; color: #0f172a; margin-bottom: 2px; white-space: normal; text-align: center; line-height: 1.2; max-width: 235px; }
+  .bubble-tag-3d { padding: 2px 6px; border-radius: 9px; border: 1.5px solid #0f172a; font-size: 8px; font-weight: 900; color: #0f172a; margin-bottom: 2px; white-space: normal; text-align: center; line-height: 1.15; max-width: 225px; }
   .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-passlip { background: #facc15; } .st-ptl { background: #2dd4bf; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; } .st-coffee { background: #fde047; }
-  .name-chip-3d { background: rgba(255,255,255,.96); color: #0f172a; border: 1.5px solid #334155; border-radius: 6px; padding: 1.5px 6px; font-size: 9px; font-weight: 900; white-space: nowrap; }
+  .name-chip-3d { background: rgba(255,255,255,.96); color: #0f172a; border: 1.5px solid #334155; border-radius: 6px; padding: 1px 6px; font-size: 8.5px; font-weight: 900; white-space: nowrap; }
 
-  .hud-3d-corner { position: absolute; bottom: 8px; right: 8px; z-index: 25; display: flex; gap: 5px; align-items: center; background: rgba(3,9,84,.86); border: 1px solid #fbbf24; border-radius: 8px; padding: 4px 8px; font-size: 9.5px; font-weight: 800; color: #fde68a; }
-  .hud-3d-btn { background: #fbbf24; color: #030954; border: none; border-radius: 5px; padding: 2px 7px; font-family: inherit; font-size: 9.5px; font-weight: 900; cursor: pointer; }
-  .prov-3d-banner { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 25; background: #030954; color: #fde047; border: 1.5px solid #fbbf24; border-radius: 999px; padding: 4px 12px; font-size: 10.5px; font-weight: 900; white-space: nowrap; }
+  .hud-3d-corner { position: absolute; bottom: 8px; right: 8px; z-index: 25; display: flex; gap: 5px; align-items: center; background: rgba(3,9,84,.86); border: 1px solid #fbbf24; border-radius: 8px; padding: 4px 8px; font-size: 9px; font-weight: 800; color: #fde68a; }
+  .hud-3d-btn { background: #fbbf24; color: #030954; border: none; border-radius: 5px; padding: 2px 7px; font-family: inherit; font-size: 9px; font-weight: 900; cursor: pointer; }
+  .prov-3d-banner { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 25; background: #030954; color: #fde047; border: 1.5px solid #fbbf24; border-radius: 999px; padding: 4px 12px; font-size: 10px; font-weight: 900; white-space: nowrap; }
   .prov-3d-banner.active { display: block; }
-  .dance-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 45; display: none; align-items: center; gap: 8px; background: rgba(15,23,42,.94); border: 2px solid #f472b6; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 900; color: #fde047; }
+  .dance-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 45; display: none; align-items: center; gap: 8px; background: rgba(15,23,42,.94); border: 2px solid #f472b6; border-radius: 999px; padding: 4px 12px; font-size: 10.5px; font-weight: 900; color: #fde047; }
   .dance-banner.active { display: inline-flex; }
-  .dance-stop-btn { background: #ef4444; color: #fff; border: 1px solid #fff; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 900; cursor: pointer; }
+  .dance-stop-btn { background: #ef4444; color: #fff; border: 1px solid #fff; border-radius: 999px; padding: 2px 8px; font-size: 9.5px; font-weight: 900; cursor: pointer; }
 
-  .vo-footer { margin-top: 10px; background: #07116e; border: 1px solid rgba(251,191,36,.45); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; }
-  .controls-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .vo-footer { margin-top: 8px; background: #07116e; border: 1px solid rgba(251,191,36,.45); border-radius: 8px; padding: 8px 10px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; }
+  .controls-group { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
   .controls-group.view-only-locked button, .controls-group.view-only-locked input { opacity: .42; pointer-events: none; cursor: not-allowed; }
-  .note-input { background: #030954; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; min-width: 210px; }
-  .task-set-btn { background: #f59e0b; color: #030954; border: 2px solid #fde047; border-radius: 5px; padding: 6px 9px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
-  .pin-lock-status { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
-  .checkin-btn { background: #16a34a; color: #fff; border: 2px solid #bbf7d0; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
-  .checkout-btn { background: #dc2626; color: #fff; border: 2px solid #fecaca; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .note-input { background: #030954; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 5px 7px; font-family: inherit; font-size: 10.5px; min-width: 175px; }
+  .task-set-btn { background: #f59e0b; color: #030954; border: 2px solid #fde047; border-radius: 5px; padding: 5px 8px; font-family: inherit; font-size: 10.5px; font-weight: 900; cursor: pointer; }
+  .pin-lock-status { font-size: 9.5px; font-weight: 900; padding: 2px 6px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
+  .checkin-btn { background: #16a34a; color: #fff; border: 2px solid #bbf7d0; border-radius: 5px; padding: 5px 9px; font-family: inherit; font-size: 10.5px; font-weight: 900; cursor: pointer; }
+  .checkout-btn { background: #dc2626; color: #fff; border: 2px solid #fecaca; border-radius: 5px; padding: 5px 9px; font-family: inherit; font-size: 10.5px; font-weight: 900; cursor: pointer; }
   .status-btns { display: flex; flex-wrap: wrap; gap: 4px; }
-  .status-btns button { font-family: inherit; font-size: 11px; font-weight: 800; padding: 5px 8px; border-radius: 5px; border: 2px solid #0f172a; cursor: pointer; color: #0f172a; }
-  .timing-pill { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
+  .status-btns button { font-family: inherit; font-size: 10.5px; font-weight: 800; padding: 4px 7px; border-radius: 5px; border: 2px solid #0f172a; cursor: pointer; color: #0f172a; }
+  .timing-pill { font-size: 9.5px; font-weight: 900; padding: 2px 6px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
 
-  .pin-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.82); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px; }
+  .pin-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.84); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px; }
   .pin-modal-backdrop.open { display: flex; }
-  .pin-modal-card { width: 100%; max-width: 440px; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
-  .pin-modal-title { font-size: 15px; font-weight: 900; color: #fbbf24; }
-  .pin-modal-sub { font-size: 11.5px; color: #e2e8f0; line-height: 1.4; }
-  .honor-rule-box { background: rgba(251,191,36,.14); border: 1px solid #fbbf24; border-radius: 8px; padding: 7px 10px; font-size: 10.5px; font-weight: 800; color: #fde68a; line-height: 1.35; }
-  .field-details-box { display: none; flex-direction: column; gap: 6px; text-align: left; background: #07116e; border: 1px solid rgba(251,191,36,.5); border-radius: 8px; padding: 8px; }
+  .pin-modal-card { width: 100%; max-width: 560px; background: #030954; border: 2.5px solid #fbbf24; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 11px; text-align: center; box-shadow: 0 18px 40px rgba(0,0,0,.6); }
+  .pin-modal-title { font-size: 17px; font-weight: 900; color: #fbbf24; }
+  .pin-modal-sub { font-size: 12.5px; color: #e2e8f0; line-height: 1.4; }
+  .honor-rule-box { background: rgba(251,191,36,.15); border: 1.5px solid #fbbf24; border-radius: 8px; padding: 8px 11px; font-size: 11.5px; font-weight: 800; color: #fde68a; line-height: 1.35; }
+  .field-details-box { display: none; flex-direction: column; gap: 9px; text-align: left; background: #07116e; border: 1.5px solid rgba(251,191,36,.6); border-radius: 10px; padding: 11px; }
   .field-details-box.visible { display: flex; }
-  .field-row-wrap.hidden-field { display: none; }
-  .field-lbl { font-size: 10px; font-weight: 800; color: #fde047; margin-bottom: 2px; }
-  .pin-modal-input { width: 100%; background: #07116e; color: #fde047; border: 2px solid #fbbf24; border-radius: 6px; padding: 7px 10px; font-family: inherit; font-size: 12px; font-weight: 800; text-align: center; }
-  .pin-modal-input.left-txt { text-align: left; color: #fff; font-weight: 600; font-size: 11.5px; }
-  .pin-modal-err { font-size: 10.5px; font-weight: 800; color: #fca5a5; min-height: 15px; }
-  .pin-modal-actions { display: flex; gap: 8px; justify-content: center; margin-top: 2px; }
-  .pin-confirm-btn { background: #16a34a; color: #fff; border: 2px solid #bbf7d0; border-radius: 6px; padding: 6px 14px; font-family: inherit; font-size: 11.5px; font-weight: 900; cursor: pointer; }
-  .pin-cancel-btn { background: #334155; color: #fff; border: 1.5px solid #94a3b8; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+  .field-lbl { font-size: 11.5px; font-weight: 800; color: #fde047; margin-bottom: 3px; }
+  .pin-modal-input { width: 100%; background: #030954; color: #fde047; border: 2px solid #fbbf24; border-radius: 7px; padding: 9px 11px; font-family: inherit; font-size: 13px; font-weight: 800; text-align: center; }
+  .pin-modal-input.left-txt { text-align: left; color: #fff; font-weight: 600; font-size: 12.5px; padding: 8px 11px; }
+  .pin-modal-err { font-size: 11.5px; font-weight: 800; color: #fca5a5; min-height: 15px; }
+  .pin-modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 2px; }
+  .pin-confirm-btn { background: #16a34a; color: #fff; border: 2px solid #bbf7d0; border-radius: 7px; padding: 7px 16px; font-family: inherit; font-size: 12.5px; font-weight: 900; cursor: pointer; }
+  .pin-cancel-btn { background: #334155; color: #fff; border: 1.5px solid #94a3b8; border-radius: 7px; padding: 7px 14px; font-family: inherit; font-size: 12.5px; font-weight: 800; cursor: pointer; }
 
   .log-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.78); z-index: 999; display: none; align-items: center; justify-content: center; padding: 14px; }
   .log-modal-backdrop.open { display: flex; }
@@ -138,7 +150,7 @@
   table.log-tbl th { background: #07116e; color: #fde047; font-weight: 900; position: sticky; top: 0; }
 
   .mobile-bottom-nav { display: none; }
-  @media (max-width: 820px) {
+  @media (max-width: 780px) {
     html, body { background: #030954; min-height: 100dvh; padding: 0 0 64px 0; overflow-x: hidden; }
     .vo-shell { width: 100%; max-width: 100%; border-radius: 0 0 12px 12px; border: none; padding: 8px; }
     .summary-strip { grid-template-columns: repeat(4, 1fr); width: 100%; }
@@ -269,11 +281,11 @@
   </div>
 
   <div class="vo-footer">
-    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
       <div id="selectedInfo">Click a member on the 3D office to select</div>
       <span class="pin-lock-status" id="actionPinStatus">👆 Click User First</span>
       <span class="timing-pill" id="timingBadge">--</span>
-      <span style="font-size:10.5px; color:#cbd5e1;" id="checkTimesInfo">In: -- | Out: --</span>
+      <span style="font-size:10px; color:#cbd5e1;" id="checkTimesInfo">In: -- | Out: --</span>
     </div>
     <div class="controls-group" id="actionControlsGroup">
       <button type="button" class="checkin-btn" onclick="requestPinAction('CHECK_IN')">✅ Check-In</button>
@@ -307,15 +319,15 @@
     <div class="honor-rule-box" id="honorRuleBox">⚠️ Honor Rule: Check-in only when physically at the office / on duty, and set accurate status &amp; activity details.</div>
 
     <div class="field-details-box" id="fieldDetailsBox">
-      <div class="field-row-wrap">
+      <div>
         <div class="field-lbl">Activity Title / Seminar / Training / Task:</div>
         <input type="text" id="taskModalInput" class="pin-modal-input left-txt" placeholder="e.g. Subaybayan Training / Field Inspection / FB Posting" maxlength="160">
       </div>
-      <div class="field-row-wrap" id="projectIdRowWrap">
+      <div>
         <div class="field-lbl">Project ID(s) <span style="color:#cbd5e1; font-weight:400;">(optional • on-field only • comma-separated if multiple)</span>:</div>
         <input type="text" id="projectIdModalInput" class="pin-modal-input left-txt" placeholder="e.g. FA-OI-22-16-67-14-000-1, FA-OI-22-16-67-14-000-2" maxlength="180">
       </div>
-      <div class="field-row-wrap">
+      <div>
         <div class="field-lbl">Location(s) / Venue / Brgy / Mun. <span style="color:#cbd5e1; font-weight:400;">(optional • comma-separated if multiple)</span>:</div>
         <input type="text" id="locationModalInput" class="pin-modal-input left-txt" placeholder="e.g. Butuan City / Brgy. Roxas, Brgy. San Isidro" maxlength="180">
       </div>
@@ -353,8 +365,11 @@
     </div>
   </div>
 </div>
-
 <script>
+  if (window.self === window.top) {
+    document.body.classList.add("standalone-full");
+  }
+
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7-3e7fOJ_cNRqbFQNBmZ2K-XnU15C-MDLiYRVOrYwMJtTeF_Y-ZA04QnXmVzSkR-f/exec";
   const CONVO_PASSKEY = "PDMU2026";
   const DANCE_BREAK_MINUTES = 30;
@@ -473,7 +488,9 @@
     return { online:"online", activity:"activity / gawas", passlip:"passlip", ptl:"ptl", leave:"on leave", absent:"absent" }[st] || "offline (uli na)";
   }
   function formatBubbleText(p) {
-    const base = (p.note && !/^(checked-in|in office|online)$/i.test(p.note.trim())) ? p.note.trim() : statusLabel(p.status);
+    if (p.status === "offline") return statusLabel("offline");
+    if (p.status !== "online" && p.status !== "activity") return statusLabel(p.status);
+    const base = (p.note && !/^(checked-in|in office|online|activity sa gawas)$/i.test(p.note.trim())) ? p.note.trim() : statusLabel(p.status);
     const extras = [];
     if (p.status === "activity" && p.projectId) extras.push("Proj: " + p.projectId);
     if (p.location) extras.push("Loc: " + p.location);
@@ -528,8 +545,7 @@
     pendingPinAction = actionType; pendingPinIsCreate = !savedPin;
     pendingTaskText = typeof presetTask === "string" ? presetTask : document.getElementById("noteInput").value.trim();
 
-    const isFieldActivity = (actionType === "STATUS_ACTIVITY") || (actionType === "UPDATE_TASK" && p.status === "activity");
-    pendingProjectId = isFieldActivity ? (p.projectId || "") : "";
+    pendingProjectId = p.projectId || "";
     pendingLocation = p.location || "";
 
     document.getElementById("pinModalErr").textContent = ""; document.getElementById("pinModalInput").value = "";
@@ -539,7 +555,6 @@
 
     const showDetails = (actionType === "UPDATE_TASK" || actionType === "STATUS_ACTIVITY");
     document.getElementById("fieldDetailsBox").classList.toggle("visible", showDetails);
-    document.getElementById("projectIdRowWrap").classList.toggle("hidden-field", !isFieldActivity);
 
     document.getElementById("taskModalInput").value = pendingTaskText || (actionType === "STATUS_ACTIVITY" ? "On-Field Inspection" : "");
     document.getElementById("projectIdModalInput").value = pendingProjectId;
@@ -547,9 +562,7 @@
 
     document.getElementById("pinModalTitle").textContent = (actionType === "UPDATE_TASK" ? "SET ACTIVITY / TASK • " : (actionType === "STATUS_ACTIVITY" ? "ON-FIELD ACTIVITY • " : (pendingPinIsCreate ? "CREATE PIN • " : "INPUT PIN • "))) + p.name;
     document.getElementById("pinModalSub").textContent = showDetails
-      ? (isFieldActivity
-          ? "Ibutang ang Activity/Seminar/Training title, optional Project ID(s) (on-field), ug Location(s) ni " + p.name + "."
-          : "Ibutang ang Activity/Seminar/Training title o task ug optional Location(s)/Venue ni " + p.name + ".")
+      ? "Ibutang ang Activity/Seminar/Training title, optional Project ID(s) (on-field), ug optional Location(s) ni " + p.name + "."
       : (pendingPinIsCreate ? "Pag-create og imong PIN para kang " + p.name + "." : "Isulod ang PIN ni " + p.name + ".");
 
     document.getElementById("pinModalBackdrop").classList.add("open");
@@ -561,13 +574,12 @@
     const p = PEOPLE[selectedIndex], savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
     const entered = String(document.getElementById("pinModalInput").value || "").trim(), errEl = document.getElementById("pinModalErr");
     const showDetails = (pendingPinAction === "UPDATE_TASK" || pendingPinAction === "STATUS_ACTIVITY");
-    const isFieldActivity = (pendingPinAction === "STATUS_ACTIVITY") || (pendingPinAction === "UPDATE_TASK" && p.status === "activity");
 
     if (showDetails) {
       const tVal = String(document.getElementById("taskModalInput").value || "").trim();
       if (!tVal) { errEl.textContent = "Palihog isulod ang Activity Title / Seminar / Task."; return; }
       pendingTaskText = tVal;
-      pendingProjectId = isFieldActivity ? String(document.getElementById("projectIdModalInput").value || "").trim() : "";
+      pendingProjectId = String(document.getElementById("projectIdModalInput").value || "").trim();
       pendingLocation = String(document.getElementById("locationModalInput").value || "").trim();
       document.getElementById("noteInput").value = tVal;
     }
@@ -582,29 +594,34 @@
     const now = new Date(), hmStr = String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"), dateKey = now.toLocaleDateString("en-CA");
     let timingText = "";
     p.location = typeof loc === "string" ? loc : (p.location || "");
+    if (typeof projId === "string" && projId.trim()) p.projectId = projId.trim();
 
     if (actionType === "UPDATE_TASK") {
       p.note = noteVal;
       if (p.status === "offline") p.status = "online";
-      p.projectId = p.status === "activity" ? (typeof projId === "string" ? projId : (p.projectId || "")) : "";
       timingText = getTimingBadgeText(p);
     } else if (actionType === "CHECK_IN") {
       p.status = "online"; p.note = noteVal || "Checked-In at Office"; p.projectId = ""; p.location = ""; p.checkInAt = hmStr; p.checkOutAt = ""; timingText = getTimingBadgeText(p);
     } else if (actionType === "CHECK_OUT") {
-      p.status = "offline"; p.note = noteVal || "Checked-Out (Uli na)"; p.projectId = ""; p.location = ""; p.checkOutAt = hmStr;
+      p.status = "offline"; p.note = "Checked-Out (Uli na)"; p.projectId = ""; p.location = ""; p.checkOutAt = hmStr;
+      document.getElementById("noteInput").value = "";
     } else {
       const map = { STATUS_ONLINE:["online","In Office"], STATUS_ACTIVITY:["activity","Activity sa Gawas"], STATUS_PASSLIP:["passlip","Passlip"], STATUS_PTL:["ptl","PTL"], STATUS_LEAVE:["leave","On Leave"], STATUS_ABSENT:["absent","Absent"], STATUS_OFFLINE:["offline","Uli na"] };
       const [st, defNote] = map[actionType] || ["online","In Office"];
       p.status = st;
-      p.note = noteVal || defNote;
-      p.projectId = st === "activity" ? (typeof projId === "string" ? projId : (p.projectId || "")) : "";
-      if (st !== "activity" && st !== "online") p.location = "";
-      if (st === "offline") p.checkOutAt = hmStr;
-      if (st === "online") timingText = getTimingBadgeText(p);
+      if (st === "offline") {
+        p.note = "Uli na"; p.projectId = ""; p.location = ""; p.checkOutAt = hmStr;
+        document.getElementById("noteInput").value = "";
+      } else {
+        p.note = noteVal || defNote;
+        if (st !== "activity") p.projectId = "";
+        if (st !== "activity" && st !== "online") p.location = "";
+        if (st === "online") timingText = getTimingBadgeText(p);
+      }
     }
 
     if (p.status !== "online" && coffeeBusy && activeCoffeeName === p.name) stopCoffeeWalk();
-    const logEntry = { date: dateKey, time: hmStr, name: p.name, province: p.province || "Regional", action: actionType, status: p.status, timing: timingText, note: p.note || "", projectId: p.status === "activity" ? (p.projectId || "") : "", location: p.location || "" };
+    const logEntry = { date: dateKey, time: hmStr, name: p.name, province: p.province || "Regional", action: actionType, status: p.status, timing: timingText, note: noteVal || p.note || "", projectId: p.status === "activity" ? (p.projectId || "") : "", location: p.location || "" };
     todayLogsData.unshift(logEntry);
     allLogsData.unshift(logEntry);
     renderTodayLogTable(); renderFloor(); await postStatusPayload(p, actionType, logEntry);
@@ -996,7 +1013,12 @@
     updateSelectedFooter();
   }
 
-  function selectPerson(idx) { selectedIndex = idx; document.getElementById("noteInput").value = PEOPLE[idx].note || ""; renderFloor(); }
+  function selectPerson(idx) {
+    selectedIndex = idx;
+    const p = PEOPLE[idx];
+    document.getElementById("noteInput").value = (p.status === "offline") ? "" : (p.note || "");
+    renderFloor();
+  }
   function updateSelectedFooter() {
     updateActionPinStatus();
     if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { document.getElementById("selectedInfo").innerHTML = "Click a member on the 3D office to select"; document.getElementById("timingBadge").textContent = "--"; document.getElementById("checkTimesInfo").textContent = "In: -- | Out: --"; return; }
@@ -1007,7 +1029,7 @@
   }
   async function postStatusPayload(p, action, logEntry) {
     if (!APPS_SCRIPT_URL) return;
-    try { await fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ type:"status", name:p.name, status:p.status, note:p.note, projectId:p.status==="activity"?(p.projectId||""):"", location:p.location||"", province:p.province||"Regional", action, time:logEntry?formatTimeOnly(logEntry.time):"", timing:logEntry?logEntry.timing:"", checkInAt:formatTimeOnly(p.checkInAt)||"", checkOutAt:formatTimeOnly(p.checkOutAt)||"" }) }); } catch(_){}
+    try { await fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ type:"status", name:p.name, status:p.status, note:p.status==="offline"?"":p.note, projectId:p.status==="activity"?(p.projectId||""):"", location:p.status==="offline"?"":(p.location||""), province:p.province||"Regional", action, time:logEntry?formatTimeOnly(logEntry.time):"", timing:logEntry?logEntry.timing:"", checkInAt:formatTimeOnly(p.checkInAt)||"", checkOutAt:formatTimeOnly(p.checkOutAt)||"" }) }); } catch(_){}
   }
   function triggerCoffeeBreak() {
     if (coffeeBusy || isDancingNow() || isAfterHours || isViewingProvinceOffice()) return;
@@ -1165,7 +1187,16 @@
     try {
       const json = await (await fetch(APPS_SCRIPT_URL + "?t=" + Date.now())).json();
       if (json && json.ok) {
-        if (Array.isArray(json.data)) json.data.forEach(row => { const m = PEOPLE.find(p => p.name.toLowerCase() === String(row.name||"").trim().toLowerCase()); if (m) { m.status = normalizeStatus(row.status); m.note = row.note || ""; m.checkInAt = row.checkInAt ? formatTimeOnly(row.checkInAt) : ""; m.checkOutAt = row.checkOutAt ? formatTimeOnly(row.checkOutAt) : ""; } });
+        if (Array.isArray(json.data)) json.data.forEach(row => {
+          const m = PEOPLE.find(p => p.name.toLowerCase() === String(row.name||"").trim().toLowerCase());
+          if (m) {
+            m.status = normalizeStatus(row.status);
+            m.note = (m.status === "offline") ? "" : (row.note || "");
+            if (m.status === "offline") { m.projectId = ""; m.location = ""; }
+            m.checkInAt = row.checkInAt ? formatTimeOnly(row.checkInAt) : "";
+            m.checkOutAt = row.checkOutAt ? formatTimeOnly(row.checkOutAt) : "";
+          }
+        });
         if (Array.isArray(json.messages)) { chatMessages = json.messages; if (convoUnlocked) renderChatMessages(); }
         if (json.pins) { savedPinsMap = json.pins; updatePinBadgeUI(); updateActionPinStatus(); }
         if (Array.isArray(json.allLogs)) {
@@ -1173,7 +1204,7 @@
           allLogsData.forEach(l => {
             const m = PEOPLE.find(p => p.name.toLowerCase() === String(l.name||"").trim().toLowerCase());
             if (m && m.status === "activity" && !m.projectId && l.projectId) m.projectId = l.projectId;
-            if (m && !m.location && l.location) m.location = l.location;
+            if (m && m.status !== "offline" && !m.location && l.location) m.location = l.location;
           });
         }
         if (Array.isArray(json.todayLogs)) { todayLogsData = json.todayLogs.map(r => Object.assign({}, r, { time: formatTimeOnly(r.time) })); renderTodayLogTable(); }
