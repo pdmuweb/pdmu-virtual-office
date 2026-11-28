@@ -124,9 +124,9 @@
 
   .log-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.78); z-index: 999; display: none; align-items: center; justify-content: center; padding: 14px; }
   .log-modal-backdrop.open { display: flex; }
-  .log-modal-card { width: 100%; max-width: 860px; max-height: 82vh; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-  .log-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(251,191,36,.35); padding-bottom: 8px; }
-  .log-modal-head h3 { font-size: 15px; font-weight: 900; color: #fbbf24; }
+  .log-modal-card { width: 100%; max-width: 920px; max-height: 84vh; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .log-modal-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(251,191,36,.35); padding-bottom: 8px; }
+  .log-modal-head h3 { font-size: 14px; font-weight: 900; color: #fbbf24; }
   .log-table-wrap { overflow: auto; flex: 1; border: 1px solid rgba(251,191,36,.3); border-radius: 8px; }
   table.log-tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
   table.log-tbl th, table.log-tbl td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.1); text-align: left; }
@@ -313,16 +313,21 @@
 <div class="log-modal-backdrop" id="logModalBackdrop" onclick="if(event.target===this) closeTodayLogModal()">
   <div class="log-modal-card">
     <div class="log-modal-head">
-      <h3>📋 TODAY'S ATTENDANCE LOG</h3>
-      <div style="display:flex; gap:6px;">
+      <h3>📋 INDIVIDUAL TASK &amp; ATTENDANCE LOG</h3>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+        <select id="logMemberFilter" onchange="renderTodayLogTable()" style="background:#07116e; color:#fde047; border:1px solid #fbbf24; border-radius:4px; padding:3px 6px; font-size:10.5px; font-weight:800;">
+          <option value="ALL">All Members</option>
+        </select>
+        <input type="date" id="logDateFrom" onchange="renderTodayLogTable()" style="background:#07116e; color:#fff; border:1px solid #fbbf24; border-radius:4px; padding:2px 5px; font-size:10px;">
+        <input type="date" id="logDateTo" onchange="renderTodayLogTable()" style="background:#07116e; color:#fff; border:1px solid #fbbf24; border-radius:4px; padding:2px 5px; font-size:10px;">
+        <button type="button" class="chat-lock-top-btn" style="background:#16a34a; color:#fff;" onclick="printIndividualTaskLog()">🖨️ Print</button>
         <button type="button" class="chat-lock-top-btn" onclick="exportTodayLogCsv()">⬇ CSV</button>
-        <button type="button" class="chat-lock-top-btn" onclick="archiveTodayNow()">💾 Archive</button>
         <button type="button" class="chat-lock-top-btn" onclick="closeTodayLogModal()">✕ Close</button>
       </div>
     </div>
     <div class="log-table-wrap">
       <table class="log-tbl">
-        <thead><tr><th>Time</th><th>Name</th><th>Office</th><th>Action</th><th>Status</th><th>Timing</th><th>Remarks</th></tr></thead>
+        <thead><tr><th>Date</th><th>Time</th><th>Name</th><th>Office</th><th>Status</th><th>Timing</th><th>Task / Remarks</th></tr></thead>
         <tbody id="logTableBody"><tr><td colspan="7">Loading logs...</td></tr></tbody>
       </table>
     </div>
@@ -404,7 +409,7 @@
   ];
 
   let deferredInstallPrompt = null, selectedIndex = -1, pendingPinAction = null, pendingPinIsCreate = false, pendingTaskText = "";
-  let convoUnlocked = false, currentChatUser = "", unlockedPinUser = "", savedPinsMap = {}, chatMessages = [], todayLogsData = [], replyTarget = null;
+  let convoUnlocked = false, currentChatUser = "", unlockedPinUser = "", savedPinsMap = {}, chatMessages = [], todayLogsData = [], allLogsData = [], replyTarget = null;
   let coffeeBusy = false, activeCoffeeName = "", coffeePhase = "idle", coffeeProgress = 0, coffeeChatterIndex = 0, coffeeDrinkTimeout = null, coffeeChatterInterval = null;
   let danceEndTime = 0, danceCountdownInterval = null, isAfterHours = false, snowEnabled = true;
   let scene3D, camera3D, renderer3D, staff3DObjects = [], regionalWallFramesGroup = null, discoLights3D = [], fairyBulbs3D = [], snowPoints3D = null, snowVelocities = [];
@@ -523,7 +528,7 @@
   }
   async function executeAuthorizedAction(p, actionType, customTask) {
     const noteVal = (typeof customTask === "string" && customTask.trim()) ? customTask.trim() : document.getElementById("noteInput").value.trim();
-    const now = new Date(), hmStr = String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+    const now = new Date(), hmStr = String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"), dateKey = now.toLocaleDateString("en-CA");
     let timingText = "";
     if (actionType === "UPDATE_TASK") { p.note = noteVal; if (p.status === "offline") p.status = "online"; timingText = getTimingBadgeText(p); }
     else if (actionType === "CHECK_IN") { p.status = "online"; p.note = noteVal || "Checked-In at Office"; p.checkInAt = hmStr; p.checkOutAt = ""; timingText = getTimingBadgeText(p); }
@@ -534,8 +539,10 @@
       if (st === "offline") p.checkOutAt = hmStr; if (st === "online") timingText = getTimingBadgeText(p);
     }
     if (p.status !== "online" && coffeeBusy && activeCoffeeName === p.name) stopCoffeeWalk();
-    const logEntry = { date: now.toLocaleDateString("en-CA"), time: hmStr, name: p.name, province: p.province || "Regional", action: actionType, status: p.status, timing: timingText, note: p.note || "" };
-    todayLogsData.unshift(logEntry); renderTodayLogTable(); renderFloor(); await postStatusPayload(p, actionType, logEntry);
+    const logEntry = { date: dateKey, time: hmStr, name: p.name, province: p.province || "Regional", action: actionType, status: p.status, timing: timingText, note: p.note || "" };
+    todayLogsData.unshift(logEntry);
+    allLogsData.unshift(logEntry);
+    renderTodayLogTable(); renderFloor(); await postStatusPayload(p, actionType, logEntry);
   }
 
   function populateChatSenderSelect() { document.getElementById("chatSenderSelect").innerHTML = `<option value="" selected disabled>-- Choose your name --</option>` + PEOPLE.map(p => `<option value="${esc(p.name)}">${esc(p.name)}</option>`).join(""); updatePinBadgeUI(); }
@@ -624,19 +631,15 @@
   function buildChristmasTree3D(x, z) {
     const treeGroup = new THREE.Group();
     treeGroup.position.set(x, 0, z);
-
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 0.8, 12), new THREE.MeshStandardMaterial({ color: 0x5c3a21 }));
     trunk.position.y = 0.4; trunk.castShadow = true; treeGroup.add(trunk);
-
     const leafMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.6 });
     [[1.35, 1.4, 1.3], [1.05, 1.25, 2.1], [0.75, 1.1, 2.8]].forEach(([rad, h, y]) => {
       const cone = new THREE.Mesh(new THREE.ConeGeometry(rad, h, 16), leafMat);
       cone.position.y = y; cone.castShadow = true; treeGroup.add(cone);
     });
-
     const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.26, 0), new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xf59e0b, emissiveIntensity: 0.7 }));
     star.position.y = 3.52; treeGroup.add(star);
-
     const orbColors = [0xdc2626, 0xfbbf24, 0x38bdf8, 0xf472b6];
     for (let i = 0; i < 16; i++) {
       const ang = i * 1.15;
@@ -647,12 +650,10 @@
       orb.position.set(Math.cos(ang)*r, y, Math.sin(ang)*r);
       treeGroup.add(orb);
     }
-
     [[-0.75, 0.22, 0.65, 0xdc2626], [0.72, 0.25, 0.62, 0x2563eb], [0.05, 0.18, 0.92, 0xf59e0b]].forEach(([gx, gy, gz, col]) => {
       const box = new THREE.Mesh(new THREE.BoxGeometry(0.46, gy*2, 0.46), new THREE.MeshStandardMaterial({ color: col }));
       box.position.set(gx, gy, gz); box.castShadow = true; treeGroup.add(box);
     });
-
     scene3D.add(treeGroup);
   }
 
@@ -959,14 +960,116 @@
   }
   function stopDanceBreak() { danceEndTime = 0; clearInterval(danceCountdownInterval); document.getElementById("danceBanner").classList.remove("active"); }
   function checkAutoOfflineSchedule() { const now = new Date(), m = now.getHours()*60 + now.getMinutes(), after = (m >= 19*60+30) || (m < 6*60); isAfterHours = after; document.getElementById("stageWrap").classList.toggle("after-hours-dim", after); document.getElementById("afterHoursPill").classList.toggle("active", after); }
-  function openTodayLogModal() { document.getElementById("logModalBackdrop").classList.add("open"); renderTodayLogTable(); fetchFromSheet(false); }
-  function closeTodayLogModal() { document.getElementById("logModalBackdrop").classList.remove("open"); }
-  function renderTodayLogTable() { document.getElementById("logTableBody").innerHTML = todayLogsData.length ? todayLogsData.map(r => `<tr><td>${esc(formatTimeOnly(r.time))}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.province)}</td><td>${esc(r.action)}</td><td>${esc(r.status)}</td><td>${esc(r.timing)}</td><td>${esc(r.note)}</td></tr>`).join("") : `<tr><td colspan="7">No check-in/out logs recorded yet today.</td></tr>`; }
-  function exportTodayLogCsv() {
-    const lines = [["Date","Time","Name","Office","Action","Status","Timing","Note"].join(",")].concat(todayLogsData.map(r => [r.date,formatTimeOnly(r.time),r.name,r.province,r.action,r.status,r.timing,r.note].map(v => `"${String(v||"").replace(/"/g,'""')}"`).join(",")));
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type:"text/csv;charset=utf-8;" })); a.download = "PDMU_Log_" + new Date().toISOString().slice(0,10) + ".csv"; a.click();
+
+  function openTodayLogModal() {
+    const sel = document.getElementById("logMemberFilter");
+    if (sel && sel.options.length <= 1) {
+      PEOPLE.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.name;
+        opt.textContent = p.name;
+        sel.appendChild(opt);
+      });
+    }
+    if (sel && selectedIndex >= 0 && PEOPLE[selectedIndex]) {
+      sel.value = PEOPLE[selectedIndex].name;
+    }
+    const todayIso = new Date().toLocaleDateString("en-CA");
+    const df = document.getElementById("logDateFrom");
+    const dt = document.getElementById("logDateTo");
+    if (df && !df.value) df.value = todayIso;
+    if (dt && !dt.value) dt.value = todayIso;
+
+    document.getElementById("logModalBackdrop").classList.add("open");
+    renderTodayLogTable();
+    fetchFromSheet(false);
   }
+
+  function closeTodayLogModal() { document.getElementById("logModalBackdrop").classList.remove("open"); }
+
+  function getFilteredLogsForPrint() {
+    const member = (document.getElementById("logMemberFilter") && document.getElementById("logMemberFilter").value) || "ALL";
+    const dFrom = (document.getElementById("logDateFrom") && document.getElementById("logDateFrom").value) || "";
+    const dTo = (document.getElementById("logDateTo") && document.getElementById("logDateTo").value) || "";
+    const source = allLogsData.length ? allLogsData : todayLogsData;
+
+    return source.filter(r => {
+      const mOk = member === "ALL" || String(r.name || "").toLowerCase() === member.toLowerCase();
+      const dStr = String(r.date || "");
+      const fOk = !dFrom || !dStr || dStr >= dFrom;
+      const tOk = !dTo || !dStr || dStr <= dTo;
+      return mOk && fOk && tOk;
+    });
+  }
+
+  function renderTodayLogTable() {
+    const rows = getFilteredLogsForPrint();
+    document.getElementById("logTableBody").innerHTML = rows.length
+      ? rows.map(r => `<tr><td>${esc(r.date || "")}</td><td>${esc(formatTimeOnly(r.time))}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.province)}</td><td>${esc(r.status)}</td><td>${esc(r.timing)}</td><td>${esc(r.note)}</td></tr>`).join("")
+      : `<tr><td colspan="7">No task logs found for selected filter.</td></tr>`;
+  }
+
+  function printIndividualTaskLog() {
+    const member = (document.getElementById("logMemberFilter") && document.getElementById("logMemberFilter").value) || "ALL";
+    const dFrom = (document.getElementById("logDateFrom") && document.getElementById("logDateFrom").value) || "All Dates";
+    const dTo = (document.getElementById("logDateTo") && document.getElementById("logDateTo").value) || "All Dates";
+    const rows = getFilteredLogsForPrint();
+
+    if (!rows.length) { alert("Walay log records nga ma-print sa napili nga petsa/pangalan."); return; }
+
+    const trHtml = rows.map((r, i) => `
+      <tr>
+        <td style="text-align:center;">${i + 1}</td>
+        <td>${esc(r.date || "")}</td>
+        <td>${esc(formatTimeOnly(r.time))}</td>
+        <td>${esc(r.name)}</td>
+        <td>${esc(r.status)}</td>
+        <td>${esc(r.timing)}</td>
+        <td>${esc(r.note)}</td>
+      </tr>`).join("");
+
+    const win = window.open("", "_blank", "width=900,height=700");
+    win.document.write(`
+      <html><head><title>PDMU Task Log - ${esc(member)}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 24px; color: #111; }
+        h2, h4 { margin: 0; text-align: center; }
+        .meta { margin: 14px 0; font-size: 13px; display: flex; justify-content: space-between; border-bottom: 2px solid #030954; padding-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        th, td { border: 1px solid #333; padding: 6px 8px; text-align: left; }
+        th { background: #f1f5f9; font-weight: bold; }
+        .sign-box { margin-top: 42px; display: flex; justify-content: space-between; font-size: 12px; }
+        .sign-line { width: 240px; border-top: 1px solid #000; padding-top: 4px; text-align: center; }
+        @media print { button { display: none; } }
+      </style></head><body>
+      <button onclick="window.print()" style="padding:8px 14px; font-weight:bold; margin-bottom:12px; cursor:pointer;">🖨️ Print / Save PDF</button>
+      <h4>DILG CARAGA • PROJECT DEVELOPMENT AND MANAGEMENT UNIT (PDMU)</h4>
+      <h2>INDIVIDUAL DAILY TASK &amp; ATTENDANCE LOG</h2>
+      <div class="meta">
+        <div><strong>Personnel:</strong> ${esc(member === "ALL" ? "All PDMU Personnel" : member)}</div>
+        <div><strong>Period:</strong> ${esc(dFrom)} to ${esc(dTo)}</div>
+      </div>
+      <table>
+        <thead><tr><th style="width:36px;">#</th><th>Date</th><th>Time</th><th>Name</th><th>Status</th><th>Timing</th><th>Task / Accomplishment Remarks</th></tr></thead>
+        <tbody>${trHtml}</tbody>
+      </table>
+      <div class="sign-box">
+        <div class="sign-line">Prepared by:<br><strong>${esc(member === "ALL" ? "PDMU Staff" : member)}</strong></div>
+        <div class="sign-line">Noted by:<br><strong>JOJO / JESREEL (PDMU Chief / Asst. Chief)</strong></div>
+      </div>
+      </body></html>
+    `);
+    win.document.close();
+  }
+
+  function exportTodayLogCsv() {
+    const rows = getFilteredLogsForPrint();
+    const lines = [["Date","Time","Name","Office","Status","Timing","Task / Remarks"].join(",")].concat(rows.map(r => [r.date||"",formatTimeOnly(r.time),r.name,r.province,r.status,r.timing,r.note].map(v => `"${String(v||"").replace(/"/g,'""')}"`).join(",")));
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type:"text/csv;charset=utf-8;" })); a.download = "PDMU_Task_Log_" + new Date().toISOString().slice(0,10) + ".csv"; a.click();
+  }
+
   async function archiveTodayNow() { if (!APPS_SCRIPT_URL) { alert("Ibutang una ang APPS_SCRIPT_URL."); return; } await fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({type:"archive_day"}) }).catch(()=>{}); alert("Na-archive na sa VO_Daily_History!"); }
+
   async function fetchFromSheet(showAlert) {
     if (!APPS_SCRIPT_URL) { document.getElementById("syncPill").textContent = "Local Mode"; return; }
     try {
@@ -975,6 +1078,7 @@
         if (Array.isArray(json.data)) json.data.forEach(row => { const m = PEOPLE.find(p => p.name.toLowerCase() === String(row.name||"").trim().toLowerCase()); if (m) { m.status = normalizeStatus(row.status); m.note = row.note || ""; m.checkInAt = row.checkInAt ? formatTimeOnly(row.checkInAt) : ""; m.checkOutAt = row.checkOutAt ? formatTimeOnly(row.checkOutAt) : ""; } });
         if (Array.isArray(json.messages)) { chatMessages = json.messages; if (convoUnlocked) renderChatMessages(); }
         if (json.pins) { savedPinsMap = json.pins; updatePinBadgeUI(); updateActionPinStatus(); }
+        if (Array.isArray(json.allLogs)) { allLogsData = json.allLogs.map(r => Object.assign({}, r, { time: formatTimeOnly(r.time) })); }
         if (Array.isArray(json.todayLogs)) { todayLogsData = json.todayLogs.map(r => Object.assign({}, r, { time: formatTimeOnly(r.time) })); renderTodayLogTable(); }
         renderFloor(); document.getElementById("syncPill").textContent = "Live Synced"; if (showAlert) alert("Synced!");
       }
