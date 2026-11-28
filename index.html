@@ -109,6 +109,7 @@
     align-items: center;
     pointer-events: auto;
     cursor: pointer;
+    max-width: 240px;
   }
   .tag-3d-card.hidden-out { display: none !important; }
   .tag-3d-card.selected .name-chip-3d {
@@ -119,14 +120,17 @@
     box-shadow: 0 4px 12px rgba(251, 191, 36, 0.65);
   }
   .bubble-tag-3d {
-    padding: 1.5px 6px;
-    border-radius: 999px;
+    padding: 2px 7px;
+    border-radius: 9px;
     border: 1.5px solid #0f172a;
     font-size: 8.5px;
     font-weight: 900;
     color: #0f172a;
     margin-bottom: 2px;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
+    max-width: 225px;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
   }
   .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-passlip { background: #facc15; } .st-ptl { background: #2dd4bf; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; }
@@ -199,7 +203,8 @@
   .controls-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .controls-group.view-only-locked button,
   .controls-group.view-only-locked input { opacity: 0.42; pointer-events: none; cursor: not-allowed; }
-  .note-input { background: #030954; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; min-width: 175px; }
+  .note-input { background: #030954; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; min-width: 210px; }
+  .task-set-btn { background: #f59e0b; color: #030954; border: 2px solid #fde047; border-radius: 5px; padding: 6px 9px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
   .pin-lock-status { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
   .checkin-btn { background: #16a34a; color: #ffffff; border: 2px solid #bbf7d0; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
   .checkout-btn { background: #dc2626; color: #ffffff; border: 2px solid #fecaca; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
@@ -207,13 +212,13 @@
   .status-btns button { font-family: inherit; font-size: 11px; font-weight: 800; padding: 5px 8px; border-radius: 5px; border: 2px solid #0f172a; cursor: pointer; color: #0f172a; }
   .timing-pill { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
 
-  /* PIN Pop-up Modal */
+  /* PIN & Task Pop-up Modal */
   .pin-modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.82); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px; }
   .pin-modal-backdrop.open { display: flex; }
-  .pin-modal-card { width: 100%; max-width: 370px; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
+  .pin-modal-card { width: 100%; max-width: 390px; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
   .pin-modal-title { font-size: 15px; font-weight: 900; color: #fbbf24; }
   .pin-modal-sub { font-size: 11.5px; color: #e2e8f0; line-height: 1.4; }
-  .pin-modal-input { width: 100%; background: #07116e; color: #fde047; border: 2px solid #fbbf24; border-radius: 6px; padding: 8px 10px; font-family: inherit; font-size: 13px; font-weight: 900; text-align: center; }
+  .pin-modal-input { width: 100%; background: #07116e; color: #fde047; border: 2px solid #fbbf24; border-radius: 6px; padding: 8px 10px; font-family: inherit; font-size: 12.5px; font-weight: 800; text-align: center; }
   .pin-modal-err { font-size: 10.5px; font-weight: 800; color: #fca5a5; min-height: 15px; }
   .pin-modal-actions { display: flex; gap: 8px; justify-content: center; margin-top: 2px; }
   .pin-confirm-btn { background: #16a34a; color: #ffffff; border: 2px solid #bbf7d0; border-radius: 6px; padding: 6px 14px; font-family: inherit; font-size: 11.5px; font-weight: 900; cursor: pointer; }
@@ -430,7 +435,8 @@
     <div class="controls-group" id="actionControlsGroup">
       <button type="button" class="checkin-btn" onclick="requestPinAction('CHECK_IN')">✅ Check-In</button>
       <button type="button" class="checkout-btn" onclick="requestPinAction('CHECK_OUT')">🚪 Check-Out</button>
-      <input type="text" id="noteInput" class="note-input" placeholder="Destination / Activity / Remarks...">
+      <input type="text" id="noteInput" class="note-input" placeholder="Current task (e.g. I'm creating FB Posting right now!)...">
+      <button type="button" class="task-set-btn" onclick="openQuickTaskModal()">✏️ Set Task</button>
       <div class="status-btns">
         <button type="button" style="background:#4ade80;" onclick="requestPinAction('STATUS_ONLINE')">Online</button>
         <button type="button" style="background:#fb923c;" onclick="requestPinAction('STATUS_ACTIVITY')">Activity</button>
@@ -452,11 +458,12 @@
   <button type="button" class="mob-nav-btn" id="mobBtnLogs" onclick="openTodayLogModal()">📋<span>Logs</span></button>
 </nav>
 
-<!-- PIN Pop-up Modal -->
+<!-- PIN & Quick Task Pop-up Modal -->
 <div class="pin-modal-backdrop" id="pinModalBackdrop" onclick="if(event.target===this) closePinModal()">
   <div class="pin-modal-card">
     <div class="pin-modal-title" id="pinModalTitle">ENTER PIN</div>
     <div class="pin-modal-sub" id="pinModalSub">Enter your PIN to continue.</div>
+    <input type="text" id="taskModalInput" class="pin-modal-input" style="display:none; color:#ffffff;" placeholder="e.g. I'm creating FB Posting right now!" maxlength="140" onkeydown="if(event.key==='Enter' && !document.getElementById('pinModalInput').offsetParent){event.preventDefault();confirmPinModal();}">
     <input type="password" id="pinModalInput" class="pin-modal-input" placeholder="Enter PIN" maxlength="12" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmPinModal();}">
     <div class="pin-modal-err" id="pinModalErr"></div>
     <div class="pin-modal-actions">
@@ -522,7 +529,6 @@
     "Alvin": "https://drive.google.com/thumbnail?id=1OynwukEyXvpJ5HCF0vr4MNn_IY_sg7e4&sz=w120"
   };
 
-  // Jojo (Chief) centered on the red carpet area
   const PEOPLE = [
     { name: "Airah", x: 30.0, y: 12.0, hair: "#5c3a21", shirt: "#f472b6", pigtails: true, hairtie: "#ec4899", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
     { name: "Shaira", x: 10.0, y: 26.0, hair: "#27272a", shirt: "#fb923c", pigtails: false, hairtie: "", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
@@ -578,6 +584,7 @@
   let selectedIndex = -1;
   let pendingPinAction = null;
   let pendingPinIsCreate = false;
+  let pendingTaskText = "";
 
   let convoUnlocked = false;
   let currentChatUser = "";
@@ -589,11 +596,11 @@
 
   let coffeeBusy = false;
   let activeCoffeeName = "";
-  let coffeeEndsAt = 0;
-  let coffeePhase = "idle";
+  let coffeePhase = "idle"; // "to", "drink", "back"
   let coffeeProgress = 0;
+  let coffeeChatterIndex = 0;
   let coffeeDrinkTimeout = null;
-  let coffeeCountdownInterval = null;
+  let coffeeChatterInterval = null;
 
   let danceEndTime = 0;
   let danceCountdownInterval = null;
@@ -645,6 +652,30 @@
     if (st === "leave") return "on leave";
     if (st === "absent") return "absent";
     return "offline (uli na)";
+  }
+
+  // Build task-related coffee chatter lines without any timer
+  function getCoffeeChatterLine(p) {
+    const rawTask = String((p && p.note) || "").trim();
+    const cleanTask = rawTask
+      .replace(/^i['’]?m\s+/i, "")
+      .replace(/\s+right now!?$/i, "")
+      .trim();
+
+    if (cleanTask && !/^(checked-in|in office|online|uli na)$/i.test(cleanTask)) {
+      const lines = [
+        "☕ sip sa kape while " + cleanTask + "!",
+        "☕ nag-kape kadiyot—balik dayon sa '" + cleanTask + "'",
+        "☕ lami ang kape! Padayon ta sa " + cleanTask
+      ];
+      return lines[coffeeChatterIndex % lines.length];
+    }
+    const fallbackLines = [
+      "☕ nag-kape kadiyot para fresh sa trabaho!",
+      "☕ sip sa kape—daghan pa og i-update sa PDMU!",
+      "☕ lami kaayo ang kape karon!"
+    ];
+    return fallbackLines[coffeeChatterIndex % fallbackLines.length];
   }
 
   function getTimingBadgeText(p) {
@@ -715,10 +746,17 @@
     }
   }
 
-  function requestPinAction(actionType) {
+  function openQuickTaskModal() {
+    if (isViewingProvinceOffice()) { alert("View-only lang ni nga provincial office."); return; }
+    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { alert("I-click una sa 3D office ang employee."); return; }
+    const currentVal = document.getElementById("noteInput").value.trim() || PEOPLE[selectedIndex].note || "";
+    requestPinAction("UPDATE_TASK", currentVal);
+  }
+
+  function requestPinAction(actionType, presetTask) {
     if (isViewingProvinceOffice()) { alert("View-only lang ni nga provincial office."); return; }
     if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { alert("I-click una sa 3D office ang user."); return; }
-    if (actionType !== "CHECK_OUT" && actionType !== "STATUS_OFFLINE" && actionType !== "STATUS_LEAVE" && actionType !== "STATUS_ABSENT" && isAfterHours) {
+    if (actionType !== "CHECK_OUT" && actionType !== "STATUS_OFFLINE" && actionType !== "STATUS_LEAVE" && actionType !== "STATUS_ABSENT" && actionType !== "UPDATE_TASK" && isAfterHours) {
       alert("7:30 PM+ na (Auto-Offline).");
       return;
     }
@@ -726,20 +764,38 @@
     const savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
     pendingPinAction = actionType;
     pendingPinIsCreate = !savedPin;
+    pendingTaskText = typeof presetTask === "string" ? presetTask : document.getElementById("noteInput").value.trim();
 
     document.getElementById("pinModalErr").textContent = "";
     document.getElementById("pinModalInput").value = "";
-    document.getElementById("pinModalTitle").textContent = (pendingPinIsCreate ? "CREATE PIN • " : "INPUT PIN • ") + p.name;
-    document.getElementById("pinModalSub").textContent = pendingPinIsCreate
-      ? "Pag-create og imong PIN para kang " + p.name + " (magamit pud sa Chatbox)."
-      : "Isulod ang PIN ni " + p.name + " (magamit pud sa Chatbox).";
+
+    const taskEl = document.getElementById("taskModalInput");
+    if (actionType === "UPDATE_TASK") {
+      taskEl.style.display = "block";
+      taskEl.value = pendingTaskText || "I'm creating FB Posting right now!";
+    } else {
+      taskEl.style.display = "none";
+      taskEl.value = "";
+    }
+
+    document.getElementById("pinModalTitle").textContent = (actionType === "UPDATE_TASK" ? "SET TASK • " : (pendingPinIsCreate ? "CREATE PIN • " : "INPUT PIN • ")) + p.name;
+    document.getElementById("pinModalSub").textContent = actionType === "UPDATE_TASK"
+      ? "Ibutang ang current task ni " + p.name + " ug isulod ang PIN."
+      : (pendingPinIsCreate
+        ? "Pag-create og imong PIN para kang " + p.name + " (magamit pud sa Chatbox)."
+        : "Isulod ang PIN ni " + p.name + " (magamit pud sa Chatbox).");
+
     document.getElementById("pinModalBackdrop").classList.add("open");
-    setTimeout(() => document.getElementById("pinModalInput").focus(), 40);
+    setTimeout(() => {
+      if (actionType === "UPDATE_TASK") taskEl.focus();
+      else document.getElementById("pinModalInput").focus();
+    }, 40);
   }
 
   function closePinModal() {
     pendingPinAction = null;
     pendingPinIsCreate = false;
+    pendingTaskText = "";
     document.getElementById("pinModalBackdrop").classList.remove("open");
     document.getElementById("pinModalErr").textContent = "";
   }
@@ -751,6 +807,13 @@
     const entered = String(document.getElementById("pinModalInput").value || "").trim();
     const errEl = document.getElementById("pinModalErr");
 
+    if (pendingPinAction === "UPDATE_TASK") {
+      const tVal = String(document.getElementById("taskModalInput").value || "").trim();
+      if (!tVal) { errEl.textContent = "Palihog isulod ang task."; return; }
+      pendingTaskText = tVal;
+      document.getElementById("noteInput").value = tVal;
+    }
+
     if (savedPin) {
       if (!entered) { errEl.textContent = "Palihog isulod ang PIN."; return; }
       if (entered !== savedPin) { errEl.textContent = "Sayop ang PIN!"; return; }
@@ -760,18 +823,23 @@
       syncPinToChatbox(p.name, entered);
     }
     const act = pendingPinAction;
+    const customTask = pendingTaskText;
     closePinModal();
-    await executeAuthorizedAction(p, act);
+    await executeAuthorizedAction(p, act, customTask);
   }
 
-  async function executeAuthorizedAction(p, actionType) {
-    const noteInputVal = document.getElementById("noteInput").value.trim();
+  async function executeAuthorizedAction(p, actionType, customTask) {
+    const noteInputVal = (typeof customTask === "string" && customTask.trim()) ? customTask.trim() : document.getElementById("noteInput").value.trim();
     const now = new Date();
     const hmStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
     const dateKey = now.toLocaleDateString("en-CA");
     let timingText = "";
 
-    if (actionType === "CHECK_IN") {
+    if (actionType === "UPDATE_TASK") {
+      p.note = noteInputVal;
+      if (p.status === "offline") p.status = "online";
+      timingText = getTimingBadgeText(p);
+    } else if (actionType === "CHECK_IN") {
       p.status = "online";
       p.note = noteInputVal || "Checked-In at Office";
       p.checkInAt = hmStr;
@@ -992,22 +1060,17 @@
 
   function quickFilter(st) { document.getElementById("statusFilter").value = st; renderFloor(); }
   function isDancingNow() { return danceEndTime > Date.now(); }
-  function getCoffeeRemText() {
-    if (!coffeeEndsAt) return "1m";
-    const remSec = Math.max(0, Math.ceil((coffeeEndsAt - Date.now()) / 1000));
-    return Math.floor(remSec / 60) + ":" + String(remSec % 60).padStart(2, "0");
-  }
 
   function stopCoffeeWalk() {
     clearTimeout(coffeeDrinkTimeout);
     coffeeDrinkTimeout = null;
-    clearInterval(coffeeCountdownInterval);
-    coffeeCountdownInterval = null;
+    clearInterval(coffeeChatterInterval);
+    coffeeChatterInterval = null;
     coffeeBusy = false;
     activeCoffeeName = "";
-    coffeeEndsAt = 0;
     coffeePhase = "idle";
     coffeeProgress = 0;
+    coffeeChatterIndex = 0;
   }
 
   /* ================= 3D THREE.JS OFFICE ENGINE ================= */
@@ -1027,7 +1090,6 @@
     return { x: wx, z: wz };
   }
 
-  // Detailed & clean 3D chibi character inspired by image_a7b7bd.jpg (no box mask!)
   function buildDetailedChibiCharacter3D(p) {
     const charGroup = new THREE.Group();
     const skinMat = new THREE.MeshStandardMaterial({ color: 0xfcd5b5, roughness: 0.42 });
@@ -1040,7 +1102,6 @@
     const lipMat = new THREE.MeshBasicMaterial({ color: 0xe11d48 });
     const cheekMat = new THREE.MeshBasicMaterial({ color: 0xfba5a5 });
 
-    // Seated Legs bent horizontally forward on chair
     const legGeo = new THREE.CylinderGeometry(0.075, 0.072, 0.34, 12);
     const legL = new THREE.Mesh(legGeo, pantsMat);
     legL.rotation.x = Math.PI / 2;
@@ -1053,7 +1114,6 @@
     legR.castShadow = true;
     charGroup.add(legL, legR);
 
-    // Shirt Torso + optional stripe
     const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.27, 0.44, 18), shirtMat);
     torso.position.set(0, 0.28, 0);
     torso.castShadow = true;
@@ -1068,7 +1128,6 @@
       charGroup.add(band);
     }
 
-    // Animated Typing Arms (pivoting from shoulder)
     const armLGroup = new THREE.Group();
     armLGroup.position.set(-0.28, 0.42, 0.02);
     const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.34, 12), skinMat);
@@ -1087,30 +1146,25 @@
 
     charGroup.add(armLGroup, armRGroup);
 
-    // Head Group (so head tilts/nods naturally while working)
     const headGroup = new THREE.Group();
     headGroup.position.set(0, 0.92, 0.04);
 
-    // Smooth Chibi Face Sphere (clean, no flat square box over face)
     const head = new THREE.Mesh(new THREE.SphereGeometry(0.44, 28, 24), skinMat);
     head.scale.set(1.04, 1.0, 0.98);
     head.castShadow = true;
     headGroup.add(head);
 
-    // Cute Ears
     const earGeo = new THREE.SphereGeometry(0.09, 12, 12);
     const earL = new THREE.Mesh(earGeo, skinMat); earL.position.set(-0.44, -0.02, 0);
     const earR = new THREE.Mesh(earGeo, skinMat); earR.position.set(0.44, -0.02, 0);
     headGroup.add(earL, earR);
 
-    // Hair Crown + Swept Bangs (only top/back/sides, leaving face front open)
     const crown = new THREE.Mesh(new THREE.SphereGeometry(0.465, 28, 20), hairMat);
     crown.scale.set(1.06, 1.02, 1.04);
     crown.position.set(0, 0.07, -0.04);
     crown.castShadow = true;
     headGroup.add(crown);
 
-    // Swept side bangs on forehead
     const bangL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.12, 0.14), hairMat);
     bangL.position.set(-0.22, 0.27, 0.36);
     bangL.rotation.z = -0.18;
@@ -1133,7 +1187,6 @@
       });
     }
 
-    // Detailed Eyes (White + Iris + Pupil)
     [-0.155, 0.155].forEach(ex => {
       const ew = new THREE.Mesh(new THREE.SphereGeometry(0.072, 14, 14), eyeWhiteMat);
       ew.scale.set(1.0, 1.15, 0.45);
@@ -1149,7 +1202,6 @@
       headGroup.add(ew, ir, pu);
     });
 
-    // Arched Eyebrows + Rosy Cheeks + Cute Smile
     const browGeo = new THREE.BoxGeometry(0.12, 0.028, 0.03);
     const browL = new THREE.Mesh(browGeo, hairMat); browL.position.set(-0.155, 0.14, 0.41); browL.rotation.z = 0.08;
     const browR = new THREE.Mesh(browGeo, hairMat); browR.position.set(0.155, 0.14, 0.41); browR.rotation.z = -0.08;
@@ -1178,7 +1230,6 @@
     const deskMat = new THREE.MeshStandardMaterial({ color: isChief ? 0xf59e0b : 0xfef3c7, roughness: 0.45 });
     const legMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6 });
 
-    // Desk in front (+z) while character sits at (-z) facing front (+z toward camera)
     const deskTop = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.11, 0.85), deskMat);
     deskTop.position.set(0, 0.70, 0.44);
     deskTop.castShadow = true;
@@ -1192,7 +1243,6 @@
       unitGroup.add(leg);
     });
 
-    // Open Laptop on desk (base + screen facing user)
     const lapMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.35 });
     const lapScreenMat = new THREE.MeshStandardMaterial({ color: 0x7dd3fc, emissive: 0x0284c7, emissiveIntensity: 0.5 });
     const lapGroup = new THREE.Group();
@@ -1215,7 +1265,6 @@
     lapGroup.add(lapBase, lapLid, lapScreen);
     unitGroup.add(lapGroup);
 
-    // Cute Mug on right corner of desk
     const mug = new THREE.Mesh(
       new THREE.CylinderGeometry(0.065, 0.06, 0.11, 12),
       new THREE.MeshStandardMaterial({ color: 0xfb7185 })
@@ -1223,7 +1272,6 @@
     mug.position.set(0.62, 0.81, 0.42);
     unitGroup.add(mug);
 
-    // Chair / Stool behind desk (-z)
     const chairMat = new THREE.MeshStandardMaterial({ color: isChief ? 0xd97706 : 0x64748b, roughness: 0.6 });
     const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.26, 0.09, 16), chairMat);
     seat.position.set(0, 0.44, -0.34);
@@ -1232,12 +1280,10 @@
     chairStem.position.set(0, 0.2, -0.34);
     unitGroup.add(seat, chairStem);
 
-    // Detailed Character sitting on chair facing +z (toward camera)
     const parts = buildDetailedChibiCharacter3D(p);
     parts.charGroup.position.set(0, 0.49, -0.34);
     unitGroup.add(parts.charGroup);
 
-    // Hitbox for Easy Clicking
     const hitBox = new THREE.Mesh(
       new THREE.BoxGeometry(1.9, 2.0, 1.7),
       new THREE.MeshBasicMaterial({ visible: false })
@@ -1371,7 +1417,6 @@
       scene3D.add(shelf);
     });
 
-    // Red Carpet centered around Jojo (Chief)
     const carpet = new THREE.Mesh(
       new THREE.BoxGeometry(6.8, 0.04, 5.2),
       new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.85 })
@@ -1539,8 +1584,11 @@
           -0.34 + (targetLocalZ + 0.34) * ratio
         );
         obj.avatarGroup.rotation.y = coffeePhase === "back" ? Math.PI : 0;
+        if (obj.headGroup) {
+          obj.headGroup.rotation.x = Math.sin(nowSec * 8) * 0.12;
+          obj.headGroup.rotation.y = Math.cos(nowSec * 5) * 0.15;
+        }
       } else {
-        // Active typing & head motion when online; calm when offline
         const bob = isOnline ? (dancing ? Math.abs(Math.sin(nowSec * 9 + obj.idx)) * 0.22 : Math.sin(nowSec * 4 + obj.idx) * 0.025) : 0;
         obj.avatarGroup.position.set(0, 0.49 + bob, -0.34);
         obj.avatarGroup.rotation.y = dancing && isOnline ? Math.sin(nowSec * 7 + obj.idx) * 0.45 : 0;
@@ -1614,7 +1662,6 @@
         obj.homePos = { x: gx, z: gz };
         provSlotIdx++;
       } else if (p.name === "Jojo (Chief)" && prov === "Regional") {
-        // Center Jojo on the red carpet
         obj.group.position.set(CARPET_3D_CENTER.x, 0, CARPET_3D_CENTER.z);
         obj.homePos = { x: CARPET_3D_CENTER.x, z: CARPET_3D_CENTER.z };
       } else {
@@ -1627,8 +1674,11 @@
       let bubbleText = statusLabel(p.status);
       if (walkingCoffee) {
         bubbleCls = "st-coffee";
-        bubbleText = "☕ coffee (" + getCoffeeRemText() + ")";
+        bubbleText = getCoffeeChatterLine(p);
+      } else if (p.status === "online" && p.note && !/^(checked-in|in office|online)$/i.test(p.note.trim())) {
+        bubbleText = p.note.trim();
       }
+
       obj.bubbleEl.className = "bubble-tag-3d " + bubbleCls;
       obj.bubbleEl.textContent = bubbleText;
     });
@@ -1689,22 +1739,23 @@
 
     coffeeBusy = true;
     activeCoffeeName = p.name;
-    coffeeEndsAt = Date.now() + COFFEE_DURATION_MS;
     coffeePhase = "to";
     coffeeProgress = 0;
+    coffeeChatterIndex = 0;
 
     clearTimeout(coffeeDrinkTimeout);
-    clearInterval(coffeeCountdownInterval);
+    clearInterval(coffeeChatterInterval);
     renderFloor();
 
-    coffeeCountdownInterval = setInterval(() => {
+    coffeeChatterInterval = setInterval(() => {
       if (!coffeeBusy || p.status !== "online") {
         stopCoffeeWalk();
         renderFloor();
         return;
       }
+      coffeeChatterIndex++;
       renderFloor();
-    }, 1000);
+    }, 5500);
 
     coffeeDrinkTimeout = setTimeout(() => {
       if (!coffeeBusy || p.status !== "online") {
@@ -1713,6 +1764,8 @@
         return;
       }
       coffeePhase = "back";
+      coffeeChatterIndex++;
+      renderFloor();
     }, COFFEE_DURATION_MS);
   }
 
