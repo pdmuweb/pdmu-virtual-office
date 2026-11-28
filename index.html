@@ -3,137 +3,139 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#030954">
-<title>PDMU Virtual Office 3D</title>
+<meta name="theme-color" content="#0b2e1f">
+<title>PDMU Virtual Office 3D • Christmas Edition</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: transparent; width: 100%; overflow-x: hidden; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #fff; }
-  .vo-shell { width: 100%; max-width: 1440px; margin: 0 auto; background: #030954; border: 2px solid #fbbf24; border-bottom: 5px solid #f59e0b; border-radius: 14px; padding: 12px; position: relative; }
-  .vo-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .vo-header h2 { font-size: 18px; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px; }
-  .badge-3d { background: #f97316; color: #fff; font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fde047; }
+  .vo-shell { width: 100%; max-width: 1440px; margin: 0 auto; background: linear-gradient(160deg, #7f1d1d 0%, #14532d 55%, #0f3d2e 100%); border: 2.5px solid #fbbf24; border-bottom: 5px solid #facc15; border-radius: 14px; padding: 12px; position: relative; box-shadow: 0 12px 30px rgba(20, 83, 45, 0.45); }
+  .vo-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; background: rgba(20, 83, 45, 0.72); border: 1.5px solid #fbbf24; border-radius: 10px; padding: 8px 12px; }
+  .vo-header h2 { font-size: 18px; font-weight: 900; color: #fde047; display: flex; align-items: center; gap: 6px; text-shadow: 0 1px 4px rgba(0,0,0,0.45); }
+  .badge-3d { background: #dc2626; color: #fff; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 999px; border: 1px solid #fde047; }
   .vo-top-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 10px; margin-bottom: 10px; }
   .vo-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .vo-tools select, .vo-tools button, .vo-tools label { background: #07116e; color: #fff; border: 1.5px solid #fbbf24; border-radius: 6px; padding: 6px 8px; font-family: inherit; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
-  .vo-tools button:hover { background: #fbbf24; color: #030954; }
-  .vo-tools button.dance-btn { background: #ec4899; border-color: #fde047; }
-  .vo-tools button.log-btn { background: #0ea5e9; border-color: #bae6fd; }
-  .vo-tools button.cam-btn { background: #4f46e5; border-color: #c7d2fe; }
+  .vo-tools select, .vo-tools button, .vo-tools label { background: #14532d; color: #fff; border: 1.5px solid #fbbf24; border-radius: 6px; padding: 6px 8px; font-family: inherit; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .vo-tools button:hover, .vo-tools select:hover { background: #fbbf24; color: #450a0a; }
+  .vo-tools button.dance-btn { background: #dc2626; border-color: #fde047; }
+  .vo-tools button.snow-btn { background: #0f766e; border-color: #99f6e4; }
+  .vo-tools button.log-btn { background: #b45309; border-color: #fde68a; }
+  .vo-tools button.cam-btn { background: #991b1b; border-color: #fecaca; }
   .vo-tools button.install-pwa-btn { background: #16a34a; border-color: #bbf7d0; display: none; }
   .vo-tools button.install-pwa-btn.visible { display: inline-flex; }
-  .sync-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(15,23,42,.85); border: 1px solid #4ade80; color: #4ade80; font-weight: 800; }
-  .after-hours-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(88,28,135,.85); border: 1px solid #e879f9; color: #f5d0fe; font-weight: 800; display: none; }
+  .sync-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(20, 83, 45, 0.9); border: 1px solid #4ade80; color: #86efac; font-weight: 800; }
+  .after-hours-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(127, 29, 29, 0.9); border: 1px solid #fde047; color: #fef08a; font-weight: 800; display: none; }
   .after-hours-pill.active { display: inline-flex; }
-  .view-only-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(127,29,29,.9); border: 1px solid #fca5a5; color: #fecaca; font-weight: 800; display: none; }
+  .view-only-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(153, 27, 27, 0.92); border: 1px solid #fca5a5; color: #fecaca; font-weight: 800; display: none; }
   .view-only-pill.active { display: inline-flex; }
 
-  .summary-strip { flex: 1; min-width: 0; background: #07116e; border: 1.5px solid #fbbf24; border-radius: 8px; padding: 5px 8px; display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
-  .stat-card { background: #030954; border: 1px solid rgba(251,191,36,.45); border-radius: 6px; padding: 3px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+  .summary-strip { flex: 1; min-width: 0; background: #14532d; border: 1.5px solid #fbbf24; border-radius: 8px; padding: 5px 8px; display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
+  .stat-card { background: #450a0a; border: 1px solid rgba(251,191,36,.55); border-radius: 6px; padding: 3px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
   .stat-num { font-size: 13px; font-weight: 900; line-height: 1.1; }
-  .stat-lbl { font-size: 8px; font-weight: 800; color: #e2e8f0; white-space: nowrap; }
-  .c-total { color: #fde047; } .c-online { color: #4ade80; } .c-activity { color: #fb923c; } .c-passlip { color: #facc15; } .c-ptl { color: #2dd4bf; } .c-leave { color: #60a5fa; } .c-absent { color: #cbd5e1; } .c-offline { color: #e879f9; }
+  .stat-lbl { font-size: 8px; font-weight: 800; color: #fef9c3; white-space: nowrap; }
+  .c-total { color: #fde047; } .c-online { color: #4ade80; } .c-activity { color: #fb923c; } .c-passlip { color: #facc15; } .c-ptl { color: #5eead4; } .c-leave { color: #93c5fd; } .c-absent { color: #e2e8f0; } .c-offline { color: #fda4af; }
 
   .vo-main-grid { display: grid; grid-template-columns: 295px minmax(0, 1fr); gap: 10px; align-items: stretch; }
   .chat-panel-slot, .stage-wrap-slot { min-width: 0; width: 100%; }
 
-  .chat-panel { background: #07116e; border: 2px solid #fbbf24; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; height: 580px; overflow: hidden; }
-  .chat-top { border-bottom: 1.5px solid rgba(251,191,36,.35); padding-bottom: 7px; margin-bottom: 8px; }
-  .chat-title { font-size: 13px; font-weight: 900; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
-  .chat-lock-top-btn { background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 4px; padding: 2px 6px; font-family: inherit; font-size: 9.5px; font-weight: 800; cursor: pointer; }
-  .chat-lock-top-btn:hover { background: #fbbf24; color: #030954; }
-  .chat-sub { font-size: 10px; color: #cbd5e1; margin-top: 2px; }
-  .chat-gate-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px 12px; gap: 8px; background: #030954; border: 1.5px dashed rgba(251,191,36,.55); border-radius: 8px; margin-bottom: 8px; }
+  .chat-panel { background: #14532d; border: 2px solid #fbbf24; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; height: 580px; overflow: hidden; }
+  .chat-top { border-bottom: 1.5px solid rgba(251,191,36,.45); padding-bottom: 7px; margin-bottom: 8px; }
+  .chat-title { font-size: 13px; font-weight: 900; color: #fde047; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+  .chat-lock-top-btn { background: #991b1b; color: #fde047; border: 1px solid #fbbf24; border-radius: 4px; padding: 2px 6px; font-family: inherit; font-size: 9.5px; font-weight: 800; cursor: pointer; }
+  .chat-lock-top-btn:hover { background: #fbbf24; color: #450a0a; }
+  .chat-sub { font-size: 10px; color: #dcfce7; margin-top: 2px; }
+  .chat-gate-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px 12px; gap: 8px; background: #450a0a; border: 1.5px dashed rgba(251,191,36,.75); border-radius: 8px; margin-bottom: 8px; }
   .chat-gate-title { font-size: 12.5px; font-weight: 900; color: #fde047; }
-  .chat-gate-desc { font-size: 10.5px; color: #cbd5e1; max-width: 220px; line-height: 1.35; }
-  .chat-gate-input { width: 100%; max-width: 210px; background: #07116e; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; text-align: center; }
-  .chat-gate-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 12px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .chat-gate-desc { font-size: 10.5px; color: #fef9c3; max-width: 220px; line-height: 1.35; }
+  .chat-gate-input { width: 100%; max-width: 210px; background: #14532d; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; text-align: center; }
+  .chat-gate-btn { background: #dc2626; color: #fff; border: 1.5px solid #fde047; border-radius: 5px; padding: 5px 12px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
   .chat-messages { flex: 1; min-height: 0; overflow-y: auto; display: none; flex-direction: column; gap: 8px; padding-right: 3px; margin-bottom: 8px; }
   .chat-messages.unlocked { display: flex; }
   .msg-row { display: flex; align-items: flex-end; gap: 6px; }
   .msg-row.mine { flex-direction: row-reverse; }
-  .msg-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; object-position: center top; border: 1.5px solid #fbbf24; background: #030954; flex-shrink: 0; }
+  .msg-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; object-position: center top; border: 1.5px solid #fbbf24; background: #450a0a; flex-shrink: 0; }
   .msg-col { display: flex; flex-direction: column; max-width: 78%; }
   .msg-row.mine .msg-col { align-items: flex-end; }
   .msg-sender { font-size: 9.5px; font-weight: 800; color: #fde047; margin-bottom: 2px; }
-  .msg-bubble { background: #030954; border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: 6px 9px; font-size: 11px; line-height: 1.35; color: #fff; word-break: break-word; }
-  .msg-row.mine .msg-bubble { background: #1d4ed8; border-color: #93c5fd; }
-  .msg-reply-quote { background: rgba(255,255,255,.08); border-left: 2.5px solid #fbbf24; border-radius: 4px; padding: 3px 6px; margin-bottom: 4px; font-size: 9.5px; color: #e2e8f0; }
-  .msg-time { font-size: 8.5px; color: #94a3b8; margin-top: 2px; }
+  .msg-bubble { background: #450a0a; border: 1px solid rgba(251,191,36,.35); border-radius: 10px; padding: 6px 9px; font-size: 11px; line-height: 1.35; color: #fff; word-break: break-word; }
+  .msg-row.mine .msg-bubble { background: #991b1b; border-color: #fde047; }
+  .msg-reply-quote { background: rgba(255,255,255,.1); border-left: 2.5px solid #fbbf24; border-radius: 4px; padding: 3px 6px; margin-bottom: 4px; font-size: 9.5px; color: #fef9c3; }
+  .msg-time { font-size: 8.5px; color: #bbf7d0; margin-top: 2px; }
   .msg-actions-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-top: 2px; }
-  .msg-act-btn { background: rgba(3,9,84,.85); color: #e2e8f0; border: 1px solid rgba(251,191,36,.35); border-radius: 999px; padding: 1px 5px; font-size: 9.5px; cursor: pointer; }
-  .msg-act-btn:hover, .msg-act-btn.reacted { background: #fbbf24; color: #030954; font-weight: 800; }
-  .reply-banner { display: none; justify-content: space-between; align-items: center; gap: 6px; background: #030954; border-left: 3px solid #fbbf24; border-radius: 5px; padding: 4px 7px; margin-bottom: 5px; font-size: 10px; color: #fde68a; }
+  .msg-act-btn { background: rgba(69,10,10,.9); color: #fef9c3; border: 1px solid rgba(251,191,36,.45); border-radius: 999px; padding: 1px 5px; font-size: 9.5px; cursor: pointer; }
+  .msg-act-btn:hover, .msg-act-btn.reacted { background: #fbbf24; color: #450a0a; font-weight: 800; }
+  .reply-banner { display: none; justify-content: space-between; align-items: center; gap: 6px; background: #450a0a; border-left: 3px solid #fbbf24; border-radius: 5px; padding: 4px 7px; margin-bottom: 5px; font-size: 10px; color: #fde68a; }
   .reply-banner.active { display: flex; }
   .reply-cancel-btn { background: transparent; color: #fca5a5; border: none; font-weight: 900; font-size: 11px; cursor: pointer; }
-  .chat-form { display: flex; flex-direction: column; gap: 5px; border-top: 1.5px solid rgba(251,191,36,.35); padding-top: 7px; }
+  .chat-form { display: flex; flex-direction: column; gap: 5px; border-top: 1.5px solid rgba(251,191,36,.45); padding-top: 7px; }
   .chat-form.locked-ui { opacity: .55; pointer-events: none; }
   .chat-user-row { display: flex; gap: 5px; align-items: center; }
-  .chat-user-select { flex: 1; background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; }
-  .chat-pin-input { width: 78px; background: #030954; color: #fff; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; text-align: center; }
-  .chat-pin-badge { font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 4px; background: rgba(248,113,113,.18); border: 1px solid #f87171; color: #fca5a5; white-space: nowrap; }
-  .chat-pin-badge.unlocked { background: rgba(74,222,128,.18); border-color: #4ade80; color: #4ade80; }
+  .chat-user-select { flex: 1; background: #450a0a; color: #fde047; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; }
+  .chat-pin-input { width: 78px; background: #450a0a; color: #fff; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; text-align: center; }
+  .chat-pin-badge { font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 4px; background: rgba(153,27,27,.45); border: 1px solid #fca5a5; color: #fecaca; white-space: nowrap; }
+  .chat-pin-badge.unlocked { background: rgba(22,163,74,.35); border-color: #4ade80; color: #86efac; }
   .chat-input-row { display: flex; gap: 5px; }
-  .chat-input { flex: 1; background: #030954; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 5px 8px; font-family: inherit; font-size: 11px; }
-  .chat-send-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .chat-input { flex: 1; background: #450a0a; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 5px 8px; font-family: inherit; font-size: 11px; }
+  .chat-send-btn { background: #dc2626; color: #fff; border: 1.5px solid #fde047; border-radius: 5px; padding: 5px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
 
-  .stage-wrap { position: relative; width: 100%; height: 580px; border-radius: 10px; overflow: hidden; border: 2px solid #fbbf24; background: radial-gradient(circle at 50% 25%, #fffbeb 0%, #fef3c7 52%, #fde68a 100%); user-select: none; touch-action: none; }
+  .stage-wrap { position: relative; width: 100%; height: 580px; border-radius: 10px; overflow: hidden; border: 2px solid #fbbf24; background: radial-gradient(circle at 50% 20%, #fef9c3 0%, #fef3c7 55%, #fde68a 100%); user-select: none; touch-action: none; }
   .stage-wrap.after-hours-dim { background: radial-gradient(circle at 50% 25%, #1e1b4b 0%, #0f172a 70%, #020617 100%); }
   #threeCanvasHost { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; }
   #threeCanvasHost:active { cursor: grabbing; }
   .labels-3d-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 15; }
   .tag-3d-card { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; cursor: pointer; max-width: 240px; }
   .tag-3d-card.hidden-out { display: none !important; }
-  .tag-3d-card.selected .name-chip-3d { background: #fbbf24; color: #030954; border-color: #0f172a; transform: scale(1.08); }
+  .tag-3d-card.selected .name-chip-3d { background: #dc2626; color: #fff; border-color: #fde047; transform: scale(1.08); }
   .bubble-tag-3d { padding: 2px 7px; border-radius: 9px; border: 1.5px solid #0f172a; font-size: 8.5px; font-weight: 900; color: #0f172a; margin-bottom: 2px; white-space: normal; text-align: center; line-height: 1.2; max-width: 225px; }
   .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-passlip { background: #facc15; } .st-ptl { background: #2dd4bf; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; } .st-coffee { background: #fde047; }
   .name-chip-3d { background: rgba(255,255,255,.96); color: #0f172a; border: 1.5px solid #334155; border-radius: 6px; padding: 1.5px 6px; font-size: 9px; font-weight: 900; white-space: nowrap; }
 
-  .hud-3d-corner { position: absolute; bottom: 8px; right: 8px; z-index: 25; display: flex; gap: 5px; align-items: center; background: rgba(3,9,84,.86); border: 1px solid #fbbf24; border-radius: 8px; padding: 4px 8px; font-size: 9.5px; font-weight: 800; color: #fde68a; }
-  .hud-3d-btn { background: #fbbf24; color: #030954; border: none; border-radius: 5px; padding: 2px 7px; font-family: inherit; font-size: 9.5px; font-weight: 900; cursor: pointer; }
-  .prov-3d-banner { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 25; background: #030954; color: #fde047; border: 1.5px solid #fbbf24; border-radius: 999px; padding: 4px 12px; font-size: 10.5px; font-weight: 900; white-space: nowrap; }
+  .xmas-corner-tag { position: absolute; top: 10px; left: 10px; z-index: 24; background: rgba(185,28,28,.94); border: 1.5px solid #fde047; border-radius: 999px; padding: 4px 10px; font-size: 10px; font-weight: 900; color: #fef08a; pointer-events: none; }
+  .hud-3d-corner { position: absolute; bottom: 8px; right: 8px; z-index: 25; display: flex; gap: 5px; align-items: center; background: rgba(20,83,45,.92); border: 1px solid #fbbf24; border-radius: 8px; padding: 4px 8px; font-size: 9.5px; font-weight: 800; color: #fef08a; }
+  .hud-3d-btn { background: #fbbf24; color: #450a0a; border: none; border-radius: 5px; padding: 2px 7px; font-family: inherit; font-size: 9.5px; font-weight: 900; cursor: pointer; }
+  .prov-3d-banner { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 25; background: #7f1d1d; color: #fde047; border: 1.5px solid #fbbf24; border-radius: 999px; padding: 4px 12px; font-size: 10.5px; font-weight: 900; white-space: nowrap; }
   .prov-3d-banner.active { display: block; }
-  .dance-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 45; display: none; align-items: center; gap: 8px; background: rgba(15,23,42,.94); border: 2px solid #f472b6; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 900; color: #fde047; }
+  .dance-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 45; display: none; align-items: center; gap: 8px; background: rgba(69,10,10,.96); border: 2px solid #fde047; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 900; color: #fde047; }
   .dance-banner.active { display: inline-flex; }
   .dance-stop-btn { background: #ef4444; color: #fff; border: 1px solid #fff; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 900; cursor: pointer; }
 
-  .vo-footer { margin-top: 10px; background: #07116e; border: 1px solid rgba(251,191,36,.45); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; }
+  .vo-footer { margin-top: 10px; background: #14532d; border: 1.5px solid rgba(251,191,36,.65); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; }
   .controls-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .controls-group.view-only-locked button, .controls-group.view-only-locked input { opacity: .42; pointer-events: none; cursor: not-allowed; }
-  .note-input { background: #030954; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; min-width: 210px; }
-  .task-set-btn { background: #f59e0b; color: #030954; border: 2px solid #fde047; border-radius: 5px; padding: 6px 9px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
-  .pin-lock-status { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
+  .note-input { background: #450a0a; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; min-width: 210px; }
+  .task-set-btn { background: #f59e0b; color: #450a0a; border: 2px solid #fde047; border-radius: 5px; padding: 6px 9px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .pin-lock-status { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #450a0a; color: #fde047; }
   .checkin-btn { background: #16a34a; color: #fff; border: 2px solid #bbf7d0; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
   .checkout-btn { background: #dc2626; color: #fff; border: 2px solid #fecaca; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
   .status-btns { display: flex; flex-wrap: wrap; gap: 4px; }
   .status-btns button { font-family: inherit; font-size: 11px; font-weight: 800; padding: 5px 8px; border-radius: 5px; border: 2px solid #0f172a; cursor: pointer; color: #0f172a; }
-  .timing-pill { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
+  .timing-pill { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #450a0a; color: #fde047; }
 
-  .pin-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.82); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px; }
+  .pin-modal-backdrop { position: fixed; inset: 0; background: rgba(20,5,5,.84); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px; }
   .pin-modal-backdrop.open { display: flex; }
-  .pin-modal-card { width: 100%; max-width: 395px; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
-  .pin-modal-title { font-size: 15px; font-weight: 900; color: #fbbf24; }
-  .pin-modal-sub { font-size: 11.5px; color: #e2e8f0; line-height: 1.4; }
-  .honor-rule-box { background: rgba(251,191,36,.14); border: 1px solid #fbbf24; border-radius: 8px; padding: 7px 10px; font-size: 10.5px; font-weight: 800; color: #fde68a; line-height: 1.35; }
-  .pin-modal-input { width: 100%; background: #07116e; color: #fde047; border: 2px solid #fbbf24; border-radius: 6px; padding: 8px 10px; font-family: inherit; font-size: 12.5px; font-weight: 800; text-align: center; }
+  .pin-modal-card { width: 100%; max-width: 395px; background: #14532d; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
+  .pin-modal-title { font-size: 15px; font-weight: 900; color: #fde047; }
+  .pin-modal-sub { font-size: 11.5px; color: #fef9c3; line-height: 1.4; }
+  .honor-rule-box { background: rgba(69,10,10,.65); border: 1px solid #fbbf24; border-radius: 8px; padding: 7px 10px; font-size: 10.5px; font-weight: 800; color: #fde68a; line-height: 1.35; }
+  .pin-modal-input { width: 100%; background: #450a0a; color: #fde047; border: 2px solid #fbbf24; border-radius: 6px; padding: 8px 10px; font-family: inherit; font-size: 12.5px; font-weight: 800; text-align: center; }
   .pin-modal-err { font-size: 10.5px; font-weight: 800; color: #fca5a5; min-height: 15px; }
   .pin-modal-actions { display: flex; gap: 8px; justify-content: center; margin-top: 2px; }
   .pin-confirm-btn { background: #16a34a; color: #fff; border: 2px solid #bbf7d0; border-radius: 6px; padding: 6px 14px; font-family: inherit; font-size: 11.5px; font-weight: 900; cursor: pointer; }
-  .pin-cancel-btn { background: #334155; color: #fff; border: 1.5px solid #94a3b8; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+  .pin-cancel-btn { background: #7f1d1d; color: #fff; border: 1.5px solid #fca5a5; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 11.5px; font-weight: 800; cursor: pointer; }
 
-  .log-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.78); z-index: 999; display: none; align-items: center; justify-content: center; padding: 14px; }
+  .log-modal-backdrop { position: fixed; inset: 0; background: rgba(20,5,5,.8); z-index: 999; display: none; align-items: center; justify-content: center; padding: 14px; }
   .log-modal-backdrop.open { display: flex; }
-  .log-modal-card { width: 100%; max-width: 860px; max-height: 82vh; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-  .log-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(251,191,36,.35); padding-bottom: 8px; }
-  .log-modal-head h3 { font-size: 15px; font-weight: 900; color: #fbbf24; }
-  .log-table-wrap { overflow: auto; flex: 1; border: 1px solid rgba(251,191,36,.3); border-radius: 8px; }
+  .log-modal-card { width: 100%; max-width: 860px; max-height: 82vh; background: #14532d; border: 2px solid #fbbf24; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .log-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(251,191,36,.45); padding-bottom: 8px; }
+  .log-modal-head h3 { font-size: 15px; font-weight: 900; color: #fde047; }
+  .log-table-wrap { overflow: auto; flex: 1; border: 1px solid rgba(251,191,36,.4); border-radius: 8px; background: #450a0a; }
   table.log-tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
-  table.log-tbl th, table.log-tbl td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.1); text-align: left; }
-  table.log-tbl th { background: #07116e; color: #fde047; font-weight: 900; position: sticky; top: 0; }
+  table.log-tbl th, table.log-tbl td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.12); text-align: left; }
+  table.log-tbl th { background: #7f1d1d; color: #fde047; font-weight: 900; position: sticky; top: 0; }
 
   .mobile-bottom-nav { display: none; }
   @media (max-width: 820px) {
-    html, body { background: #030954; min-height: 100dvh; padding: 0 0 64px 0; overflow-x: hidden; }
+    html, body { background: #14532d; min-height: 100dvh; padding: 0 0 64px 0; overflow-x: hidden; }
     .vo-shell { width: 100%; max-width: 100%; border-radius: 0 0 12px 12px; border: none; padding: 8px; }
     .summary-strip { grid-template-columns: repeat(4, 1fr); width: 100%; }
     .vo-main-grid { grid-template-columns: minmax(0, 1fr); width: 100%; }
@@ -145,9 +147,9 @@
     body.mobile-tab-mode .stage-wrap-slot, body.mobile-tab-mode .chat-panel-slot, body.mobile-tab-mode .vo-footer { display: none; }
     body.mobile-tab-mode.tab-floor .stage-wrap-slot, body.mobile-tab-mode.tab-chat .chat-panel-slot, body.mobile-tab-mode.tab-checkin .stage-wrap-slot { display: block; }
     body.mobile-tab-mode.tab-checkin .vo-footer { display: flex; }
-    .mobile-bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; background: #030954; border-top: 2px solid #fbbf24; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); z-index: 950; gap: 4px; }
-    .mob-nav-btn { background: #07116e; color: #e2e8f0; border: 1px solid rgba(251,191,36,.4); border-radius: 8px; padding: 6px 4px; font-family: inherit; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .mob-nav-btn.active { background: #fbbf24; color: #030954; border-color: #fff; }
+    .mobile-bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; background: #14532d; border-top: 2px solid #fbbf24; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); z-index: 950; gap: 4px; }
+    .mob-nav-btn { background: #450a0a; color: #fef9c3; border: 1px solid rgba(251,191,36,.45); border-radius: 8px; padding: 6px 4px; font-family: inherit; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .mob-nav-btn.active { background: #dc2626; color: #fff; border-color: #fde047; }
   }
 </style>
 </head>
@@ -155,7 +157,7 @@
 
 <div class="vo-shell">
   <div class="vo-header">
-    <h2>PDMU VIRTUAL OFFICE <span class="badge-3d">3D</span></h2>
+    <h2>🎄 PDMU VIRTUAL OFFICE <span class="badge-3d">3D CHRISTMAS</span></h2>
     <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
       <button type="button" class="install-pwa-btn" id="installPwaBtn" onclick="installPwaApp()">📲 Install App</button>
       <span class="view-only-pill" id="viewOnlyPill">👁 VIEW ONLY (OTHER OFFICE)</span>
@@ -186,7 +188,8 @@
         <option value="offline">Offline</option>
       </select>
       <label><input type="checkbox" id="hideOutChk" onchange="renderFloor()"> Hide Out</label>
-      <button type="button" class="dance-btn" onclick="startDanceBreak(30)">🪩 3PM Dance</button>
+      <button type="button" class="snow-btn" id="snowToggleBtn" onclick="toggleSnowEffect()">❄️ Snow: ON</button>
+      <button type="button" class="dance-btn" onclick="startDanceBreak(30)">🎅 3PM Party</button>
       <button type="button" class="log-btn" onclick="openTodayLogModal()">📋 Log</button>
       <button type="button" class="cam-btn" onclick="reset3DCamera()">🎥 Reset Cam</button>
     </div>
@@ -209,13 +212,13 @@
         <div style="display:flex; flex-direction:column; flex:1; min-height:0;">
           <div class="chat-top">
             <div class="chat-title">
-              <span>PDMU CHATBOX</span>
+              <span>🎄 PDMU CHATBOX</span>
               <button type="button" class="chat-lock-top-btn" id="lockConvoBtn" onclick="lockConvoPanel()">🔒 Lock</button>
             </div>
             <div class="chat-sub" id="chatSubLabel">Enter chat passkey to view &amp; join convo</div>
           </div>
           <div class="chat-gate-box" id="chatGateBox">
-            <div class="chat-gate-title">PRIVATE PDMU CONVO</div>
+            <div class="chat-gate-title">🎅 PRIVATE PDMU CONVO</div>
             <div class="chat-gate-desc">Hidden from public view. Enter the team chat passkey to read and send messages.</div>
             <input type="password" id="convoPasskeyInput" class="chat-gate-input" placeholder="Enter Passkey" onkeydown="if(event.key==='Enter') unlockConvoPanel()">
             <button type="button" class="chat-gate-btn" onclick="unlockConvoPanel()">Unlock Chat</button>
@@ -235,7 +238,7 @@
               <span class="chat-pin-badge" id="chatPinBadge">🔒 PIN</span>
             </div>
             <div class="chat-input-row">
-              <input type="text" id="chatInput" class="chat-input" placeholder="Type message..." maxlength="280">
+              <input type="text" id="chatInput" class="chat-input" placeholder="Type holiday greeting..." maxlength="280">
               <button type="submit" class="chat-send-btn">Send</button>
             </div>
           </form>
@@ -245,8 +248,9 @@
 
     <div class="stage-wrap-slot">
       <div class="stage-wrap" id="stageWrap">
+        <div class="xmas-corner-tag">🎄 Happy Holidays, PDMU Caraga!</div>
         <div class="dance-banner" id="danceBanner">
-          <span>🪩 3:00 PM DANCE BREAK!</span>
+          <span>🎅 3:00 PM CHRISTMAS DANCE BREAK!</span>
           <span id="danceTimerText">30:00</span>
           <button type="button" class="dance-stop-btn" onclick="stopDanceBreak()">End</button>
         </div>
@@ -287,7 +291,7 @@
 </div>
 
 <nav class="mobile-bottom-nav">
-  <button type="button" class="mob-nav-btn active" id="mobBtnFloor" onclick="switchMobileTab('floor')">🏢<span>3D Office</span></button>
+  <button type="button" class="mob-nav-btn active" id="mobBtnFloor" onclick="switchMobileTab('floor')">🎄<span>3D Office</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnCheckin" onclick="switchMobileTab('checkin')">✅<span>Check-In</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnChat" onclick="switchMobileTab('chat')">💬<span>Chat</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnLogs" onclick="openTodayLogModal()">📋<span>Logs</span></button>
@@ -334,8 +338,13 @@
   const COFFEE_DURATION_MS = 60000;
   const COFFEE_INTERVAL_MS = 180000;
   const PROVINCE_CODES = ["PDI", "SDN", "ADN", "ADS", "SDS"];
-  const WALL_PHOTO_URLS = ["wall1.jpg", "wall2.JPG", "wall3.jpeg", "wall4.png"];
-  const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="16" fill="#030954"/><circle cx="16" cy="12" r="5.5" fill="#fcd34d"/><path d="M7 28c0-5 4-8.5 9-8.5s9 3.5 9 8.5" fill="#2563eb"/></svg>');
+  const WALL_PHOTO_URLS = [
+    "https://pdmuweb.github.io/pdmu-virtual-office/wall1.jpg",
+    "https://pdmuweb.github.io/pdmu-virtual-office/wall2.JPG",
+    "https://pdmuweb.github.io/pdmu-virtual-office/wall3.jpeg",
+    "https://pdmuweb.github.io/pdmu-virtual-office/wall4.png"
+  ];
+  const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="16" fill="#07241b"/><circle cx="16" cy="12" r="5.5" fill="#fcd34d"/><path d="M7 28c0-5 4-8.5 9-8.5s9 3.5 9 8.5" fill="#dc2626"/></svg>');
 
   const MEMBER_AVATARS = {
     "Jojo (Chief)": "https://drive.google.com/thumbnail?id=1inSLucU7wifxYKpCtQjj66M_Ey6Hfv9j&sz=w120",
@@ -399,8 +408,8 @@
   let deferredInstallPrompt = null, selectedIndex = -1, pendingPinAction = null, pendingPinIsCreate = false, pendingTaskText = "";
   let convoUnlocked = false, currentChatUser = "", unlockedPinUser = "", savedPinsMap = {}, chatMessages = [], todayLogsData = [], replyTarget = null;
   let coffeeBusy = false, activeCoffeeName = "", coffeePhase = "idle", coffeeProgress = 0, coffeeChatterIndex = 0, coffeeDrinkTimeout = null, coffeeChatterInterval = null;
-  let danceEndTime = 0, danceCountdownInterval = null, isAfterHours = false;
-  let scene3D, camera3D, renderer3D, staff3DObjects = [], regionalWallFramesGroup = null, discoLights3D = [];
+  let danceEndTime = 0, danceCountdownInterval = null, isAfterHours = false, snowEnabled = true;
+  let scene3D, camera3D, renderer3D, staff3DObjects = [], regionalWallFramesGroup = null, discoLights3D = [], fairyBulbs3D = [], snowPoints3D = null, snowVelocities = [];
   let camSpherical = { theta: 0.44, phi: 0.94, radius: 32.0 }, camTarget = { x: 0, y: 1.0, z: 0.4 };
   let isDragging3D = false, dragMoved3D = false, prevPointer3D = { x: 0, y: 0 }, raycaster3D, pointerNDC3D;
   const COFFEE_3D_SPOT = { x: -7.2, z: 8.6 }, CARPET_3D_CENTER = { x: 10.6, z: 7.8 }, tempWorldVec3 = new THREE.Vector3();
@@ -410,6 +419,11 @@
     if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); const ch = await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; if (ch && ch.outcome === "accepted") { document.getElementById("installPwaBtn").classList.remove("visible"); return; } }
     if (/iPad|iPhone|iPod/.test(navigator.userAgent)) { alert("Sa iPhone/iPad (Safari):\n1. I-tap ang Share icon.\n2. Pilia ang 'Add to Home Screen'."); return; }
     window.open("https://pdmuweb.github.io/pdmu-virtual-office/", "_blank", "noopener,noreferrer");
+  }
+  function toggleSnowEffect() {
+    snowEnabled = !snowEnabled;
+    if (snowPoints3D) snowPoints3D.visible = snowEnabled;
+    document.getElementById("snowToggleBtn").textContent = snowEnabled ? "❄️ Snow: ON" : "❄️ Snow: OFF";
   }
   function switchMobileTab(tabName) {
     document.body.classList.remove("tab-floor", "tab-chat", "tab-checkin"); document.body.classList.add("tab-" + tabName);
@@ -438,9 +452,9 @@
   function getCoffeeChatterLine(p) {
     const cleanTask = String((p && p.note) || "").trim().replace(/^i['’]?m\s+/i,"").replace(/\s+right now!?$/i,"").trim();
     if (cleanTask && !/^(checked-in|in office|online|uli na)$/i.test(cleanTask)) {
-      return ["☕ sip sa kape while " + cleanTask + "!", "☕ nag-kape kadiyot—balik dayon sa '" + cleanTask + "'", "☕ lami ang kape! Padayon ta sa " + cleanTask][coffeeChatterIndex % 3];
+      return ["☕ sip sa kape while " + cleanTask + "!", "☕ nag-kape kadiyot—balik dayon sa '" + cleanTask + "'", "🎄 lami ang kape! Padayon ta sa " + cleanTask][coffeeChatterIndex % 3];
     }
-    return ["☕ nag-kape kadiyot para fresh sa trabaho!", "☕ sip sa kape—daghan pa og i-update sa PDMU!", "☕ lami kaayo ang kape karon!"][coffeeChatterIndex % 3];
+    return ["☕ nag-kape kadiyot para fresh sa trabaho!", "🎄 merry Christmas! Sip sa kape!", "☕ lami kaayo ang kape karon!"][coffeeChatterIndex % 3];
   }
   function getTimingBadgeText(p) {
     const ct = formatTimeOnly(p && p.checkInAt); if (!ct) return "No Check-In Yet";
@@ -554,7 +568,7 @@
       const isMine = currentChatUser && m.sender === currentChatUser;
       const q = m.replyTo && m.replyTo.sender ? `<div class="msg-reply-quote"><strong>${esc(m.replyTo.sender)}:</strong> ${esc(m.replyTo.text)}</div>` : "";
       const rx = m.reactions || {};
-      const btns = ["👍","❤️","😂","👏"].map(emo => { const u = Array.isArray(rx[emo]) ? rx[emo] : []; const act = currentChatUser && u.includes(currentChatUser); return `<button type="button" class="msg-act-btn ${act?"reacted":""}" onclick="toggleReaction('${esc(m.id)}','${emo}')">${emo}${u.length?" "+u.length:""}</button>`; }).join("") + `<button type="button" class="msg-act-btn" onclick="setReplyTarget('${esc(m.id)}','${esc(m.sender)}','${esc(m.message)}')">↩ Reply</button>`;
+      const btns = ["👍","❤️","😂","🎄"].map(emo => { const u = Array.isArray(rx[emo]) ? rx[emo] : []; const act = currentChatUser && u.includes(currentChatUser); return `<button type="button" class="msg-act-btn ${act?"reacted":""}" onclick="toggleReaction('${esc(m.id)}','${emo}')">${emo}${u.length?" "+u.length:""}</button>`; }).join("") + `<button type="button" class="msg-act-btn" onclick="setReplyTarget('${esc(m.id)}','${esc(m.sender)}','${esc(m.message)}')">↩ Reply</button>`;
       return `<div class="msg-row ${isMine?"mine":""}"><img class="msg-avatar" src="${esc(getAvatarForSender(m.sender))}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}';"><div class="msg-col"><div class="msg-sender">${esc(m.sender)}</div><div class="msg-bubble">${q}${esc(m.message)}</div><div class="msg-actions-bar">${btns}</div><div class="msg-time">${esc(formatTimeOnly(m.sentAt||""))}</div></div></div>`;
     }).join("");
     box.scrollTop = box.scrollHeight;
@@ -597,8 +611,8 @@
   function map2Dto3D(px, py) { return { x: ((px-50)/50)*14.2, z: ((py-50)/50)*10.2 }; }
   function createFallbackFrameTexture(labelText, bgColor) {
     const c = document.createElement("canvas"); c.width = 512; c.height = 256; const ctx = c.getContext("2d");
-    ctx.fillStyle = bgColor || "#1e293b"; ctx.fillRect(0,0,512,256); ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 8; ctx.strokeRect(12,12,488,232);
-    ctx.fillStyle = "#fde047"; ctx.font = "bold 28px Inter, sans-serif"; ctx.textAlign = "center"; ctx.fillText("PDMU REGIONAL WALL", 256, 112);
+    ctx.fillStyle = bgColor || "#07241b"; ctx.fillRect(0,0,512,256); ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 8; ctx.strokeRect(12,12,488,232);
+    ctx.fillStyle = "#fde047"; ctx.font = "bold 28px Inter, sans-serif"; ctx.textAlign = "center"; ctx.fillText("🎄 PDMU REGIONAL WALL", 256, 112);
     ctx.fillStyle = "#fff"; ctx.font = "bold 22px Inter, sans-serif"; ctx.fillText(labelText, 256, 152);
     return new THREE.CanvasTexture(c);
   }
@@ -607,6 +621,42 @@
     const img = new Image(); img.crossOrigin = "anonymous";
     img.onload = () => { const tex = new THREE.Texture(img); tex.needsUpdate = true; photoMat.map = tex; photoMat.needsUpdate = true; };
     img.src = url;
+  }
+
+  function buildChristmasTree3D(x, z) {
+    const treeGroup = new THREE.Group();
+    treeGroup.position.set(x, 0, z);
+
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 0.8, 12), new THREE.MeshStandardMaterial({ color: 0x5c3a21 }));
+    trunk.position.y = 0.4; trunk.castShadow = true; treeGroup.add(trunk);
+
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.6 });
+    [[1.35, 1.4, 1.3], [1.05, 1.25, 2.1], [0.75, 1.1, 2.8]].forEach(([rad, h, y]) => {
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(rad, h, 16), leafMat);
+      cone.position.y = y; cone.castShadow = true; treeGroup.add(cone);
+    });
+
+    const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.26, 0), new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xf59e0b, emissiveIntensity: 0.7 }));
+    star.position.y = 3.52; treeGroup.add(star);
+
+    const orbColors = [0xdc2626, 0xfbbf24, 0x38bdf8, 0xf472b6];
+    for (let i = 0; i < 16; i++) {
+      const ang = i * 1.15;
+      const tier = i < 7 ? 0 : (i < 12 ? 1 : 2);
+      const r = tier === 0 ? 1.15 : (tier === 1 ? 0.85 : 0.55);
+      const y = tier === 0 ? 1.05 : (tier === 1 ? 1.85 : 2.55);
+      const orb = new THREE.Mesh(new THREE.SphereGeometry(0.10, 10, 10), new THREE.MeshStandardMaterial({ color: orbColors[i % orbColors.length], emissive: orbColors[i % orbColors.length], emissiveIntensity: 0.35 }));
+      orb.position.set(Math.cos(ang)*r, y, Math.sin(ang)*r);
+      treeGroup.add(orb);
+    }
+
+    // Gift boxes under the tree
+    [[-0.75, 0.22, 0.65, 0xdc2626], [0.72, 0.25, 0.62, 0x2563eb], [0.05, 0.18, 0.92, 0xf59e0b]].forEach(([gx, gy, gz, col]) => {
+      const box = new THREE.Mesh(new THREE.BoxGeometry(0.46, gy*2, 0.46), new THREE.MeshStandardMaterial({ color: col }));
+      box.position.set(gx, gy, gz); box.castShadow = true; treeGroup.add(box);
+    });
+
+    scene3D.add(treeGroup);
   }
 
   function buildDetailedChibiCharacter3D(p) {
@@ -641,6 +691,19 @@
     const bangL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.12, 0.14), hairMat); bangL.position.set(-0.22, 0.27, 0.36); bangL.rotation.z = -0.18;
     const bangR = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.11, 0.14), hairMat); bangR.position.set(0.18, 0.28, 0.37); bangR.rotation.z = 0.14;
     headGroup.add(bangL, bangR);
+
+    // Cute Christmas Santa Hat on every character
+    const hatGroup = new THREE.Group();
+    hatGroup.position.set(0, 0.44, -0.02);
+    hatGroup.rotation.z = -0.14;
+    const hatBrim = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.075, 10, 20), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 }));
+    hatBrim.rotation.x = Math.PI / 2;
+    const hatCone = new THREE.Mesh(new THREE.ConeGeometry(0.31, 0.52, 18), new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.45 }));
+    hatCone.position.set(0, 0.24, 0);
+    const hatPom = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 12), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    hatPom.position.set(0.06, 0.50, -0.04);
+    hatGroup.add(hatBrim, hatCone, hatPom);
+    headGroup.add(hatGroup);
 
     if (p.pigtails) {
       const tieMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(p.hairtie || "#ec4899") });
@@ -685,7 +748,7 @@
     const lapScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.48,0.30), lapScreenMat); lapScreen.position.set(0,0.19,0.155); lapScreen.rotation.x = -0.22; lapScreen.rotation.y = Math.PI;
     lapGroup.add(lapBase, lapLid, lapScreen); unitGroup.add(lapGroup);
 
-    const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.065,0.06,0.11,12), new THREE.MeshStandardMaterial({ color: 0xfb7185 })); mug.position.set(0.62,0.81,0.42); unitGroup.add(mug);
+    const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.065,0.06,0.11,12), new THREE.MeshStandardMaterial({ color: 0xdc2626 })); mug.position.set(0.62,0.81,0.42); unitGroup.add(mug);
     const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.30,0.26,0.09,16), new THREE.MeshStandardMaterial({ color: isChief ? 0xd97706 : 0x64748b })); seat.position.set(0,0.44,-0.34); seat.castShadow = true;
     const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.18,0.4,12), legMat); stem.position.set(0,0.2,-0.34); unitGroup.add(seat, stem);
 
@@ -718,7 +781,7 @@
     scene3D.add(new THREE.HemisphereLight(0xfffbeb, 0xd97706, 0.92));
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.85); dirLight.position.set(14,24,16); dirLight.castShadow = true; dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 1024;
     const d = 20; dirLight.shadow.camera.left = dirLight.shadow.camera.bottom = -d; dirLight.shadow.camera.right = dirLight.shadow.camera.top = d; scene3D.add(dirLight);
-    [0xf472b6, 0x38bdf8, 0xfacc15].forEach((col,i) => { const pl = new THREE.PointLight(col, 0, 22); pl.position.set((i-1)*9, 6, 0); scene3D.add(pl); discoLights3D.push(pl); });
+    [0xdc2626, 0x16a34a, 0xfacc15].forEach((col,i) => { const pl = new THREE.PointLight(col, 0, 22); pl.position.set((i-1)*9, 6, 0); scene3D.add(pl); discoLights3D.push(pl); });
 
     const floorMesh = new THREE.Mesh(new THREE.BoxGeometry(32,0.4,23.5), new THREE.MeshStandardMaterial({ map: createWoodFloorTexture(), roughness:0.65 })); floorMesh.position.set(0,-0.2,0); floorMesh.receiveShadow = true; scene3D.add(floorMesh);
     const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness:0.7 });
@@ -726,9 +789,22 @@
     const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.35,3.6,23.5), wallMat); leftWall.position.set(-15.8,1.6,0); leftWall.receiveShadow = true;
     scene3D.add(backWall, leftWall);
 
+    // Twinkling Christmas Fairy Lights along the top of the back wall
+    const bulbColors = [0xef4444, 0x22c55e, 0xfacc15, 0x38bdf8];
+    for (let bx = -14.5; bx <= 14.5; bx += 1.45) {
+      const idx = fairyBulbs3D.length;
+      const col = bulbColors[idx % bulbColors.length];
+      const mat = new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.8 });
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), mat);
+      bulb.position.set(bx, 3.22 + Math.sin(bx * 0.7) * 0.14, -11.35);
+      scene3D.add(bulb);
+      fairyBulbs3D.push({ mesh: bulb, mat, phase: idx * 0.8 });
+    }
+
+    // 4 Framed Wall Photos (Regional Office only)
     regionalWallFramesGroup = new THREE.Group();
-    const frameBorderMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness:0.5 });
-    const cardColors = ["#030954","#1e3a8a","#0f172a","#172554"], cardLabels = ["PHOTO 1","PHOTO 2","PHOTO 3","PHOTO 4"];
+    const frameBorderMat = new THREE.MeshStandardMaterial({ color: 0x7f1d1d, roughness:0.5 });
+    const cardColors = ["#07241b","#0f3d2e","#7f1d1d","#06213e"], cardLabels = ["PHOTO 1","PHOTO 2","PHOTO 3","PHOTO 4"];
     [-4.5, 0.0, 4.5, 9.0].forEach((wx, idx) => {
       const frame = new THREE.Mesh(new THREE.BoxGeometry(3.96,2.06,0.10), frameBorderMat); frame.position.set(wx,1.95,-11.41); frame.castShadow = true; regionalWallFramesGroup.add(frame);
       const photoMat = new THREE.MeshBasicMaterial({ map: createFallbackFrameTexture(cardLabels[idx], cardColors[idx]) });
@@ -748,8 +824,26 @@
     const coffeeCounter = new THREE.Mesh(new THREE.BoxGeometry(1.8,0.85,1.0), new THREE.MeshStandardMaterial({ color: 0x451a03 })); coffeeCounter.position.set(COFFEE_3D_SPOT.x,0.42,COFFEE_3D_SPOT.z+0.8); coffeeCounter.castShadow = true;
     const coffeeMachine = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.55,0.48), new THREE.MeshStandardMaterial({ color: 0xfbbf24 })); coffeeMachine.position.set(COFFEE_3D_SPOT.x,1.12,COFFEE_3D_SPOT.z+0.8); scene3D.add(coffeeCounter, coffeeMachine);
 
-    [[-14.5,-10.3],[14.5,-10.3],[-14.5,10.3],[14.5,10.3]].forEach(([px,pz]) => {
-      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.28,0.48,12), new THREE.MeshStandardMaterial({ color: 0xd97706 })); pot.position.set(px,0.24,pz);
+    // Christmas Tree in back-right corner
+    buildChristmasTree3D(13.8, -9.6);
+
+    // Gentle Snowfall Particles
+    const snowCount = 240;
+    const snowPositions = new Float32Array(snowCount * 3);
+    for (let i = 0; i < snowCount; i++) {
+      snowPositions[i*3] = (Math.random() - 0.5) * 31;
+      snowPositions[i*3 + 1] = Math.random() * 14;
+      snowPositions[i*3 + 2] = (Math.random() - 0.5) * 22;
+      snowVelocities.push(0.015 + Math.random() * 0.02);
+    }
+    const snowGeo = new THREE.BufferGeometry();
+    snowGeo.setAttribute("position", new THREE.BufferAttribute(snowPositions, 3));
+    const snowMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.18, transparent: true, opacity: 0.85 });
+    snowPoints3D = new THREE.Points(snowGeo, snowMat);
+    scene3D.add(snowPoints3D);
+
+    [[-14.5,-10.3],[-14.5,10.3],[14.5,10.3]].forEach(([px,pz]) => {
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.28,0.48,12), new THREE.MeshStandardMaterial({ color: 0xdc2626 })); pot.position.set(px,0.24,pz);
       const bush = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55), new THREE.MeshStandardMaterial({ color: 0x16a34a })); bush.position.set(px,0.82,pz); bush.castShadow = true; scene3D.add(pot, bush);
     });
 
@@ -783,6 +877,21 @@
   function animate3DLoop() {
     requestAnimationFrame(animate3DLoop); if (!renderer3D || !scene3D || !camera3D) return;
     const nowSec = performance.now()*0.001, dancing = isDancingNow();
+
+    fairyBulbs3D.forEach(b => {
+      b.mat.emissiveIntensity = 0.45 + 0.55 * Math.abs(Math.sin(nowSec * 3.2 + b.phase));
+    });
+
+    if (snowPoints3D && snowEnabled) {
+      const posAttr = snowPoints3D.geometry.attributes.position;
+      for (let i = 0; i < snowVelocities.length; i++) {
+        let ny = posAttr.getY(i) - snowVelocities[i];
+        if (ny < 0.1) ny = 14;
+        posAttr.setY(i, ny);
+      }
+      posAttr.needsUpdate = true;
+    }
+
     discoLights3D.forEach((pl,i) => { pl.intensity = dancing ? (1.6 + Math.sin(nowSec*6+i*2)*1.1) : 0; });
     staff3DObjects.forEach(obj => {
       const p = obj.person, isOnline = p.status === "online", isCoffeeWalker = coffeeBusy && activeCoffeeName === p.name && isOnline;
@@ -804,7 +913,7 @@
       }
       if (obj.lapScreenMat) obj.lapScreenMat.emissiveIntensity = isOnline ? (0.45+Math.sin(nowSec*5+obj.idx)*0.15) : 0.05;
       const sc = isOnline ? 1.06 : 0.92; obj.avatarGroup.scale.set(sc,sc,sc);
-      obj.avatarGroup.getWorldPosition(tempWorldVec3); tempWorldVec3.y += 1.38;
+      obj.avatarGroup.getWorldPosition(tempWorldVec3); tempWorldVec3.y += 1.52;
       const sp = project3DToScreen(tempWorldVec3); if (sp.visible) { obj.tagEl.style.left = sp.x.toFixed(1)+"px"; obj.tagEl.style.top = sp.y.toFixed(1)+"px"; }
     });
     renderer3D.render(scene3D, camera3D);
