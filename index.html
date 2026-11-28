@@ -329,11 +329,11 @@
       <button type="button" onclick="fetchFromSheet(true)">Sync Sheet</button>
       <select id="provFilter" onchange="renderFloor()">
         <option value="Regional">Regional Office</option>
-        <option value="ADN">ADN</option>
-        <option value="ADS">ADS</option>
-        <option value="SDN">SDN</option>
-        <option value="SDS">SDS</option>
-        <option value="PDI">PDI</option>
+        <option value="PDI">Province of Dinagat Islands (PDI)</option>
+        <option value="SDN">Surigao del Norte (SDN)</option>
+        <option value="ADN">Agusan del Norte (ADN)</option>
+        <option value="ADS">Agusan del Sur (ADS)</option>
+        <option value="SDS">Surigao del Sur (SDS)</option>
       </select>
       <select id="statusFilter" onchange="renderFloor()">
         <option value="ALL">Show All</option>
@@ -503,7 +503,7 @@
   const DANCE_BREAK_MINUTES = 30;
   const COFFEE_DURATION_MS = 60000;
   const COFFEE_INTERVAL_MS = 180000;
-  const PROVINCE_CODES = ["ADN", "ADS", "SDN", "SDS", "PDI"];
+  const PROVINCE_CODES = ["PDI", "SDN", "ADN", "ADS", "SDS"];
 
   const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="16" fill="#030954"/><circle cx="16" cy="12" r="5.5" fill="#fcd34d"/><path d="M7 28c0-5 4-8.5 9-8.5s9 3.5 9 8.5" fill="#2563eb"/></svg>');
 
@@ -530,6 +530,7 @@
   };
 
   const PEOPLE = [
+    // Regional Office
     { name: "Airah", x: 30.0, y: 12.0, hair: "#5c3a21", shirt: "#f472b6", pigtails: true, hairtie: "#ec4899", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
     { name: "Shaira", x: 10.0, y: 26.0, hair: "#27272a", shirt: "#fb923c", pigtails: false, hairtie: "", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
     { name: "Darren", x: 23.0, y: 26.0, hair: "#5c3a21", shirt: "#f97316", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
@@ -546,9 +547,34 @@
     { name: "Ian", x: 10.0, y: 74.0, hair: "#27272a", shirt: "#2563eb", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
     { name: "Kirsten", x: 83.0, y: 20.0, hair: "#4a2c18", shirt: "#f43f5e", pigtails: true, hairtie: "#fbbf24", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
     { name: "Christian", x: 83.0, y: 38.0, hair: "#1e293b", shirt: "#0ea5e9", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jojo (Chief)", x: 80.5, y: 72.0, hair: "#1e293b", shirt: "#ec4899", pigtails: true, hairtie: "#fbbf24", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Alvin", x: 56.0, y: 86.0, hair: "#0f172a", shirt: "#0284c7", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jesreel (Asst. Chief)", x: 68.0, y: 86.0, hair: "#451a03", shirt: "#d97706", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" }
+    { name: "Jojo (Chief)", x: 86.0, y: 74.0, hair: "#1e293b", shirt: "#ec4899", pigtails: true, hairtie: "#fbbf24", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Alvin", x: 49.0, y: 86.0, hair: "#0f172a", shirt: "#0284c7", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jesreel (Asst. Chief)", x: 61.5, y: 86.0, hair: "#451a03", shirt: "#d97706", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+
+    // Province of Dinagat Islands (PDI)
+    { name: "Welmer", x: 32.0, y: 36.0, hair: "#1e293b", shirt: "#2563eb", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "PDI", checkInAt: "", checkOutAt: "" },
+    { name: "Nitcheban", x: 68.0, y: 36.0, hair: "#3b2314", shirt: "#0ea5e9", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "PDI", checkInAt: "", checkOutAt: "" },
+
+    // Surigao del Norte (SDN)
+    { name: "Quennie", x: 24.0, y: 34.0, hair: "#4a2c18", shirt: "#f472b6", pigtails: true, hairtie: "#38bdf8", female: true, status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
+    { name: "Jermalyn", x: 50.0, y: 34.0, hair: "#27272a", shirt: "#a855f7", pigtails: true, hairtie: "#facc15", female: true, status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
+    { name: "Camz", x: 76.0, y: 34.0, hair: "#1e1b4b", shirt: "#14b8a6", pigtails: false, hairtie: "", female: true, status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
+
+    // Agusan del Norte (ADN)
+    { name: "Niña", x: 32.0, y: 36.0, hair: "#3b2314", shirt: "#fb7185", pigtails: true, hairtie: "#fbbf24", female: true, status: "offline", note: "", province: "ADN", checkInAt: "", checkOutAt: "" },
+    { name: "Sheena", x: 68.0, y: 36.0, hair: "#27272a", shirt: "#38bdf8", pigtails: true, hairtie: "#ec4899", female: true, status: "offline", note: "", province: "ADN", checkInAt: "", checkOutAt: "" },
+
+    // Agusan del Sur (ADS)
+    { name: "Gen", x: 24.0, y: 34.0, hair: "#0f172a", shirt: "#10b981", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
+    { name: "Hermie", x: 50.0, y: 34.0, hair: "#451a03", shirt: "#f97316", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
+    { name: "Jassy", x: 76.0, y: 34.0, hair: "#3b2314", shirt: "#f472b6", pigtails: true, hairtie: "#a855f7", female: true, status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
+
+    // Surigao del Sur (SDS)
+    { name: "Ace", x: 24.0, y: 30.0, hair: "#1e293b", shirt: "#2563eb", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Mark", x: 50.0, y: 30.0, hair: "#0f172a", shirt: "#0ea5e9", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Joxin", x: 76.0, y: 30.0, hair: "#451a03", shirt: "#eab308", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Jae Wayne", x: 36.0, y: 66.0, hair: "#27272a", shirt: "#22c55e", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Jeunesse", x: 64.0, y: 66.0, hair: "#3b2314", shirt: "#3b82f6", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" }
   ];
 
   let deferredInstallPrompt = null;
@@ -568,6 +594,11 @@
         document.getElementById("installPwaBtn").classList.remove("visible");
         return;
       }
+    }
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      alert("Sa iPhone/iPad (Safari):\n1. I-tap ang Share icon (pataas nga arrow).\n2. Pilia ang 'Add to Home Screen'.");
+      return;
     }
     window.open(pwaUrl, "_blank", "noopener,noreferrer");
   }
@@ -596,7 +627,7 @@
 
   let coffeeBusy = false;
   let activeCoffeeName = "";
-  let coffeePhase = "idle"; // "to", "drink", "back"
+  let coffeePhase = "idle";
   let coffeeProgress = 0;
   let coffeeChatterIndex = 0;
   let coffeeDrinkTimeout = null;
@@ -654,7 +685,6 @@
     return "offline (uli na)";
   }
 
-  // Build task-related coffee chatter lines without any timer
   function getCoffeeChatterLine(p) {
     const rawTask = String((p && p.note) || "").trim();
     const cleanTask = rawTask
@@ -1082,7 +1112,7 @@
   let raycaster3D, pointerNDC3D;
   let discoLights3D = [];
   const COFFEE_3D_SPOT = { x: -7.2, z: 8.6 };
-  const CARPET_3D_CENTER = { x: 8.4, z: 7.4 };
+  const CARPET_3D_CENTER = { x: 10.6, z: 7.8 };
 
   function map2Dto3D(px, py) {
     const wx = ((px - 50) / 50) * 14.2;
@@ -1418,7 +1448,7 @@
     });
 
     const carpet = new THREE.Mesh(
-      new THREE.BoxGeometry(6.8, 0.04, 5.2),
+      new THREE.BoxGeometry(5.2, 0.04, 4.8),
       new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.85 })
     );
     carpet.position.set(CARPET_3D_CENTER.x, 0.02, CARPET_3D_CENTER.z);
@@ -1656,10 +1686,9 @@
       obj.tagEl.classList.toggle("selected", obj.idx === selectedIndex);
 
       if (isProvSquare && provMatch) {
-        const gx = (provSlotIdx % 3 - 1) * 4.4;
-        const gz = (Math.floor(provSlotIdx / 3) - 1) * 3.8;
-        obj.group.position.set(gx, 0, gz);
-        obj.homePos = { x: gx, z: gz };
+        const pos = map2Dto3D(p.x, p.y);
+        obj.group.position.set(pos.x, 0, pos.z);
+        obj.homePos = { x: pos.x, z: pos.z };
         provSlotIdx++;
       } else if (p.name === "Jojo (Chief)" && prov === "Regional") {
         obj.group.position.set(CARPET_3D_CENTER.x, 0, CARPET_3D_CENTER.z);
