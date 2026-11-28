@@ -4,36 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#030954">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.json">
 <title>PDMU Virtual Office 3D</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: transparent; margin: 0; padding: 0; width: 100%; overflow-x: hidden; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #ffffff; }
-  .vo-shell { width: 100%; max-width: 1440px; margin: 0 auto; background: #030954; border: 2px solid #fbbf24; border-bottom: 5px solid #f59e0b; border-radius: 14px; padding: 12px; box-shadow: 0 12px 30px rgba(3, 9, 84, 0.35); position: relative; }
+  html, body { background: transparent; width: 100%; overflow-x: hidden; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #fff; }
+  .vo-shell { width: 100%; max-width: 1440px; margin: 0 auto; background: #030954; border: 2px solid #fbbf24; border-bottom: 5px solid #f59e0b; border-radius: 14px; padding: 12px; position: relative; }
   .vo-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
   .vo-header h2 { font-size: 18px; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px; }
-  .badge-3d { background: #f97316; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fde047; }
+  .badge-3d { background: #f97316; color: #fff; font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fde047; }
   .vo-top-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 10px; margin-bottom: 10px; }
   .vo-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .vo-tools select, .vo-tools button, .vo-tools label { background: #07116e; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 6px; padding: 6px 8px; font-family: inherit; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .vo-tools select, .vo-tools button, .vo-tools label { background: #07116e; color: #fff; border: 1.5px solid #fbbf24; border-radius: 6px; padding: 6px 8px; font-family: inherit; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
   .vo-tools button:hover { background: #fbbf24; color: #030954; }
-  .vo-tools button.dance-btn { background: #ec4899; border-color: #fde047; color: #ffffff; }
-  .vo-tools button.log-btn { background: #0ea5e9; border-color: #bae6fd; color: #ffffff; }
-  .vo-tools button.cam-btn { background: #4f46e5; border-color: #c7d2fe; color: #ffffff; }
-  .vo-tools button.install-pwa-btn { background: #16a34a; border-color: #bbf7d0; color: #ffffff; display: none; }
+  .vo-tools button.dance-btn { background: #ec4899; border-color: #fde047; }
+  .vo-tools button.log-btn { background: #0ea5e9; border-color: #bae6fd; }
+  .vo-tools button.cam-btn { background: #4f46e5; border-color: #c7d2fe; }
+  .vo-tools button.install-pwa-btn { background: #16a34a; border-color: #bbf7d0; display: none; }
   .vo-tools button.install-pwa-btn.visible { display: inline-flex; }
-
-  .sync-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(15, 23, 42, 0.85); border: 1px solid #4ade80; color: #4ade80; font-weight: 800; }
-  .after-hours-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(88, 28, 135, 0.85); border: 1px solid #e879f9; color: #f5d0fe; font-weight: 800; display: none; }
-  .after-hours-pill.active { display: inline-flex; align-items: center; gap: 4px; }
-  .view-only-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(127, 29, 29, 0.9); border: 1px solid #fca5a5; color: #fecaca; font-weight: 800; display: none; }
-  .view-only-pill.active { display: inline-flex; align-items: center; gap: 4px; }
+  .sync-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(15,23,42,.85); border: 1px solid #4ade80; color: #4ade80; font-weight: 800; }
+  .after-hours-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(88,28,135,.85); border: 1px solid #e879f9; color: #f5d0fe; font-weight: 800; display: none; }
+  .after-hours-pill.active { display: inline-flex; }
+  .view-only-pill { font-size: 10.5px; padding: 4px 8px; border-radius: 999px; background: rgba(127,29,29,.9); border: 1px solid #fca5a5; color: #fecaca; font-weight: 800; display: none; }
+  .view-only-pill.active { display: inline-flex; }
 
   .summary-strip { flex: 1; min-width: 0; background: #07116e; border: 1.5px solid #fbbf24; border-radius: 8px; padding: 5px 8px; display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
-  .stat-card { background: #030954; border: 1px solid rgba(251, 191, 36, 0.45); border-radius: 6px; padding: 3px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+  .stat-card { background: #030954; border: 1px solid rgba(251,191,36,.45); border-radius: 6px; padding: 3px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
   .stat-num { font-size: 13px; font-weight: 900; line-height: 1.1; }
   .stat-lbl { font-size: 8px; font-weight: 800; color: #e2e8f0; white-space: nowrap; }
   .c-total { color: #fde047; } .c-online { color: #4ade80; } .c-activity { color: #fb923c; } .c-passlip { color: #facc15; } .c-ptl { color: #2dd4bf; } .c-leave { color: #60a5fa; } .c-absent { color: #cbd5e1; } .c-offline { color: #e879f9; }
@@ -41,17 +37,16 @@
   .vo-main-grid { display: grid; grid-template-columns: 295px minmax(0, 1fr); gap: 10px; align-items: stretch; }
   .chat-panel-slot, .stage-wrap-slot { min-width: 0; width: 100%; }
 
-  /* Chatbox */
   .chat-panel { background: #07116e; border: 2px solid #fbbf24; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; height: 580px; overflow: hidden; }
-  .chat-top { border-bottom: 1.5px solid rgba(251, 191, 36, 0.35); padding-bottom: 7px; margin-bottom: 8px; }
+  .chat-top { border-bottom: 1.5px solid rgba(251,191,36,.35); padding-bottom: 7px; margin-bottom: 8px; }
   .chat-title { font-size: 13px; font-weight: 900; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
   .chat-lock-top-btn { background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 4px; padding: 2px 6px; font-family: inherit; font-size: 9.5px; font-weight: 800; cursor: pointer; }
   .chat-lock-top-btn:hover { background: #fbbf24; color: #030954; }
   .chat-sub { font-size: 10px; color: #cbd5e1; margin-top: 2px; }
-  .chat-gate-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px 12px; gap: 8px; background: #030954; border: 1.5px dashed rgba(251, 191, 36, 0.55); border-radius: 8px; margin-bottom: 8px; }
+  .chat-gate-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px 12px; gap: 8px; background: #030954; border: 1.5px dashed rgba(251,191,36,.55); border-radius: 8px; margin-bottom: 8px; }
   .chat-gate-title { font-size: 12.5px; font-weight: 900; color: #fde047; }
   .chat-gate-desc { font-size: 10.5px; color: #cbd5e1; max-width: 220px; line-height: 1.35; }
-  .chat-gate-input { width: 100%; max-width: 210px; background: #07116e; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; text-align: center; }
+  .chat-gate-input { width: 100%; max-width: 210px; background: #07116e; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; text-align: center; }
   .chat-gate-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 12px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
   .chat-messages { flex: 1; min-height: 0; overflow-y: auto; display: none; flex-direction: column; gap: 8px; padding-right: 3px; margin-bottom: 8px; }
   .chat-messages.unlocked { display: flex; }
@@ -61,251 +56,98 @@
   .msg-col { display: flex; flex-direction: column; max-width: 78%; }
   .msg-row.mine .msg-col { align-items: flex-end; }
   .msg-sender { font-size: 9.5px; font-weight: 800; color: #fde047; margin-bottom: 2px; }
-  .msg-bubble { background: #030954; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; padding: 6px 9px; font-size: 11px; line-height: 1.35; color: #ffffff; word-break: break-word; }
+  .msg-bubble { background: #030954; border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: 6px 9px; font-size: 11px; line-height: 1.35; color: #fff; word-break: break-word; }
   .msg-row.mine .msg-bubble { background: #1d4ed8; border-color: #93c5fd; }
-  .msg-reply-quote { background: rgba(255, 255, 255, 0.08); border-left: 2.5px solid #fbbf24; border-radius: 4px; padding: 3px 6px; margin-bottom: 4px; font-size: 9.5px; color: #e2e8f0; }
+  .msg-reply-quote { background: rgba(255,255,255,.08); border-left: 2.5px solid #fbbf24; border-radius: 4px; padding: 3px 6px; margin-bottom: 4px; font-size: 9.5px; color: #e2e8f0; }
   .msg-time { font-size: 8.5px; color: #94a3b8; margin-top: 2px; }
   .msg-actions-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-top: 2px; }
-  .msg-act-btn { background: rgba(3, 9, 84, 0.85); color: #e2e8f0; border: 1px solid rgba(251, 191, 36, 0.35); border-radius: 999px; padding: 1px 5px; font-size: 9.5px; cursor: pointer; }
+  .msg-act-btn { background: rgba(3,9,84,.85); color: #e2e8f0; border: 1px solid rgba(251,191,36,.35); border-radius: 999px; padding: 1px 5px; font-size: 9.5px; cursor: pointer; }
   .msg-act-btn:hover, .msg-act-btn.reacted { background: #fbbf24; color: #030954; font-weight: 800; }
   .reply-banner { display: none; justify-content: space-between; align-items: center; gap: 6px; background: #030954; border-left: 3px solid #fbbf24; border-radius: 5px; padding: 4px 7px; margin-bottom: 5px; font-size: 10px; color: #fde68a; }
   .reply-banner.active { display: flex; }
   .reply-cancel-btn { background: transparent; color: #fca5a5; border: none; font-weight: 900; font-size: 11px; cursor: pointer; }
-  .chat-form { display: flex; flex-direction: column; gap: 5px; border-top: 1.5px solid rgba(251, 191, 36, 0.35); padding-top: 7px; }
-  .chat-form.locked-ui { opacity: 0.55; pointer-events: none; }
+  .chat-form { display: flex; flex-direction: column; gap: 5px; border-top: 1.5px solid rgba(251,191,36,.35); padding-top: 7px; }
+  .chat-form.locked-ui { opacity: .55; pointer-events: none; }
   .chat-user-row { display: flex; gap: 5px; align-items: center; }
   .chat-user-select { flex: 1; background: #030954; color: #fde047; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; }
-  .chat-pin-input { width: 78px; background: #030954; color: #ffffff; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; text-align: center; }
-  .chat-pin-badge { font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 4px; background: rgba(248, 113, 113, 0.18); border: 1px solid #f87171; color: #fca5a5; white-space: nowrap; }
-  .chat-pin-badge.unlocked { background: rgba(74, 222, 128, 0.18); border-color: #4ade80; color: #4ade80; }
+  .chat-pin-input { width: 78px; background: #030954; color: #fff; border: 1px solid #fbbf24; border-radius: 5px; padding: 4px 6px; font-family: inherit; font-size: 10.5px; font-weight: 800; text-align: center; }
+  .chat-pin-badge { font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 4px; background: rgba(248,113,113,.18); border: 1px solid #f87171; color: #fca5a5; white-space: nowrap; }
+  .chat-pin-badge.unlocked { background: rgba(74,222,128,.18); border-color: #4ade80; color: #4ade80; }
   .chat-input-row { display: flex; gap: 5px; }
-  .chat-input { flex: 1; background: #030954; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 5px 8px; font-family: inherit; font-size: 11px; }
+  .chat-input { flex: 1; background: #030954; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 5px 8px; font-family: inherit; font-size: 11px; }
   .chat-send-btn { background: #fbbf24; color: #030954; border: 1.5px solid #0f172a; border-radius: 5px; padding: 5px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
 
-  /* 3D Isometric Stage */
-  .stage-wrap {
-    position: relative;
-    width: 100%;
-    height: 580px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 2px solid #fbbf24;
-    background: radial-gradient(circle at 50% 25%, #fffbeb 0%, #fef3c7 52%, #fde68a 100%);
-    user-select: none;
-    touch-action: none;
-  }
-  .stage-wrap.after-hours-dim {
-    background: radial-gradient(circle at 50% 25%, #1e1b4b 0%, #0f172a 70%, #020617 100%);
-  }
+  .stage-wrap { position: relative; width: 100%; height: 580px; border-radius: 10px; overflow: hidden; border: 2px solid #fbbf24; background: radial-gradient(circle at 50% 25%, #fffbeb 0%, #fef3c7 52%, #fde68a 100%); user-select: none; touch-action: none; }
+  .stage-wrap.after-hours-dim { background: radial-gradient(circle at 50% 25%, #1e1b4b 0%, #0f172a 70%, #020617 100%); }
   #threeCanvasHost { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; }
   #threeCanvasHost:active { cursor: grabbing; }
-
   .labels-3d-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 15; }
-  .tag-3d-card {
-    position: absolute;
-    transform: translate(-50%, -100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    pointer-events: auto;
-    cursor: pointer;
-    max-width: 240px;
-  }
+  .tag-3d-card { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; cursor: pointer; max-width: 240px; }
   .tag-3d-card.hidden-out { display: none !important; }
-  .tag-3d-card.selected .name-chip-3d {
-    background: #fbbf24;
-    color: #030954;
-    border-color: #0f172a;
-    transform: scale(1.08);
-    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.65);
-  }
-  .bubble-tag-3d {
-    padding: 2px 7px;
-    border-radius: 9px;
-    border: 1.5px solid #0f172a;
-    font-size: 8.5px;
-    font-weight: 900;
-    color: #0f172a;
-    margin-bottom: 2px;
-    white-space: normal;
-    text-align: center;
-    line-height: 1.2;
-    max-width: 225px;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
-  }
-  .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-passlip { background: #facc15; } .st-ptl { background: #2dd4bf; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; }
-  .st-coffee { background: #fde047; }
+  .tag-3d-card.selected .name-chip-3d { background: #fbbf24; color: #030954; border-color: #0f172a; transform: scale(1.08); }
+  .bubble-tag-3d { padding: 2px 7px; border-radius: 9px; border: 1.5px solid #0f172a; font-size: 8.5px; font-weight: 900; color: #0f172a; margin-bottom: 2px; white-space: normal; text-align: center; line-height: 1.2; max-width: 225px; }
+  .st-online { background: #4ade80; } .st-activity { background: #fb923c; } .st-passlip { background: #facc15; } .st-ptl { background: #2dd4bf; } .st-leave { background: #60a5fa; } .st-absent { background: #cbd5e1; } .st-offline { background: #e879f9; } .st-coffee { background: #fde047; }
+  .name-chip-3d { background: rgba(255,255,255,.96); color: #0f172a; border: 1.5px solid #334155; border-radius: 6px; padding: 1.5px 6px; font-size: 9px; font-weight: 900; white-space: nowrap; }
 
-  .name-chip-3d {
-    background: rgba(255, 255, 255, 0.96);
-    color: #0f172a;
-    border: 1.5px solid #334155;
-    border-radius: 6px;
-    padding: 1.5px 6px;
-    font-size: 9px;
-    font-weight: 900;
-    white-space: nowrap;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
-  }
-
-  .hud-3d-corner {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    z-index: 25;
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    background: rgba(3, 9, 84, 0.86);
-    border: 1px solid #fbbf24;
-    border-radius: 8px;
-    padding: 4px 8px;
-    font-size: 9.5px;
-    font-weight: 800;
-    color: #fde68a;
-  }
-  .hud-3d-btn {
-    background: #fbbf24;
-    color: #030954;
-    border: none;
-    border-radius: 5px;
-    padding: 2px 7px;
-    font-family: inherit;
-    font-size: 9.5px;
-    font-weight: 900;
-    cursor: pointer;
-  }
-
-  .prov-3d-banner {
-    display: none;
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 25;
-    background: #030954;
-    color: #fde047;
-    border: 1.5px solid #fbbf24;
-    border-radius: 999px;
-    padding: 4px 12px;
-    font-size: 10.5px;
-    font-weight: 900;
-    white-space: nowrap;
-  }
+  .hud-3d-corner { position: absolute; bottom: 8px; right: 8px; z-index: 25; display: flex; gap: 5px; align-items: center; background: rgba(3,9,84,.86); border: 1px solid #fbbf24; border-radius: 8px; padding: 4px 8px; font-size: 9.5px; font-weight: 800; color: #fde68a; }
+  .hud-3d-btn { background: #fbbf24; color: #030954; border: none; border-radius: 5px; padding: 2px 7px; font-family: inherit; font-size: 9.5px; font-weight: 900; cursor: pointer; }
+  .prov-3d-banner { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 25; background: #030954; color: #fde047; border: 1.5px solid #fbbf24; border-radius: 999px; padding: 4px 12px; font-size: 10.5px; font-weight: 900; white-space: nowrap; }
   .prov-3d-banner.active { display: block; }
-
-  .dance-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 45; display: none; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.94); border: 2px solid #f472b6; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 900; color: #fde047; }
+  .dance-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 45; display: none; align-items: center; gap: 8px; background: rgba(15,23,42,.94); border: 2px solid #f472b6; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 900; color: #fde047; }
   .dance-banner.active { display: inline-flex; }
-  .dance-stop-btn { background: #ef4444; color: #ffffff; border: 1px solid #ffffff; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 900; cursor: pointer; }
+  .dance-stop-btn { background: #ef4444; color: #fff; border: 1px solid #fff; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 900; cursor: pointer; }
 
-  /* Check-In / Check-Out & Status Footer */
-  .vo-footer { margin-top: 10px; background: #07116e; border: 1px solid rgba(251, 191, 36, 0.45); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; }
+  .vo-footer { margin-top: 10px; background: #07116e; border: 1px solid rgba(251,191,36,.45); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; }
   .controls-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .controls-group.view-only-locked button,
-  .controls-group.view-only-locked input { opacity: 0.42; pointer-events: none; cursor: not-allowed; }
-  .note-input { background: #030954; color: #ffffff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; min-width: 210px; }
+  .controls-group.view-only-locked button, .controls-group.view-only-locked input { opacity: .42; pointer-events: none; cursor: not-allowed; }
+  .note-input { background: #030954; color: #fff; border: 1.5px solid #fbbf24; border-radius: 5px; padding: 6px 8px; font-family: inherit; font-size: 11px; min-width: 210px; }
   .task-set-btn { background: #f59e0b; color: #030954; border: 2px solid #fde047; border-radius: 5px; padding: 6px 9px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
   .pin-lock-status { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
-  .checkin-btn { background: #16a34a; color: #ffffff; border: 2px solid #bbf7d0; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
-  .checkout-btn { background: #dc2626; color: #ffffff; border: 2px solid #fecaca; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .checkin-btn { background: #16a34a; color: #fff; border: 2px solid #bbf7d0; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+  .checkout-btn { background: #dc2626; color: #fff; border: 2px solid #fecaca; border-radius: 5px; padding: 6px 10px; font-family: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
   .status-btns { display: flex; flex-wrap: wrap; gap: 4px; }
   .status-btns button { font-family: inherit; font-size: 11px; font-weight: 800; padding: 5px 8px; border-radius: 5px; border: 2px solid #0f172a; cursor: pointer; color: #0f172a; }
   .timing-pill { font-size: 10px; font-weight: 900; padding: 2px 7px; border-radius: 999px; border: 1px solid #fbbf24; background: #030954; color: #fde047; }
 
-  /* PIN & Task Pop-up Modal */
-  .pin-modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.82); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px; }
+  .pin-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.82); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px; }
   .pin-modal-backdrop.open { display: flex; }
-  .pin-modal-card { width: 100%; max-width: 390px; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
+  .pin-modal-card { width: 100%; max-width: 395px; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 9px; text-align: center; }
   .pin-modal-title { font-size: 15px; font-weight: 900; color: #fbbf24; }
   .pin-modal-sub { font-size: 11.5px; color: #e2e8f0; line-height: 1.4; }
+  .honor-rule-box { background: rgba(251,191,36,.14); border: 1px solid #fbbf24; border-radius: 8px; padding: 7px 10px; font-size: 10.5px; font-weight: 800; color: #fde68a; line-height: 1.35; }
   .pin-modal-input { width: 100%; background: #07116e; color: #fde047; border: 2px solid #fbbf24; border-radius: 6px; padding: 8px 10px; font-family: inherit; font-size: 12.5px; font-weight: 800; text-align: center; }
   .pin-modal-err { font-size: 10.5px; font-weight: 800; color: #fca5a5; min-height: 15px; }
   .pin-modal-actions { display: flex; gap: 8px; justify-content: center; margin-top: 2px; }
-  .pin-confirm-btn { background: #16a34a; color: #ffffff; border: 2px solid #bbf7d0; border-radius: 6px; padding: 6px 14px; font-family: inherit; font-size: 11.5px; font-weight: 900; cursor: pointer; }
-  .pin-cancel-btn { background: #334155; color: #ffffff; border: 1.5px solid #94a3b8; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+  .pin-confirm-btn { background: #16a34a; color: #fff; border: 2px solid #bbf7d0; border-radius: 6px; padding: 6px 14px; font-family: inherit; font-size: 11.5px; font-weight: 900; cursor: pointer; }
+  .pin-cancel-btn { background: #334155; color: #fff; border: 1.5px solid #94a3b8; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 11.5px; font-weight: 800; cursor: pointer; }
 
-  /* Today's Log Modal */
-  .log-modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78); z-index: 999; display: none; align-items: center; justify-content: center; padding: 14px; }
+  .log-modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,.78); z-index: 999; display: none; align-items: center; justify-content: center; padding: 14px; }
   .log-modal-backdrop.open { display: flex; }
   .log-modal-card { width: 100%; max-width: 860px; max-height: 82vh; background: #030954; border: 2px solid #fbbf24; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-  .log-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(251, 191, 36, 0.35); padding-bottom: 8px; }
+  .log-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(251,191,36,.35); padding-bottom: 8px; }
   .log-modal-head h3 { font-size: 15px; font-weight: 900; color: #fbbf24; }
-  .log-table-wrap { overflow: auto; flex: 1; border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px; }
+  .log-table-wrap { overflow: auto; flex: 1; border: 1px solid rgba(251,191,36,.3); border-radius: 8px; }
   table.log-tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
-  table.log-tbl th, table.log-tbl td { padding: 6px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: left; }
+  table.log-tbl th, table.log-tbl td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.1); text-align: left; }
   table.log-tbl th { background: #07116e; color: #fde047; font-weight: 900; position: sticky; top: 0; }
 
-  /* Mobile Bottom Navigation Bar */
   .mobile-bottom-nav { display: none; }
   @media (max-width: 820px) {
-    html, body {
-      background: #030954;
-      min-height: 100dvh;
-      padding: 0 0 64px 0;
-      overflow-x: hidden;
-    }
-    .vo-shell {
-      width: 100%;
-      max-width: 100%;
-      border-radius: 0 0 12px 12px;
-      border-left: none;
-      border-right: none;
-      border-top: none;
-      padding: 8px;
-      box-shadow: none;
-    }
+    html, body { background: #030954; min-height: 100dvh; padding: 0 0 64px 0; overflow-x: hidden; }
+    .vo-shell { width: 100%; max-width: 100%; border-radius: 0 0 12px 12px; border: none; padding: 8px; }
     .summary-strip { grid-template-columns: repeat(4, 1fr); width: 100%; }
     .vo-main-grid { grid-template-columns: minmax(0, 1fr); width: 100%; }
-    .chat-panel { height: calc(100dvh - 235px); min-height: 360px; max-height: none; }
-    .stage-wrap {
-      width: 100%;
-      max-width: 100%;
-      height: calc(100dvh - 235px);
-      min-height: 340px;
-    }
-    body.tab-checkin .stage-wrap {
-      height: calc(100dvh - 385px);
-      min-height: 240px;
-    }
+    .chat-panel { height: calc(100dvh - 235px); min-height: 360px; }
+    .stage-wrap { width: 100%; height: calc(100dvh - 235px); min-height: 340px; }
+    body.tab-checkin .stage-wrap { height: calc(100dvh - 385px); min-height: 240px; }
     .vo-footer { margin-top: 8px; padding: 8px 10px; }
     .note-input { min-width: 100%; }
-
-    body.mobile-tab-mode .stage-wrap-slot,
-    body.mobile-tab-mode .chat-panel-slot,
-    body.mobile-tab-mode .vo-footer { display: none; }
-
-    body.mobile-tab-mode.tab-floor .stage-wrap-slot { display: block; }
-    body.mobile-tab-mode.tab-chat .chat-panel-slot { display: block; }
-    body.mobile-tab-mode.tab-checkin .stage-wrap-slot { display: block; }
+    body.mobile-tab-mode .stage-wrap-slot, body.mobile-tab-mode .chat-panel-slot, body.mobile-tab-mode .vo-footer { display: none; }
+    body.mobile-tab-mode.tab-floor .stage-wrap-slot, body.mobile-tab-mode.tab-chat .chat-panel-slot, body.mobile-tab-mode.tab-checkin .stage-wrap-slot { display: block; }
     body.mobile-tab-mode.tab-checkin .vo-footer { display: flex; }
-
-    .mobile-bottom-nav {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      background: #030954;
-      border-top: 2px solid #fbbf24;
-      padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
-      z-index: 950;
-      gap: 4px;
-    }
-    .mob-nav-btn {
-      background: #07116e;
-      color: #e2e8f0;
-      border: 1px solid rgba(251, 191, 36, 0.4);
-      border-radius: 8px;
-      padding: 6px 4px;
-      font-family: inherit;
-      font-size: 10px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-    .mob-nav-btn.active { background: #fbbf24; color: #030954; border-color: #ffffff; }
+    .mobile-bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; background: #030954; border-top: 2px solid #fbbf24; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); z-index: 950; gap: 4px; }
+    .mob-nav-btn { background: #07116e; color: #e2e8f0; border: 1px solid rgba(251,191,36,.4); border-radius: 8px; padding: 6px 4px; font-family: inherit; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .mob-nav-btn.active { background: #fbbf24; color: #030954; border-color: #fff; }
   }
 </style>
 </head>
@@ -313,9 +155,7 @@
 
 <div class="vo-shell">
   <div class="vo-header">
-    <div>
-      <h2>PDMU VIRTUAL OFFICE <span class="badge-3d">3D</span></h2>
-    </div>
+    <h2>PDMU VIRTUAL OFFICE <span class="badge-3d">3D</span></h2>
     <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
       <button type="button" class="install-pwa-btn" id="installPwaBtn" onclick="installPwaApp()">📲 Install App</button>
       <span class="view-only-pill" id="viewOnlyPill">👁 VIEW ONLY (OTHER OFFICE)</span>
@@ -351,7 +191,7 @@
       <button type="button" class="cam-btn" onclick="reset3DCamera()">🎥 Reset Cam</button>
     </div>
 
-    <div class="summary-strip" aria-label="Team Status Counts">
+    <div class="summary-strip">
       <div class="stat-card" onclick="quickFilter('ALL')"><span class="stat-num c-total" id="cntTotal">0</span><span class="stat-lbl">TOTAL</span></div>
       <div class="stat-card" onclick="quickFilter('online')"><span class="stat-num c-online" id="cntOnline">0</span><span class="stat-lbl">IN OFFICE</span></div>
       <div class="stat-card" onclick="quickFilter('activity')"><span class="stat-num c-activity" id="cntActivity">0</span><span class="stat-lbl">GAWAS / ACT</span></div>
@@ -383,7 +223,6 @@
           </div>
           <div class="chat-messages" id="chatMessages"></div>
         </div>
-
         <div>
           <div class="reply-banner" id="replyBanner">
             <span id="replyBannerText">Replying to...</span>
@@ -412,10 +251,8 @@
           <button type="button" class="dance-stop-btn" onclick="stopDanceBreak()">End</button>
         </div>
         <div class="prov-3d-banner" id="prov3dBanner">PROVINCIAL OFFICE • VIEW ONLY</div>
-
         <div id="threeCanvasHost"></div>
         <div class="labels-3d-overlay" id="labels3dOverlay"></div>
-
         <div class="hud-3d-corner">
           <span>🖱 Drag to Rotate • Scroll to Zoom • Click Staff</span>
           <button type="button" class="hud-3d-btn" onclick="reset3DCamera()">Reset</button>
@@ -424,7 +261,6 @@
     </div>
   </div>
 
-  <!-- Check-In / Check-Out & Status Footer -->
   <div class="vo-footer">
     <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
       <div id="selectedInfo">Click a member on the 3D office to select</div>
@@ -450,30 +286,28 @@
   </div>
 </div>
 
-<!-- Mobile Bottom Navigation Bar -->
-<nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+<nav class="mobile-bottom-nav">
   <button type="button" class="mob-nav-btn active" id="mobBtnFloor" onclick="switchMobileTab('floor')">🏢<span>3D Office</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnCheckin" onclick="switchMobileTab('checkin')">✅<span>Check-In</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnChat" onclick="switchMobileTab('chat')">💬<span>Chat</span></button>
   <button type="button" class="mob-nav-btn" id="mobBtnLogs" onclick="openTodayLogModal()">📋<span>Logs</span></button>
 </nav>
 
-<!-- PIN & Quick Task Pop-up Modal -->
 <div class="pin-modal-backdrop" id="pinModalBackdrop" onclick="if(event.target===this) closePinModal()">
   <div class="pin-modal-card">
     <div class="pin-modal-title" id="pinModalTitle">ENTER PIN</div>
     <div class="pin-modal-sub" id="pinModalSub">Enter your PIN to continue.</div>
-    <input type="text" id="taskModalInput" class="pin-modal-input" style="display:none; color:#ffffff;" placeholder="e.g. I'm creating FB Posting right now!" maxlength="140" onkeydown="if(event.key==='Enter' && !document.getElementById('pinModalInput').offsetParent){event.preventDefault();confirmPinModal();}">
+    <div class="honor-rule-box" id="honorRuleBox">⚠️ Honor Rule: Check-in only when physically at the office / on duty, and set accurate status &amp; current task.</div>
+    <input type="text" id="taskModalInput" class="pin-modal-input" style="display:none; color:#fff;" placeholder="e.g. I'm creating FB Posting right now!" maxlength="140">
     <input type="password" id="pinModalInput" class="pin-modal-input" placeholder="Enter PIN" maxlength="12" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmPinModal();}">
     <div class="pin-modal-err" id="pinModalErr"></div>
     <div class="pin-modal-actions">
-      <button type="button" class="pin-confirm-btn" id="pinModalConfirmBtn" onclick="confirmPinModal()">Confirm</button>
+      <button type="button" class="pin-confirm-btn" onclick="confirmPinModal()">Confirm</button>
       <button type="button" class="pin-cancel-btn" onclick="closePinModal()">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Today's Log Modal -->
 <div class="log-modal-backdrop" id="logModalBackdrop" onclick="if(event.target===this) closeTodayLogModal()">
   <div class="log-modal-card">
     <div class="log-modal-head">
@@ -486,9 +320,7 @@
     </div>
     <div class="log-table-wrap">
       <table class="log-tbl">
-        <thead>
-          <tr><th>Time</th><th>Name</th><th>Office</th><th>Action</th><th>Status</th><th>Timing</th><th>Remarks</th></tr>
-        </thead>
+        <thead><tr><th>Time</th><th>Name</th><th>Office</th><th>Action</th><th>Status</th><th>Timing</th><th>Remarks</th></tr></thead>
         <tbody id="logTableBody"><tr><td colspan="7">Loading logs...</td></tr></tbody>
       </table>
     </div>
@@ -498,13 +330,11 @@
 <script>
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7-3e7fOJ_cNRqbFQNBmZ2K-XnU15C-MDLiYRVOrYwMJtTeF_Y-ZA04QnXmVzSkR-f/exec";
   const CONVO_PASSKEY = "PDMU2026";
-  const ADMIN_NAME = "Ian";
-  const ADMIN_PIN = "PDMUADMIN";
   const DANCE_BREAK_MINUTES = 30;
   const COFFEE_DURATION_MS = 60000;
   const COFFEE_INTERVAL_MS = 180000;
   const PROVINCE_CODES = ["PDI", "SDN", "ADN", "ADS", "SDS"];
-
+  const WALL_PHOTO_URLS = ["wall1.jpg", "wall2.JPG", "wall3.jpeg", "wall4.png"];
   const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="16" fill="#030954"/><circle cx="16" cy="12" r="5.5" fill="#fcd34d"/><path d="M7 28c0-5 4-8.5 9-8.5s9 3.5 9 8.5" fill="#2563eb"/></svg>');
 
   const MEMBER_AVATARS = {
@@ -530,594 +360,253 @@
   };
 
   const PEOPLE = [
-    // Regional Office
-    { name: "Airah", x: 30.0, y: 12.0, hair: "#5c3a21", shirt: "#f472b6", pigtails: true, hairtie: "#ec4899", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Shaira", x: 10.0, y: 26.0, hair: "#27272a", shirt: "#fb923c", pigtails: false, hairtie: "", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Darren", x: 23.0, y: 26.0, hair: "#5c3a21", shirt: "#f97316", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Rachel", x: 36.0, y: 26.0, hair: "#4a2c18", shirt: "#ec4899", pigtails: true, hairtie: "#38bdf8", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Carl", x: 49.0, y: 26.0, hair: "#1e1b4b", shirt: "#3b82f6", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Nuelson", x: 10.0, y: 42.0, hair: "#18181b", shirt: "#10b981", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Aisley", x: 23.0, y: 42.0, hair: "#451a03", shirt: "#eab308", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "AJ Boy", x: 36.0, y: 42.0, hair: "#0f172a", shirt: "#6366f1", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jill", x: 49.0, y: 42.0, hair: "#27272a", shirt: "#ec4899", pigtails: true, hairtie: "#facc15", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Lee", x: 10.0, y: 58.0, hair: "#27272a", shirt: "#14b8a6", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Kiarah", x: 23.0, y: 58.0, hair: "#3b2314", shirt: "#a855f7", pigtails: true, hairtie: "#f472b6", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Cyrus", x: 36.0, y: 58.0, hair: "#1e1b4b", shirt: "#f97316", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jay", x: 49.0, y: 58.0, hair: "#451a03", shirt: "#22c55e", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Ian", x: 10.0, y: 74.0, hair: "#27272a", shirt: "#2563eb", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Kirsten", x: 83.0, y: 20.0, hair: "#4a2c18", shirt: "#f43f5e", pigtails: true, hairtie: "#fbbf24", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Christian", x: 83.0, y: 38.0, hair: "#1e293b", shirt: "#0ea5e9", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jojo (Chief)", x: 86.0, y: 74.0, hair: "#1e293b", shirt: "#ec4899", pigtails: true, hairtie: "#fbbf24", female: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Alvin", x: 49.0, y: 86.0, hair: "#0f172a", shirt: "#0284c7", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-    { name: "Jesreel (Asst. Chief)", x: 61.5, y: 86.0, hair: "#451a03", shirt: "#d97706", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
-
-    // Province of Dinagat Islands (PDI)
-    { name: "Welmer", x: 32.0, y: 36.0, hair: "#1e293b", shirt: "#2563eb", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "PDI", checkInAt: "", checkOutAt: "" },
-    { name: "Nitcheban", x: 68.0, y: 36.0, hair: "#3b2314", shirt: "#0ea5e9", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "PDI", checkInAt: "", checkOutAt: "" },
-
-    // Surigao del Norte (SDN)
-    { name: "Quennie", x: 24.0, y: 34.0, hair: "#4a2c18", shirt: "#f472b6", pigtails: true, hairtie: "#38bdf8", female: true, status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
-    { name: "Jermalyn", x: 50.0, y: 34.0, hair: "#27272a", shirt: "#a855f7", pigtails: true, hairtie: "#facc15", female: true, status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
-    { name: "Camz", x: 76.0, y: 34.0, hair: "#1e1b4b", shirt: "#14b8a6", pigtails: false, hairtie: "", female: true, status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
-
-    // Agusan del Norte (ADN)
-    { name: "Niña", x: 32.0, y: 36.0, hair: "#3b2314", shirt: "#fb7185", pigtails: true, hairtie: "#fbbf24", female: true, status: "offline", note: "", province: "ADN", checkInAt: "", checkOutAt: "" },
-    { name: "Sheena", x: 68.0, y: 36.0, hair: "#27272a", shirt: "#38bdf8", pigtails: true, hairtie: "#ec4899", female: true, status: "offline", note: "", province: "ADN", checkInAt: "", checkOutAt: "" },
-
-    // Agusan del Sur (ADS)
-    { name: "Gen", x: 24.0, y: 34.0, hair: "#0f172a", shirt: "#10b981", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
-    { name: "Hermie", x: 50.0, y: 34.0, hair: "#451a03", shirt: "#f97316", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
-    { name: "Jassy", x: 76.0, y: 34.0, hair: "#3b2314", shirt: "#f472b6", pigtails: true, hairtie: "#a855f7", female: true, status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
-
-    // Surigao del Sur (SDS)
-    { name: "Ace", x: 24.0, y: 30.0, hair: "#1e293b", shirt: "#2563eb", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
-    { name: "Mark", x: 50.0, y: 30.0, hair: "#0f172a", shirt: "#0ea5e9", stripe: true, pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
-    { name: "Joxin", x: 76.0, y: 30.0, hair: "#451a03", shirt: "#eab308", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
-    { name: "Jae Wayne", x: 36.0, y: 66.0, hair: "#27272a", shirt: "#22c55e", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
-    { name: "Jeunesse", x: 64.0, y: 66.0, hair: "#3b2314", shirt: "#3b82f6", pigtails: false, hairtie: "", female: false, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" }
+    { name: "Airah", x: 30, y: 12, hair: "#5c3a21", shirt: "#f472b6", pigtails: true, hairtie: "#ec4899", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Shaira", x: 10, y: 26, hair: "#27272a", shirt: "#fb923c", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Darren", x: 23, y: 26, hair: "#5c3a21", shirt: "#f97316", stripe: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Rachel", x: 36, y: 26, hair: "#4a2c18", shirt: "#ec4899", pigtails: true, hairtie: "#38bdf8", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Carl", x: 49, y: 26, hair: "#1e1b4b", shirt: "#3b82f6", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Nuelson", x: 10, y: 42, hair: "#18181b", shirt: "#10b981", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Aisley", x: 23, y: 42, hair: "#451a03", shirt: "#eab308", stripe: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "AJ Boy", x: 36, y: 42, hair: "#0f172a", shirt: "#6366f1", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jill", x: 49, y: 42, hair: "#27272a", shirt: "#ec4899", pigtails: true, hairtie: "#facc15", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Lee", x: 10, y: 58, hair: "#27272a", shirt: "#14b8a6", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kiarah", x: 23, y: 58, hair: "#3b2314", shirt: "#a855f7", pigtails: true, hairtie: "#f472b6", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Cyrus", x: 36, y: 58, hair: "#1e1b4b", shirt: "#f97316", stripe: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jay", x: 49, y: 58, hair: "#451a03", shirt: "#22c55e", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Ian", x: 10, y: 74, hair: "#27272a", shirt: "#2563eb", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Kirsten", x: 83, y: 20, hair: "#4a2c18", shirt: "#f43f5e", pigtails: true, hairtie: "#fbbf24", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Christian", x: 83, y: 38, hair: "#1e293b", shirt: "#0ea5e9", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jojo (Chief)", x: 86, y: 74, hair: "#1e293b", shirt: "#ec4899", pigtails: true, hairtie: "#fbbf24", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Alvin", x: 49, y: 86, hair: "#0f172a", shirt: "#0284c7", stripe: true, status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Jesreel (Asst. Chief)", x: 61.5, y: 86, hair: "#451a03", shirt: "#d97706", status: "offline", note: "", province: "Regional", checkInAt: "", checkOutAt: "" },
+    { name: "Welmer", x: 32, y: 36, hair: "#1e293b", shirt: "#2563eb", status: "offline", note: "", province: "PDI", checkInAt: "", checkOutAt: "" },
+    { name: "Nitcheban", x: 68, y: 36, hair: "#3b2314", shirt: "#0ea5e9", status: "offline", note: "", province: "PDI", checkInAt: "", checkOutAt: "" },
+    { name: "Quennie", x: 24, y: 34, hair: "#4a2c18", shirt: "#f472b6", pigtails: true, hairtie: "#38bdf8", status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
+    { name: "Jermalyn", x: 50, y: 34, hair: "#27272a", shirt: "#a855f7", pigtails: true, hairtie: "#facc15", status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
+    { name: "Camz", x: 76, y: 34, hair: "#1e1b4b", shirt: "#14b8a6", status: "offline", note: "", province: "SDN", checkInAt: "", checkOutAt: "" },
+    { name: "Niña", x: 32, y: 36, hair: "#3b2314", shirt: "#fb7185", pigtails: true, hairtie: "#fbbf24", status: "offline", note: "", province: "ADN", checkInAt: "", checkOutAt: "" },
+    { name: "Sheena", x: 68, y: 36, hair: "#27272a", shirt: "#38bdf8", pigtails: true, hairtie: "#ec4899", status: "offline", note: "", province: "ADN", checkInAt: "", checkOutAt: "" },
+    { name: "Gen", x: 24, y: 34, hair: "#0f172a", shirt: "#10b981", status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
+    { name: "Hermie", x: 50, y: 34, hair: "#451a03", shirt: "#f97316", stripe: true, status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
+    { name: "Jassy", x: 76, y: 34, hair: "#3b2314", shirt: "#f472b6", pigtails: true, hairtie: "#a855f7", status: "offline", note: "", province: "ADS", checkInAt: "", checkOutAt: "" },
+    { name: "Ace", x: 24, y: 30, hair: "#1e293b", shirt: "#2563eb", status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Mark", x: 50, y: 30, hair: "#0f172a", shirt: "#0ea5e9", stripe: true, status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Joxin", x: 76, y: 30, hair: "#451a03", shirt: "#eab308", status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Jae Wayne", x: 36, y: 66, hair: "#27272a", shirt: "#22c55e", status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" },
+    { name: "Jeunesse", x: 64, y: 66, hair: "#3b2314", shirt: "#3b82f6", status: "offline", note: "", province: "SDS", checkInAt: "", checkOutAt: "" }
   ];
 
-  let deferredInstallPrompt = null;
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    document.getElementById("installPwaBtn").classList.add("visible");
-  });
+  let deferredInstallPrompt = null, selectedIndex = -1, pendingPinAction = null, pendingPinIsCreate = false, pendingTaskText = "";
+  let convoUnlocked = false, currentChatUser = "", unlockedPinUser = "", savedPinsMap = {}, chatMessages = [], todayLogsData = [], replyTarget = null;
+  let coffeeBusy = false, activeCoffeeName = "", coffeePhase = "idle", coffeeProgress = 0, coffeeChatterIndex = 0, coffeeDrinkTimeout = null, coffeeChatterInterval = null;
+  let danceEndTime = 0, danceCountdownInterval = null, isAfterHours = false;
+  let scene3D, camera3D, renderer3D, staff3DObjects = [], regionalWallFramesGroup = null, discoLights3D = [];
+  let camSpherical = { theta: 0.44, phi: 0.94, radius: 32.0 }, camTarget = { x: 0, y: 1.0, z: 0.4 };
+  let isDragging3D = false, dragMoved3D = false, prevPointer3D = { x: 0, y: 0 }, raycaster3D, pointerNDC3D;
+  const COFFEE_3D_SPOT = { x: -7.2, z: 8.6 }, CARPET_3D_CENTER = { x: 10.6, z: 7.8 }, tempWorldVec3 = new THREE.Vector3();
 
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredInstallPrompt = e; document.getElementById("installPwaBtn").classList.add("visible"); });
   async function installPwaApp() {
-    const pwaUrl = "https://pdmuweb.github.io/pdmu-virtual-office/";
-    if (deferredInstallPrompt) {
-      deferredInstallPrompt.prompt();
-      const choice = await deferredInstallPrompt.userChoice;
-      deferredInstallPrompt = null;
-      if (choice && choice.outcome === "accepted") {
-        document.getElementById("installPwaBtn").classList.remove("visible");
-        return;
-      }
-    }
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    if (isIOS) {
-      alert("Sa iPhone/iPad (Safari):\n1. I-tap ang Share icon (pataas nga arrow).\n2. Pilia ang 'Add to Home Screen'.");
-      return;
-    }
-    window.open(pwaUrl, "_blank", "noopener,noreferrer");
+    if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); const ch = await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; if (ch && ch.outcome === "accepted") { document.getElementById("installPwaBtn").classList.remove("visible"); return; } }
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) { alert("Sa iPhone/iPad (Safari):\n1. I-tap ang Share icon.\n2. Pilia ang 'Add to Home Screen'."); return; }
+    window.open("https://pdmuweb.github.io/pdmu-virtual-office/", "_blank", "noopener,noreferrer");
   }
-
   function switchMobileTab(tabName) {
-    document.body.classList.remove("tab-floor", "tab-chat", "tab-checkin");
-    document.body.classList.add("tab-" + tabName);
+    document.body.classList.remove("tab-floor", "tab-chat", "tab-checkin"); document.body.classList.add("tab-" + tabName);
     document.querySelectorAll(".mob-nav-btn").forEach(b => b.classList.remove("active"));
-    const activeBtn = document.getElementById("mobBtn" + tabName.charAt(0).toUpperCase() + tabName.slice(1));
-    if (activeBtn) activeBtn.classList.add("active");
+    const btn = document.getElementById("mobBtn" + tabName.charAt(0).toUpperCase() + tabName.slice(1)); if (btn) btn.classList.add("active");
     setTimeout(onWindowResize3D, 50);
   }
-
-  let selectedIndex = -1;
-  let pendingPinAction = null;
-  let pendingPinIsCreate = false;
-  let pendingTaskText = "";
-
-  let convoUnlocked = false;
-  let currentChatUser = "";
-  let unlockedPinUser = "";
-  let savedPinsMap = {};
-  let chatMessages = [];
-  let todayLogsData = [];
-  let replyTarget = null;
-
-  let coffeeBusy = false;
-  let activeCoffeeName = "";
-  let coffeePhase = "idle";
-  let coffeeProgress = 0;
-  let coffeeChatterIndex = 0;
-  let coffeeDrinkTimeout = null;
-  let coffeeChatterInterval = null;
-
-  let danceEndTime = 0;
-  let danceCountdownInterval = null;
-  let isAfterHours = false;
-
-  function esc(v) {
-    return String(v || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
-
+  function esc(v) { return String(v || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
   function formatTimeOnly(val) {
-    if (!val) return "";
-    const s = String(val).trim();
+    if (!val) return ""; const s = String(val).trim();
     const m12 = s.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)\b/i);
-    if (m12) {
-      let hr = parseInt(m12[1], 10);
-      const min = m12[2];
-      const ap = m12[3].toUpperCase();
-      if (ap === "PM" && hr < 12) hr += 12;
-      if (ap === "AM" && hr === 12) hr = 0;
-      return String(hr).padStart(2, "0") + ":" + min;
-    }
-    const m24 = s.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\b/);
-    if (m24) {
-      return String(parseInt(m24[1], 10)).padStart(2, "0") + ":" + m24[2];
-    }
-    const d = new Date(s);
-    if (!isNaN(d.getTime())) {
-      return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
-    }
-    return s.replace(/\s*GMT[+-]\d{4}.*$/i, "").trim();
+    if (m12) { let hr = parseInt(m12[1],10); if (m12[3].toUpperCase()==="PM" && hr<12) hr+=12; if (m12[3].toUpperCase()==="AM" && hr===12) hr=0; return String(hr).padStart(2,"0")+":"+m12[2]; }
+    const m24 = s.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\b/); if (m24) return String(parseInt(m24[1],10)).padStart(2,"0")+":"+m24[2];
+    const d = new Date(s); if (!isNaN(d.getTime())) return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+    return s.replace(/\s*GMT[+-]\d{4}.*$/i,"").trim();
   }
-
   function normalizeStatus(st) {
     const s = String(st || "offline").trim().toLowerCase();
-    if (s.includes("passlip")) return "passlip";
-    if (s === "ptl" || s.includes("ptl")) return "ptl";
-    if (s.includes("online") || s.includes("office")) return "online";
-    if (s.includes("activity") || s.includes("gawas") || s.includes("field")) return "activity";
-    if (s.includes("leave")) return "leave";
-    if (s.includes("absent")) return "absent";
-    return "offline";
+    if (s.includes("passlip")) return "passlip"; if (s === "ptl" || s.includes("ptl")) return "ptl";
+    if (s.includes("online") || s.includes("office")) return "online"; if (s.includes("activity") || s.includes("gawas") || s.includes("field")) return "activity";
+    if (s.includes("leave")) return "leave"; if (s.includes("absent")) return "absent"; return "offline";
   }
-
   function statusLabel(st) {
-    if (st === "online") return "online";
-    if (st === "activity") return "activity / gawas";
-    if (st === "passlip") return "passlip";
-    if (st === "ptl") return "ptl";
-    if (st === "leave") return "on leave";
-    if (st === "absent") return "absent";
-    return "offline (uli na)";
+    return { online:"online", activity:"activity / gawas", passlip:"passlip", ptl:"ptl", leave:"on leave", absent:"absent" }[st] || "offline (uli na)";
   }
-
   function getCoffeeChatterLine(p) {
-    const rawTask = String((p && p.note) || "").trim();
-    const cleanTask = rawTask
-      .replace(/^i['’]?m\s+/i, "")
-      .replace(/\s+right now!?$/i, "")
-      .trim();
-
+    const cleanTask = String((p && p.note) || "").trim().replace(/^i['’]?m\s+/i,"").replace(/\s+right now!?$/i,"").trim();
     if (cleanTask && !/^(checked-in|in office|online|uli na)$/i.test(cleanTask)) {
-      const lines = [
-        "☕ sip sa kape while " + cleanTask + "!",
-        "☕ nag-kape kadiyot—balik dayon sa '" + cleanTask + "'",
-        "☕ lami ang kape! Padayon ta sa " + cleanTask
-      ];
-      return lines[coffeeChatterIndex % lines.length];
+      return ["☕ sip sa kape while " + cleanTask + "!", "☕ nag-kape kadiyot—balik dayon sa '" + cleanTask + "'", "☕ lami ang kape! Padayon ta sa " + cleanTask][coffeeChatterIndex % 3];
     }
-    const fallbackLines = [
-      "☕ nag-kape kadiyot para fresh sa trabaho!",
-      "☕ sip sa kape—daghan pa og i-update sa PDMU!",
-      "☕ lami kaayo ang kape karon!"
-    ];
-    return fallbackLines[coffeeChatterIndex % fallbackLines.length];
+    return ["☕ nag-kape kadiyot para fresh sa trabaho!", "☕ sip sa kape—daghan pa og i-update sa PDMU!", "☕ lami kaayo ang kape karon!"][coffeeChatterIndex % 3];
   }
-
   function getTimingBadgeText(p) {
-    const cleanTime = formatTimeOnly(p && p.checkInAt);
-    if (!cleanTime) return "No Check-In Yet";
-    const m = cleanTime.match(/^(\d{1,2}):(\d{2})/);
-    if (!m) return "Checked-In";
-    const totalMins = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
-    if (totalMins <= 8 * 60) return "🟢 On-Time";
-    if (totalMins <= 8 * 60 + 15) return "🟠 Grace";
-    return "🔴 Late";
+    const ct = formatTimeOnly(p && p.checkInAt); if (!ct) return "No Check-In Yet";
+    const m = ct.match(/^(\d{1,2}):(\d{2})/); if (!m) return "Checked-In";
+    const tot = parseInt(m[1],10)*60 + parseInt(m[2],10);
+    return tot <= 480 ? "🟢 On-Time" : (tot <= 495 ? "🟠 Grace" : "🔴 Late");
   }
-
-  function isViewingProvinceOffice() {
-    return PROVINCE_CODES.includes(document.getElementById("provFilter").value);
-  }
-
+  function isViewingProvinceOffice() { return PROVINCE_CODES.includes(document.getElementById("provFilter").value); }
   function syncViewOnlyUi() {
     const ro = isViewingProvinceOffice();
     document.getElementById("actionControlsGroup").classList.toggle("view-only-locked", ro);
     document.getElementById("viewOnlyPill").classList.toggle("active", ro);
-    const provBanner = document.getElementById("prov3dBanner");
-    if (ro) {
-      provBanner.textContent = document.getElementById("provFilter").value + " PROVINCIAL OFFICE (3D • VIEW ONLY)";
-      provBanner.classList.add("active");
-    } else {
-      provBanner.classList.remove("active");
-    }
+    const pb = document.getElementById("prov3dBanner");
+    if (ro) { pb.textContent = document.getElementById("provFilter").value + " PROVINCIAL OFFICE (3D • VIEW ONLY)"; pb.classList.add("active"); } else pb.classList.remove("active");
   }
-
   function updateActionPinStatus() {
     const badge = document.getElementById("actionPinStatus");
-    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) {
-      badge.textContent = "👆 Click User First";
-      badge.style.color = "#fde68a";
-      return;
-    }
-    const p = PEOPLE[selectedIndex];
-    const saved = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
-    if (!saved) {
-      badge.textContent = "✨ Create PIN (" + p.name + ")";
-      badge.style.color = "#fde047";
-    } else if (unlockedPinUser === p.name) {
-      badge.textContent = "🔓 PIN Ready (" + p.name + ")";
-      badge.style.color = "#4ade80";
-    } else {
-      badge.textContent = "🔒 Input PIN (" + p.name + ")";
-      badge.style.color = "#fca5a5";
-    }
+    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { badge.textContent = "👆 Click User First"; badge.style.color = "#fde68a"; return; }
+    const p = PEOPLE[selectedIndex], saved = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
+    if (!saved) { badge.textContent = "✨ Create PIN (" + p.name + ")"; badge.style.color = "#fde047"; }
+    else if (unlockedPinUser === p.name) { badge.textContent = "🔓 PIN Ready (" + p.name + ")"; badge.style.color = "#4ade80"; }
+    else { badge.textContent = "🔒 Input PIN (" + p.name + ")"; badge.style.color = "#fca5a5"; }
   }
-
   function syncPinToChatbox(personName, pinValue) {
-    savedPinsMap[personName.toLowerCase()] = pinValue;
-    unlockedPinUser = personName;
-    currentChatUser = personName;
-    const senderSel = document.getElementById("chatSenderSelect");
-    if (senderSel) senderSel.value = personName;
-    const chatPinEl = document.getElementById("chatPinInput");
-    if (chatPinEl) chatPinEl.value = pinValue;
-    updatePinBadgeUI();
-    updateActionPinStatus();
-    if (APPS_SCRIPT_URL) {
-      fetch(APPS_SCRIPT_URL, {
-        method: "POST", mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ type: "set_pin", memberName: personName, pin: pinValue })
-      }).catch(() => {});
-    }
+    savedPinsMap[personName.toLowerCase()] = pinValue; unlockedPinUser = personName; currentChatUser = personName;
+    const s = document.getElementById("chatSenderSelect"); if (s) s.value = personName;
+    const cp = document.getElementById("chatPinInput"); if (cp) cp.value = pinValue;
+    updatePinBadgeUI(); updateActionPinStatus();
+    if (APPS_SCRIPT_URL) fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({type:"set_pin", memberName:personName, pin:pinValue}) }).catch(()=>{});
   }
-
   function openQuickTaskModal() {
     if (isViewingProvinceOffice()) { alert("View-only lang ni nga provincial office."); return; }
     if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { alert("I-click una sa 3D office ang employee."); return; }
-    const currentVal = document.getElementById("noteInput").value.trim() || PEOPLE[selectedIndex].note || "";
-    requestPinAction("UPDATE_TASK", currentVal);
+    requestPinAction("UPDATE_TASK", document.getElementById("noteInput").value.trim() || PEOPLE[selectedIndex].note || "");
   }
-
   function requestPinAction(actionType, presetTask) {
     if (isViewingProvinceOffice()) { alert("View-only lang ni nga provincial office."); return; }
     if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { alert("I-click una sa 3D office ang user."); return; }
-    if (actionType !== "CHECK_OUT" && actionType !== "STATUS_OFFLINE" && actionType !== "STATUS_LEAVE" && actionType !== "STATUS_ABSENT" && actionType !== "UPDATE_TASK" && isAfterHours) {
-      alert("7:30 PM+ na (Auto-Offline).");
-      return;
-    }
-    const p = PEOPLE[selectedIndex];
-    const savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
-    pendingPinAction = actionType;
-    pendingPinIsCreate = !savedPin;
+    if (!["CHECK_OUT","STATUS_OFFLINE","STATUS_LEAVE","STATUS_ABSENT","UPDATE_TASK"].includes(actionType) && isAfterHours) { alert("7:30 PM+ na (Auto-Offline)."); return; }
+    const p = PEOPLE[selectedIndex], savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
+    pendingPinAction = actionType; pendingPinIsCreate = !savedPin;
     pendingTaskText = typeof presetTask === "string" ? presetTask : document.getElementById("noteInput").value.trim();
-
-    document.getElementById("pinModalErr").textContent = "";
-    document.getElementById("pinModalInput").value = "";
-
+    document.getElementById("pinModalErr").textContent = ""; document.getElementById("pinModalInput").value = "";
+    document.getElementById("honorRuleBox").textContent = (actionType === "CHECK_OUT" || actionType === "STATUS_OFFLINE")
+      ? "ℹ️ Check-Out / Offline: Record accurate departure time when leaving duty."
+      : "⚠️ Honor Rule: Check-in only when physically at the office / on duty, and set accurate status & current task.";
     const taskEl = document.getElementById("taskModalInput");
-    if (actionType === "UPDATE_TASK") {
-      taskEl.style.display = "block";
-      taskEl.value = pendingTaskText || "I'm creating FB Posting right now!";
-    } else {
-      taskEl.style.display = "none";
-      taskEl.value = "";
-    }
-
+    taskEl.style.display = actionType === "UPDATE_TASK" ? "block" : "none";
+    taskEl.value = actionType === "UPDATE_TASK" ? (pendingTaskText || "I'm creating FB Posting right now!") : "";
     document.getElementById("pinModalTitle").textContent = (actionType === "UPDATE_TASK" ? "SET TASK • " : (pendingPinIsCreate ? "CREATE PIN • " : "INPUT PIN • ")) + p.name;
-    document.getElementById("pinModalSub").textContent = actionType === "UPDATE_TASK"
-      ? "Ibutang ang current task ni " + p.name + " ug isulod ang PIN."
-      : (pendingPinIsCreate
-        ? "Pag-create og imong PIN para kang " + p.name + " (magamit pud sa Chatbox)."
-        : "Isulod ang PIN ni " + p.name + " (magamit pud sa Chatbox).");
-
+    document.getElementById("pinModalSub").textContent = actionType === "UPDATE_TASK" ? "Ibutang ang current task ni " + p.name + " ug isulod ang PIN." : (pendingPinIsCreate ? "Pag-create og imong PIN para kang " + p.name + "." : "Isulod ang PIN ni " + p.name + ".");
     document.getElementById("pinModalBackdrop").classList.add("open");
-    setTimeout(() => {
-      if (actionType === "UPDATE_TASK") taskEl.focus();
-      else document.getElementById("pinModalInput").focus();
-    }, 40);
+    setTimeout(() => { if (actionType === "UPDATE_TASK") taskEl.focus(); else document.getElementById("pinModalInput").focus(); }, 40);
   }
-
-  function closePinModal() {
-    pendingPinAction = null;
-    pendingPinIsCreate = false;
-    pendingTaskText = "";
-    document.getElementById("pinModalBackdrop").classList.remove("open");
-    document.getElementById("pinModalErr").textContent = "";
-  }
-
+  function closePinModal() { pendingPinAction = null; pendingPinIsCreate = false; pendingTaskText = ""; document.getElementById("pinModalBackdrop").classList.remove("open"); document.getElementById("pinModalErr").textContent = ""; }
   async function confirmPinModal() {
     if (selectedIndex < 0 || !PEOPLE[selectedIndex] || !pendingPinAction) return;
-    const p = PEOPLE[selectedIndex];
-    const savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
-    const entered = String(document.getElementById("pinModalInput").value || "").trim();
-    const errEl = document.getElementById("pinModalErr");
-
+    const p = PEOPLE[selectedIndex], savedPin = String(savedPinsMap[p.name.toLowerCase()] || "").trim();
+    const entered = String(document.getElementById("pinModalInput").value || "").trim(), errEl = document.getElementById("pinModalErr");
     if (pendingPinAction === "UPDATE_TASK") {
       const tVal = String(document.getElementById("taskModalInput").value || "").trim();
       if (!tVal) { errEl.textContent = "Palihog isulod ang task."; return; }
-      pendingTaskText = tVal;
-      document.getElementById("noteInput").value = tVal;
+      pendingTaskText = tVal; document.getElementById("noteInput").value = tVal;
     }
-
-    if (savedPin) {
-      if (!entered) { errEl.textContent = "Palihog isulod ang PIN."; return; }
-      if (entered !== savedPin) { errEl.textContent = "Sayop ang PIN!"; return; }
-      syncPinToChatbox(p.name, entered);
-    } else {
-      if (!entered) { errEl.textContent = "Palihog pag-type og bag-ong PIN."; return; }
-      syncPinToChatbox(p.name, entered);
-    }
-    const act = pendingPinAction;
-    const customTask = pendingTaskText;
-    closePinModal();
-    await executeAuthorizedAction(p, act, customTask);
+    if (savedPin) { if (!entered) { errEl.textContent = "Palihog isulod ang PIN."; return; } if (entered !== savedPin) { errEl.textContent = "Sayop ang PIN!"; return; } syncPinToChatbox(p.name, entered); }
+    else { if (!entered) { errEl.textContent = "Palihog pag-type og bag-ong PIN."; return; } syncPinToChatbox(p.name, entered); }
+    const act = pendingPinAction, customTask = pendingTaskText; closePinModal(); await executeAuthorizedAction(p, act, customTask);
   }
-
   async function executeAuthorizedAction(p, actionType, customTask) {
-    const noteInputVal = (typeof customTask === "string" && customTask.trim()) ? customTask.trim() : document.getElementById("noteInput").value.trim();
-    const now = new Date();
-    const hmStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
-    const dateKey = now.toLocaleDateString("en-CA");
+    const noteVal = (typeof customTask === "string" && customTask.trim()) ? customTask.trim() : document.getElementById("noteInput").value.trim();
+    const now = new Date(), hmStr = String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
     let timingText = "";
-
-    if (actionType === "UPDATE_TASK") {
-      p.note = noteInputVal;
-      if (p.status === "offline") p.status = "online";
-      timingText = getTimingBadgeText(p);
-    } else if (actionType === "CHECK_IN") {
-      p.status = "online";
-      p.note = noteInputVal || "Checked-In at Office";
-      p.checkInAt = hmStr;
-      p.checkOutAt = "";
-      timingText = getTimingBadgeText(p);
-    } else if (actionType === "CHECK_OUT") {
-      p.status = "offline";
-      p.note = noteInputVal || "Checked-Out (Uli na)";
-      p.checkOutAt = hmStr;
-    } else {
-      const map = {
-        STATUS_ONLINE: ["online", "In Office"],
-        STATUS_ACTIVITY: ["activity", "Activity sa Gawas"],
-        STATUS_PASSLIP: ["passlip", "Passlip"],
-        STATUS_PTL: ["ptl", "PTL"],
-        STATUS_LEAVE: ["leave", "On Leave"],
-        STATUS_ABSENT: ["absent", "Absent"],
-        STATUS_OFFLINE: ["offline", "Uli na"]
-      };
-      const [st, defNote] = map[actionType] || ["online", "In Office"];
-      p.status = st;
-      p.note = noteInputVal || defNote;
-      if (st === "offline") p.checkOutAt = hmStr;
-      if (st === "online") timingText = getTimingBadgeText(p);
+    if (actionType === "UPDATE_TASK") { p.note = noteVal; if (p.status === "offline") p.status = "online"; timingText = getTimingBadgeText(p); }
+    else if (actionType === "CHECK_IN") { p.status = "online"; p.note = noteVal || "Checked-In at Office"; p.checkInAt = hmStr; p.checkOutAt = ""; timingText = getTimingBadgeText(p); }
+    else if (actionType === "CHECK_OUT") { p.status = "offline"; p.note = noteVal || "Checked-Out (Uli na)"; p.checkOutAt = hmStr; }
+    else {
+      const map = { STATUS_ONLINE:["online","In Office"], STATUS_ACTIVITY:["activity","Activity sa Gawas"], STATUS_PASSLIP:["passlip","Passlip"], STATUS_PTL:["ptl","PTL"], STATUS_LEAVE:["leave","On Leave"], STATUS_ABSENT:["absent","Absent"], STATUS_OFFLINE:["offline","Uli na"] };
+      const [st, defNote] = map[actionType] || ["online","In Office"]; p.status = st; p.note = noteVal || defNote;
+      if (st === "offline") p.checkOutAt = hmStr; if (st === "online") timingText = getTimingBadgeText(p);
     }
-
-    if (p.status !== "online" && coffeeBusy && activeCoffeeName === p.name) {
-      stopCoffeeWalk();
-    }
-
-    const logEntry = {
-      date: dateKey,
-      time: hmStr,
-      name: p.name,
-      province: p.province || "Regional",
-      action: actionType,
-      status: p.status,
-      timing: timingText,
-      note: p.note || ""
-    };
-
-    todayLogsData.unshift(logEntry);
-    renderTodayLogTable();
-    renderFloor();
-    await postStatusPayload(p, actionType, logEntry);
+    if (p.status !== "online" && coffeeBusy && activeCoffeeName === p.name) stopCoffeeWalk();
+    const logEntry = { date: now.toLocaleDateString("en-CA"), time: hmStr, name: p.name, province: p.province || "Regional", action: actionType, status: p.status, timing: timingText, note: p.note || "" };
+    todayLogsData.unshift(logEntry); renderTodayLogTable(); renderFloor(); await postStatusPayload(p, actionType, logEntry);
   }
 
-  function populateChatSenderSelect() {
-    const sel = document.getElementById("chatSenderSelect");
-    sel.innerHTML = `<option value="" selected disabled>-- Choose your name --</option>` + PEOPLE.map(p => `<option value="${esc(p.name)}">${esc(p.name)}</option>`).join("");
-    updatePinBadgeUI();
-  }
-
+  function populateChatSenderSelect() { document.getElementById("chatSenderSelect").innerHTML = `<option value="" selected disabled>-- Choose your name --</option>` + PEOPLE.map(p => `<option value="${esc(p.name)}">${esc(p.name)}</option>`).join(""); updatePinBadgeUI(); }
   function updatePinBadgeUI() {
-    const badge = document.getElementById("chatPinBadge");
-    const pinInput = document.getElementById("chatPinInput");
-    if (!currentChatUser) { badge.textContent = "👤 Name"; badge.className = "chat-pin-badge"; pinInput.placeholder = "PIN"; return; }
-    const hasSavedPin = Boolean(savedPinsMap[currentChatUser.toLowerCase()]);
-    if (unlockedPinUser === currentChatUser) { badge.textContent = "🔓 OK"; badge.className = "chat-pin-badge unlocked"; pinInput.placeholder = "PIN"; }
-    else if (hasSavedPin) { badge.textContent = "🔒 PIN"; badge.className = "chat-pin-badge"; pinInput.placeholder = "Enter PIN"; }
-    else { badge.textContent = "✨ New"; badge.className = "chat-pin-badge"; pinInput.placeholder = "Set PIN"; }
+    const b = document.getElementById("chatPinBadge"), pi = document.getElementById("chatPinInput");
+    if (!currentChatUser) { b.textContent = "👤 Name"; b.className = "chat-pin-badge"; pi.placeholder = "PIN"; return; }
+    const has = Boolean(savedPinsMap[currentChatUser.toLowerCase()]);
+    if (unlockedPinUser === currentChatUser) { b.textContent = "🔓 OK"; b.className = "chat-pin-badge unlocked"; pi.placeholder = "PIN"; }
+    else if (has) { b.textContent = "🔒 PIN"; b.className = "chat-pin-badge"; pi.placeholder = "Enter PIN"; }
+    else { b.textContent = "✨ New"; b.className = "chat-pin-badge"; pi.placeholder = "Set PIN"; }
   }
-
-  function onChatSenderChange() {
-    currentChatUser = document.getElementById("chatSenderSelect").value;
-    const saved = String(savedPinsMap[currentChatUser.toLowerCase()] || "").trim();
-    document.getElementById("chatPinInput").value = (unlockedPinUser === currentChatUser && saved) ? saved : "";
-    updatePinBadgeUI();
-    renderChatMessages();
-  }
-
-  function onChatPinInput() {
-    if (!currentChatUser) return;
-    const entered = document.getElementById("chatPinInput").value.trim();
-    const saved = savedPinsMap[currentChatUser.toLowerCase()];
-    if (saved && entered === saved) unlockedPinUser = currentChatUser;
-    else if (unlockedPinUser === currentChatUser && entered !== saved) unlockedPinUser = "";
-    updatePinBadgeUI();
-    updateActionPinStatus();
-  }
-
-  function unlockConvoPanel() {
-    if (document.getElementById("convoPasskeyInput").value.trim() === CONVO_PASSKEY) {
-      convoUnlocked = true;
-      document.getElementById("chatGateBox").style.display = "none";
-      document.getElementById("chatMessages").classList.add("unlocked");
-      document.getElementById("chatForm").classList.remove("locked-ui");
-      document.getElementById("chatSubLabel").textContent = "Unlocked • PDMU Convo";
-      renderChatMessages();
-    } else {
-      document.getElementById("chatGateError").textContent = "Invalid passkey.";
-    }
-  }
-
-  function lockConvoPanel() {
-    convoUnlocked = false; unlockedPinUser = "";
-    document.getElementById("convoPasskeyInput").value = "";
-    document.getElementById("chatGateBox").style.display = "flex";
-    document.getElementById("chatMessages").classList.remove("unlocked");
-    document.getElementById("chatForm").classList.add("locked-ui");
-    document.getElementById("chatSubLabel").textContent = "Enter chat passkey to view & join convo";
-    updatePinBadgeUI(); updateActionPinStatus();
-  }
-
-  function setReplyTarget(msgId, sender, text) {
-    replyTarget = { id: msgId, sender, text: String(text || "").slice(0, 70) };
-    document.getElementById("replyBannerText").textContent = "Replying to " + sender + ": " + replyTarget.text;
-    document.getElementById("replyBanner").classList.add("active");
-    document.getElementById("chatInput").focus();
-  }
-
-  function clearReplyTarget() {
-    replyTarget = null;
-    document.getElementById("replyBanner").classList.remove("active");
-  }
-
-  function getAvatarForSender(senderName) {
-    if (!senderName) return DEFAULT_AVATAR;
-    if (MEMBER_AVATARS[senderName]) return MEMBER_AVATARS[senderName];
-    const clean = String(senderName).replace(/\s*\(.*?\)\s*/g, "").trim().toLowerCase();
-    for (const k of Object.keys(MEMBER_AVATARS)) {
-      if (k.replace(/\s*\(.*?\)\s*/g, "").trim().toLowerCase() === clean) return MEMBER_AVATARS[k];
-    }
+  function onChatSenderChange() { currentChatUser = document.getElementById("chatSenderSelect").value; const saved = String(savedPinsMap[currentChatUser.toLowerCase()] || "").trim(); document.getElementById("chatPinInput").value = (unlockedPinUser === currentChatUser && saved) ? saved : ""; updatePinBadgeUI(); renderChatMessages(); }
+  function onChatPinInput() { if (!currentChatUser) return; const e = document.getElementById("chatPinInput").value.trim(), s = savedPinsMap[currentChatUser.toLowerCase()]; if (s && e === s) unlockedPinUser = currentChatUser; else if (unlockedPinUser === currentChatUser && e !== s) unlockedPinUser = ""; updatePinBadgeUI(); updateActionPinStatus(); }
+  function unlockConvoPanel() { if (document.getElementById("convoPasskeyInput").value.trim() === CONVO_PASSKEY) { convoUnlocked = true; document.getElementById("chatGateBox").style.display = "none"; document.getElementById("chatMessages").classList.add("unlocked"); document.getElementById("chatForm").classList.remove("locked-ui"); document.getElementById("chatSubLabel").textContent = "Unlocked • PDMU Convo"; renderChatMessages(); } else document.getElementById("chatGateError").textContent = "Invalid passkey."; }
+  function lockConvoPanel() { convoUnlocked = false; unlockedPinUser = ""; document.getElementById("convoPasskeyInput").value = ""; document.getElementById("chatGateBox").style.display = "flex"; document.getElementById("chatMessages").classList.remove("unlocked"); document.getElementById("chatForm").classList.add("locked-ui"); document.getElementById("chatSubLabel").textContent = "Enter chat passkey to view & join convo"; updatePinBadgeUI(); updateActionPinStatus(); }
+  function setReplyTarget(id, sender, text) { replyTarget = { id, sender, text: String(text || "").slice(0,70) }; document.getElementById("replyBannerText").textContent = "Replying to " + sender + ": " + replyTarget.text; document.getElementById("replyBanner").classList.add("active"); document.getElementById("chatInput").focus(); }
+  function clearReplyTarget() { replyTarget = null; document.getElementById("replyBanner").classList.remove("active"); }
+  function getAvatarForSender(name) {
+    if (!name) return DEFAULT_AVATAR; if (MEMBER_AVATARS[name]) return MEMBER_AVATARS[name];
+    const clean = String(name).replace(/\s*\(.*?\)\s*/g,"").trim().toLowerCase();
+    for (const k of Object.keys(MEMBER_AVATARS)) { if (k.replace(/\s*\(.*?\)\s*/g,"").trim().toLowerCase() === clean) return MEMBER_AVATARS[k]; }
     return DEFAULT_AVATAR;
   }
-
   function renderChatMessages() {
-    const box = document.getElementById("chatMessages");
-    if (!convoUnlocked) return;
-    if (!chatMessages.length) {
-      box.innerHTML = `<div style="font-size:11px; color:#cbd5e1; text-align:center; padding:18px 8px;">No messages yet.</div>`;
-      return;
-    }
-    const emojis = ["👍", "❤️", "😂", "👏"];
+    const box = document.getElementById("chatMessages"); if (!convoUnlocked) return;
+    if (!chatMessages.length) { box.innerHTML = `<div style="font-size:11px; color:#cbd5e1; text-align:center; padding:18px 8px;">No messages yet.</div>`; return; }
     box.innerHTML = chatMessages.map(m => {
       const isMine = currentChatUser && m.sender === currentChatUser;
-      const quoteHtml = m.replyTo && m.replyTo.sender ? `<div class="msg-reply-quote"><strong>${esc(m.replyTo.sender)}:</strong> ${esc(m.replyTo.text)}</div>` : "";
+      const q = m.replyTo && m.replyTo.sender ? `<div class="msg-reply-quote"><strong>${esc(m.replyTo.sender)}:</strong> ${esc(m.replyTo.text)}</div>` : "";
       const rx = m.reactions || {};
-      const btnsHtml = emojis.map(emo => {
-        const users = Array.isArray(rx[emo]) ? rx[emo] : [];
-        const active = currentChatUser && users.includes(currentChatUser);
-        return `<button type="button" class="msg-act-btn ${active ? "reacted" : ""}" onclick="toggleReaction('${esc(m.id)}','${emo}')">${emo}${users.length ? " " + users.length : ""}</button>`;
-      }).join("") + `<button type="button" class="msg-act-btn" onclick="setReplyTarget('${esc(m.id)}','${esc(m.sender)}','${esc(m.message)}')">↩ Reply</button>`;
-      return `<div class="msg-row ${isMine ? "mine" : ""}"><img class="msg-avatar" src="${esc(getAvatarForSender(m.sender))}" alt="${esc(m.sender)}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}';"><div class="msg-col"><div class="msg-sender">${esc(m.sender)}</div><div class="msg-bubble">${quoteHtml}${esc(m.message)}</div><div class="msg-actions-bar">${btnsHtml}</div><div class="msg-time">${esc(formatTimeOnly(m.sentAt || ""))}</div></div></div>`;
+      const btns = ["👍","❤️","😂","👏"].map(emo => { const u = Array.isArray(rx[emo]) ? rx[emo] : []; const act = currentChatUser && u.includes(currentChatUser); return `<button type="button" class="msg-act-btn ${act?"reacted":""}" onclick="toggleReaction('${esc(m.id)}','${emo}')">${emo}${u.length?" "+u.length:""}</button>`; }).join("") + `<button type="button" class="msg-act-btn" onclick="setReplyTarget('${esc(m.id)}','${esc(m.sender)}','${esc(m.message)}')">↩ Reply</button>`;
+      return `<div class="msg-row ${isMine?"mine":""}"><img class="msg-avatar" src="${esc(getAvatarForSender(m.sender))}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}';"><div class="msg-col"><div class="msg-sender">${esc(m.sender)}</div><div class="msg-bubble">${q}${esc(m.message)}</div><div class="msg-actions-bar">${btns}</div><div class="msg-time">${esc(formatTimeOnly(m.sentAt||""))}</div></div></div>`;
     }).join("");
     box.scrollTop = box.scrollHeight;
   }
-
   async function sendChatMessage(e) {
-    e.preventDefault();
-    if (!convoUnlocked) return;
-    const sender = document.getElementById("chatSenderSelect").value;
-    if (!sender) { alert("Pilia una ang imong pangalan."); return; }
-    const pinVal = document.getElementById("chatPinInput").value.trim();
-    const input = document.getElementById("chatInput");
-    const text = input.value.trim();
-    if (!text) return;
-
-    const keyLower = sender.toLowerCase();
-    const existingPin = savedPinsMap[keyLower];
-    if (existingPin) {
-      if (unlockedPinUser !== sender && pinVal !== existingPin) { alert("Enter sakto nga PIN para kang " + sender + "."); return; }
-      unlockedPinUser = sender;
-    } else {
-      if (!pinVal) { alert("Palihog pag-type og PIN para ma-save ang imong account."); return; }
-      syncPinToChatbox(sender, pinVal);
-    }
+    e.preventDefault(); if (!convoUnlocked) return;
+    const sender = document.getElementById("chatSenderSelect").value; if (!sender) { alert("Pilia una ang imong pangalan."); return; }
+    const pinVal = document.getElementById("chatPinInput").value.trim(), input = document.getElementById("chatInput"), text = input.value.trim(); if (!text) return;
+    const key = sender.toLowerCase(), ex = savedPinsMap[key];
+    if (ex) { if (unlockedPinUser !== sender && pinVal !== ex) { alert("Enter sakto nga PIN para kang " + sender + "."); return; } unlockedPinUser = sender; }
+    else { if (!pinVal) { alert("Palihog pag-type og PIN."); return; } syncPinToChatbox(sender, pinVal); }
     updatePinBadgeUI(); updateActionPinStatus();
-    const msgId = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
-    const replySnapshot = replyTarget ? { sender: replyTarget.sender, text: replyTarget.text } : null;
-    const now = new Date();
-    const hmStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
-    chatMessages.push({ id: msgId, sender, message: text, sentAt: hmStr, replyTo: replySnapshot, reactions: {} });
+    const msgId = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2,6), now = new Date();
+    chatMessages.push({ id:msgId, sender, message:text, sentAt:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"), replyTo:replyTarget?{sender:replyTarget.sender,text:replyTarget.text}:null, reactions:{} });
     input.value = ""; clearReplyTarget(); renderChatMessages();
-    if (APPS_SCRIPT_URL) {
-      fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "chat", id: msgId, sender, message: text, replyTo: replySnapshot }) }).catch(() => {});
-    }
+    if (APPS_SCRIPT_URL) fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({type:"chat",id:msgId,sender,message:text,replyTo:replyTarget?{sender:replyTarget.sender,text:replyTarget.text}:null}) }).catch(()=>{});
   }
-
   async function toggleReaction(msgId, emoji) {
     if (!convoUnlocked || !currentChatUser) return;
-    const target = chatMessages.find(m => m.id === msgId);
-    if (target) {
-      if (!target.reactions) target.reactions = {};
-      if (!Array.isArray(target.reactions[emoji])) target.reactions[emoji] = [];
-      const pos = target.reactions[emoji].indexOf(currentChatUser);
-      if (pos > -1) target.reactions[emoji].splice(pos, 1);
-      else target.reactions[emoji].push(currentChatUser);
-      renderChatMessages();
-      if (APPS_SCRIPT_URL) {
-        fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "react", msgId, emoji, reactor: currentChatUser }) }).catch(() => {});
-      }
-    }
+    const t = chatMessages.find(m => m.id === msgId); if (!t) return;
+    if (!t.reactions) t.reactions = {}; if (!Array.isArray(t.reactions[emoji])) t.reactions[emoji] = [];
+    const pos = t.reactions[emoji].indexOf(currentChatUser); if (pos > -1) t.reactions[emoji].splice(pos,1); else t.reactions[emoji].push(currentChatUser);
+    renderChatMessages();
+    if (APPS_SCRIPT_URL) fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({type:"react",msgId,emoji,reactor:currentChatUser}) }).catch(()=>{});
   }
 
   function updateSummaryCounts() {
-    const prov = document.getElementById("provFilter").value;
-    const list = PEOPLE.filter(p => (p.province || "Regional") === prov);
-    let online = 0, activity = 0, passlip = 0, ptl = 0, leave = 0, absent = 0, offline = 0;
-    list.forEach(p => {
-      if (p.status === "online") online++;
-      else if (p.status === "activity") activity++;
-      else if (p.status === "passlip") passlip++;
-      else if (p.status === "ptl") ptl++;
-      else if (p.status === "leave") leave++;
-      else if (p.status === "absent") absent++;
-      else offline++;
-    });
-    document.getElementById("cntTotal").textContent = list.length;
-    document.getElementById("cntOnline").textContent = online;
-    document.getElementById("cntActivity").textContent = activity;
-    document.getElementById("cntPasslip").textContent = passlip;
-    document.getElementById("cntPtl").textContent = ptl;
-    document.getElementById("cntLeave").textContent = leave;
-    document.getElementById("cntAbsent").textContent = absent;
-    document.getElementById("cntOffline").textContent = offline;
+    const prov = document.getElementById("provFilter").value, list = PEOPLE.filter(p => (p.province || "Regional") === prov);
+    const c = { online:0, activity:0, passlip:0, ptl:0, leave:0, absent:0, offline:0 };
+    list.forEach(p => { c[p.status] = (c[p.status] || 0) + 1; });
+    document.getElementById("cntTotal").textContent = list.length; document.getElementById("cntOnline").textContent = c.online;
+    document.getElementById("cntActivity").textContent = c.activity; document.getElementById("cntPasslip").textContent = c.passlip;
+    document.getElementById("cntPtl").textContent = c.ptl; document.getElementById("cntLeave").textContent = c.leave;
+    document.getElementById("cntAbsent").textContent = c.absent; document.getElementById("cntOffline").textContent = c.offline;
   }
-
   function quickFilter(st) { document.getElementById("statusFilter").value = st; renderFloor(); }
   function isDancingNow() { return danceEndTime > Date.now(); }
+  function stopCoffeeWalk() { clearTimeout(coffeeDrinkTimeout); clearInterval(coffeeChatterInterval); coffeeDrinkTimeout = coffeeChatterInterval = null; coffeeBusy = false; activeCoffeeName = ""; coffeePhase = "idle"; coffeeProgress = 0; coffeeChatterIndex = 0; }
 
-  function stopCoffeeWalk() {
-    clearTimeout(coffeeDrinkTimeout);
-    coffeeDrinkTimeout = null;
-    clearInterval(coffeeChatterInterval);
-    coffeeChatterInterval = null;
-    coffeeBusy = false;
-    activeCoffeeName = "";
-    coffeePhase = "idle";
-    coffeeProgress = 0;
-    coffeeChatterIndex = 0;
+  function map2Dto3D(px, py) { return { x: ((px-50)/50)*14.2, z: ((py-50)/50)*10.2 }; }
+  function createFallbackFrameTexture(labelText, bgColor) {
+    const c = document.createElement("canvas"); c.width = 512; c.height = 256; const ctx = c.getContext("2d");
+    ctx.fillStyle = bgColor || "#1e293b"; ctx.fillRect(0,0,512,256); ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 8; ctx.strokeRect(12,12,488,232);
+    ctx.fillStyle = "#fde047"; ctx.font = "bold 28px Inter, sans-serif"; ctx.textAlign = "center"; ctx.fillText("PDMU REGIONAL WALL", 256, 112);
+    ctx.fillStyle = "#fff"; ctx.font = "bold 22px Inter, sans-serif"; ctx.fillText(labelText, 256, 152);
+    return new THREE.CanvasTexture(c);
   }
-
-  /* ================= 3D THREE.JS OFFICE ENGINE ================= */
-  let scene3D, camera3D, renderer3D;
-  let staff3DObjects = [];
-  let camSpherical = { theta: 0.44, phi: 0.94, radius: 32.0 };
-  let camTarget = { x: 0, y: 1.0, z: 0.4 };
-  let isDragging3D = false, dragMoved3D = false, prevPointer3D = { x: 0, y: 0 };
-  let raycaster3D, pointerNDC3D;
-  let discoLights3D = [];
-  const COFFEE_3D_SPOT = { x: -7.2, z: 8.6 };
-  const CARPET_3D_CENTER = { x: 10.6, z: 7.8 };
-
-  function map2Dto3D(px, py) {
-    const wx = ((px - 50) / 50) * 14.2;
-    const wz = ((py - 50) / 50) * 10.2;
-    return { x: wx, z: wz };
+  function tryLoadImageToMaterial(url, photoMat) {
+    if (!url || !photoMat) return;
+    const img = new Image(); img.crossOrigin = "anonymous";
+    img.onload = () => { const tex = new THREE.Texture(img); tex.needsUpdate = true; photoMat.map = tex; photoMat.needsUpdate = true; };
+    img.src = url;
   }
 
   function buildDetailedChibiCharacter3D(p) {
@@ -1126,766 +615,274 @@
     const shirtMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(p.shirt || "#3b82f6"), roughness: 0.45 });
     const hairMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(p.hair || "#27272a"), roughness: 0.58 });
     const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.65 });
-    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const irisMat = new THREE.MeshBasicMaterial({ color: 0x3b1d0e });
-    const pupilMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
-    const lipMat = new THREE.MeshBasicMaterial({ color: 0xe11d48 });
-    const cheekMat = new THREE.MeshBasicMaterial({ color: 0xfba5a5 });
 
     const legGeo = new THREE.CylinderGeometry(0.075, 0.072, 0.34, 12);
-    const legL = new THREE.Mesh(legGeo, pantsMat);
-    legL.rotation.x = Math.PI / 2;
-    legL.position.set(-0.14, 0.02, 0.16);
-    legL.castShadow = true;
-
-    const legR = new THREE.Mesh(legGeo, pantsMat);
-    legR.rotation.x = Math.PI / 2;
-    legR.position.set(0.14, 0.02, 0.16);
-    legR.castShadow = true;
+    const legL = new THREE.Mesh(legGeo, pantsMat); legL.rotation.x = Math.PI/2; legL.position.set(-0.14, 0.02, 0.16); legL.castShadow = true;
+    const legR = new THREE.Mesh(legGeo, pantsMat); legR.rotation.x = Math.PI/2; legR.position.set(0.14, 0.02, 0.16); legR.castShadow = true;
     charGroup.add(legL, legR);
 
-    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.27, 0.44, 18), shirtMat);
-    torso.position.set(0, 0.28, 0);
-    torso.castShadow = true;
-    charGroup.add(torso);
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.27, 0.44, 18), shirtMat); torso.position.set(0, 0.28, 0); torso.castShadow = true; charGroup.add(torso);
+    if (p.stripe) { const band = new THREE.Mesh(new THREE.CylinderGeometry(0.256, 0.26, 0.11, 18), new THREE.MeshStandardMaterial({ color: 0xffffff })); band.position.set(0, 0.28, 0); charGroup.add(band); }
 
-    if (p.stripe) {
-      const band = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.256, 0.26, 0.11, 18),
-        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45 })
-      );
-      band.position.set(0, 0.28, 0);
-      charGroup.add(band);
-    }
-
-    const armLGroup = new THREE.Group();
-    armLGroup.position.set(-0.28, 0.42, 0.02);
-    const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.34, 12), skinMat);
-    armL.position.set(0, -0.12, 0.14);
-    armL.rotation.x = Math.PI * 0.42;
-    armL.castShadow = true;
-    armLGroup.add(armL);
-
-    const armRGroup = new THREE.Group();
-    armRGroup.position.set(0.28, 0.42, 0.02);
-    const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.34, 12), skinMat);
-    armR.position.set(0, -0.12, 0.14);
-    armR.rotation.x = Math.PI * 0.42;
-    armR.castShadow = true;
-    armRGroup.add(armR);
-
+    const armLGroup = new THREE.Group(); armLGroup.position.set(-0.28, 0.42, 0.02);
+    const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.34, 12), skinMat); armL.position.set(0, -0.12, 0.14); armL.rotation.x = Math.PI*0.42; armL.castShadow = true; armLGroup.add(armL);
+    const armRGroup = new THREE.Group(); armRGroup.position.set(0.28, 0.42, 0.02);
+    const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.06, 0.34, 12), skinMat); armR.position.set(0, -0.12, 0.14); armR.rotation.x = Math.PI*0.42; armR.castShadow = true; armRGroup.add(armR);
     charGroup.add(armLGroup, armRGroup);
 
-    const headGroup = new THREE.Group();
-    headGroup.position.set(0, 0.92, 0.04);
-
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.44, 28, 24), skinMat);
-    head.scale.set(1.04, 1.0, 0.98);
-    head.castShadow = true;
-    headGroup.add(head);
-
+    const headGroup = new THREE.Group(); headGroup.position.set(0, 0.92, 0.04);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.44, 28, 24), skinMat); head.scale.set(1.04, 1.0, 0.98); head.castShadow = true; headGroup.add(head);
     const earGeo = new THREE.SphereGeometry(0.09, 12, 12);
     const earL = new THREE.Mesh(earGeo, skinMat); earL.position.set(-0.44, -0.02, 0);
     const earR = new THREE.Mesh(earGeo, skinMat); earR.position.set(0.44, -0.02, 0);
     headGroup.add(earL, earR);
 
-    const crown = new THREE.Mesh(new THREE.SphereGeometry(0.465, 28, 20), hairMat);
-    crown.scale.set(1.06, 1.02, 1.04);
-    crown.position.set(0, 0.07, -0.04);
-    crown.castShadow = true;
-    headGroup.add(crown);
-
-    const bangL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.12, 0.14), hairMat);
-    bangL.position.set(-0.22, 0.27, 0.36);
-    bangL.rotation.z = -0.18;
-    const bangR = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.11, 0.14), hairMat);
-    bangR.position.set(0.18, 0.28, 0.37);
-    bangR.rotation.z = 0.14;
+    const crown = new THREE.Mesh(new THREE.SphereGeometry(0.465, 28, 20), hairMat); crown.scale.set(1.06, 1.02, 1.04); crown.position.set(0, 0.07, -0.04); crown.castShadow = true; headGroup.add(crown);
+    const bangL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.12, 0.14), hairMat); bangL.position.set(-0.22, 0.27, 0.36); bangL.rotation.z = -0.18;
+    const bangR = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.11, 0.14), hairMat); bangR.position.set(0.18, 0.28, 0.37); bangR.rotation.z = 0.14;
     headGroup.add(bangL, bangR);
 
     if (p.pigtails) {
-      const tieMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(p.hairtie || "#ec4899"), roughness: 0.4 });
+      const tieMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(p.hairtie || "#ec4899") });
       [-1, 1].forEach(side => {
-        const tie = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.032, 8, 16), tieMat);
-        tie.position.set(side * 0.45, 0.18, -0.06);
-        tie.rotation.y = side * 0.6;
-        const tail = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.48, 14), hairMat);
-        tail.position.set(side * 0.56, -0.06, -0.12);
-        tail.rotation.z = side * 0.36;
-        tail.castShadow = true;
+        const tie = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.032, 8, 16), tieMat); tie.position.set(side*0.45, 0.18, -0.06); tie.rotation.y = side*0.6;
+        const tail = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.48, 14), hairMat); tail.position.set(side*0.56, -0.06, -0.12); tail.rotation.z = side*0.36; tail.castShadow = true;
         headGroup.add(tie, tail);
       });
     }
 
+    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff }), irisMat = new THREE.MeshBasicMaterial({ color: 0x3b1d0e }), pupilMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
     [-0.155, 0.155].forEach(ex => {
-      const ew = new THREE.Mesh(new THREE.SphereGeometry(0.072, 14, 14), eyeWhiteMat);
-      ew.scale.set(1.0, 1.15, 0.45);
-      ew.position.set(ex, 0.01, 0.41);
-
-      const ir = new THREE.Mesh(new THREE.SphereGeometry(0.048, 12, 12), irisMat);
-      ir.scale.set(1.0, 1.1, 0.45);
-      ir.position.set(ex + (ex < 0 ? 0.008 : -0.008), 0.005, 0.435);
-
-      const pu = new THREE.Mesh(new THREE.SphereGeometry(0.024, 10, 10), pupilMat);
-      pu.position.set(ex + (ex < 0 ? 0.012 : -0.012), 0.005, 0.45);
-
+      const ew = new THREE.Mesh(new THREE.SphereGeometry(0.072, 14, 14), eyeWhiteMat); ew.scale.set(1, 1.15, 0.45); ew.position.set(ex, 0.01, 0.41);
+      const ir = new THREE.Mesh(new THREE.SphereGeometry(0.048, 12, 12), irisMat); ir.scale.set(1, 1.1, 0.45); ir.position.set(ex+(ex<0?0.008:-0.008), 0.005, 0.435);
+      const pu = new THREE.Mesh(new THREE.SphereGeometry(0.024, 10, 10), pupilMat); pu.position.set(ex+(ex<0?0.012:-0.012), 0.005, 0.45);
       headGroup.add(ew, ir, pu);
     });
 
     const browGeo = new THREE.BoxGeometry(0.12, 0.028, 0.03);
     const browL = new THREE.Mesh(browGeo, hairMat); browL.position.set(-0.155, 0.14, 0.41); browL.rotation.z = 0.08;
     const browR = new THREE.Mesh(browGeo, hairMat); browR.position.set(0.155, 0.14, 0.41); browR.rotation.z = -0.08;
-
-    const cheekGeo = new THREE.SphereGeometry(0.048, 10, 10);
-    cheekGeo.scale(1.2, 0.7, 0.4);
+    const cheekGeo = new THREE.SphereGeometry(0.048, 10, 10); cheekGeo.scale(1.2, 0.7, 0.4);
+    const cheekMat = new THREE.MeshBasicMaterial({ color: 0xfba5a5 });
     const cheekL = new THREE.Mesh(cheekGeo, cheekMat); cheekL.position.set(-0.25, -0.08, 0.38);
     const cheekR = new THREE.Mesh(cheekGeo, cheekMat); cheekR.position.set(0.25, -0.08, 0.38);
-
-    const smile = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.032, 0.03), lipMat);
-    smile.position.set(0, -0.14, 0.42);
-    smile.rotation.x = -0.15;
-
-    headGroup.add(browL, browR, cheekL, cheekR, smile);
-    charGroup.add(headGroup);
-
+    const smile = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.032, 0.03), new THREE.MeshBasicMaterial({ color: 0xe11d48 })); smile.position.set(0, -0.14, 0.42); smile.rotation.x = -0.15;
+    headGroup.add(browL, browR, cheekL, cheekR, smile); charGroup.add(headGroup);
     return { charGroup, headGroup, armLGroup, armRGroup };
   }
 
   function buildWorkstation3D(p, idx) {
-    const unitGroup = new THREE.Group();
-    const pos = map2Dto3D(p.x, p.y);
-    unitGroup.position.set(pos.x, 0, pos.z);
+    const unitGroup = new THREE.Group(), pos = map2Dto3D(p.x, p.y); unitGroup.position.set(pos.x, 0, pos.z);
+    const isChief = p.name.includes("Chief"), legMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+    const deskTop = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.11, 0.85), new THREE.MeshStandardMaterial({ color: isChief ? 0xf59e0b : 0xfef3c7, roughness: 0.45 }));
+    deskTop.position.set(0, 0.70, 0.44); deskTop.castShadow = true; deskTop.receiveShadow = true; unitGroup.add(deskTop);
+    [[-0.78,0.35,0.08],[0.78,0.35,0.08],[-0.78,0.35,0.80],[0.78,0.35,0.80]].forEach(([lx,ly,lz]) => { const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08,0.70,0.08), legMat); leg.position.set(lx,ly,lz); leg.castShadow = true; unitGroup.add(leg); });
 
-    const isChief = p.name.includes("Chief");
-    const deskMat = new THREE.MeshStandardMaterial({ color: isChief ? 0xf59e0b : 0xfef3c7, roughness: 0.45 });
-    const legMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6 });
+    const lapMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8 }), lapScreenMat = new THREE.MeshStandardMaterial({ color: 0x7dd3fc, emissive: 0x0284c7, emissiveIntensity: 0.5 });
+    const lapGroup = new THREE.Group(); lapGroup.position.set(0, 0.76, 0.36);
+    const lapBase = new THREE.Mesh(new THREE.BoxGeometry(0.54,0.03,0.38), lapMat); lapBase.position.set(0,0.015,0); lapBase.castShadow = true;
+    const lapLid = new THREE.Mesh(new THREE.BoxGeometry(0.54,0.36,0.025), lapMat); lapLid.position.set(0,0.19,0.17); lapLid.rotation.x = -0.22; lapLid.castShadow = true;
+    const lapScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.48,0.30), lapScreenMat); lapScreen.position.set(0,0.19,0.155); lapScreen.rotation.x = -0.22; lapScreen.rotation.y = Math.PI;
+    lapGroup.add(lapBase, lapLid, lapScreen); unitGroup.add(lapGroup);
 
-    const deskTop = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.11, 0.85), deskMat);
-    deskTop.position.set(0, 0.70, 0.44);
-    deskTop.castShadow = true;
-    deskTop.receiveShadow = true;
-    unitGroup.add(deskTop);
+    const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.065,0.06,0.11,12), new THREE.MeshStandardMaterial({ color: 0xfb7185 })); mug.position.set(0.62,0.81,0.42); unitGroup.add(mug);
+    const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.30,0.26,0.09,16), new THREE.MeshStandardMaterial({ color: isChief ? 0xd97706 : 0x64748b })); seat.position.set(0,0.44,-0.34); seat.castShadow = true;
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.18,0.4,12), legMat); stem.position.set(0,0.2,-0.34); unitGroup.add(seat, stem);
 
-    [[-0.78, 0.35, 0.08], [0.78, 0.35, 0.08], [-0.78, 0.35, 0.80], [0.78, 0.35, 0.80]].forEach(([lx, ly, lz]) => {
-      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.70, 0.08), legMat);
-      leg.position.set(lx, ly, lz);
-      leg.castShadow = true;
-      unitGroup.add(leg);
-    });
-
-    const lapMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.35 });
-    const lapScreenMat = new THREE.MeshStandardMaterial({ color: 0x7dd3fc, emissive: 0x0284c7, emissiveIntensity: 0.5 });
-    const lapGroup = new THREE.Group();
-    lapGroup.position.set(0, 0.76, 0.36);
-
-    const lapBase = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.03, 0.38), lapMat);
-    lapBase.position.set(0, 0.015, 0);
-    lapBase.castShadow = true;
-
-    const lapLid = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.36, 0.025), lapMat);
-    lapLid.position.set(0, 0.19, 0.17);
-    lapLid.rotation.x = -0.22;
-    lapLid.castShadow = true;
-
-    const lapScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.30), lapScreenMat);
-    lapScreen.position.set(0, 0.19, 0.155);
-    lapScreen.rotation.x = -0.22;
-    lapScreen.rotation.y = Math.PI;
-
-    lapGroup.add(lapBase, lapLid, lapScreen);
-    unitGroup.add(lapGroup);
-
-    const mug = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.065, 0.06, 0.11, 12),
-      new THREE.MeshStandardMaterial({ color: 0xfb7185 })
-    );
-    mug.position.set(0.62, 0.81, 0.42);
-    unitGroup.add(mug);
-
-    const chairMat = new THREE.MeshStandardMaterial({ color: isChief ? 0xd97706 : 0x64748b, roughness: 0.6 });
-    const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.26, 0.09, 16), chairMat);
-    seat.position.set(0, 0.44, -0.34);
-    seat.castShadow = true;
-    const chairStem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.18, 0.4, 12), legMat);
-    chairStem.position.set(0, 0.2, -0.34);
-    unitGroup.add(seat, chairStem);
-
-    const parts = buildDetailedChibiCharacter3D(p);
-    parts.charGroup.position.set(0, 0.49, -0.34);
-    unitGroup.add(parts.charGroup);
-
-    const hitBox = new THREE.Mesh(
-      new THREE.BoxGeometry(1.9, 2.0, 1.7),
-      new THREE.MeshBasicMaterial({ visible: false })
-    );
-    hitBox.position.set(0, 1.0, 0.05);
-    hitBox.userData = { personIdx: idx };
-    unitGroup.add(hitBox);
-
+    const parts = buildDetailedChibiCharacter3D(p); parts.charGroup.position.set(0,0.49,-0.34); unitGroup.add(parts.charGroup);
+    const hitBox = new THREE.Mesh(new THREE.BoxGeometry(1.9,2.0,1.7), new THREE.MeshBasicMaterial({ visible: false })); hitBox.position.set(0,1.0,0.05); hitBox.userData = { personIdx: idx }; unitGroup.add(hitBox);
     scene3D.add(unitGroup);
 
-    const overlayHost = document.getElementById("labels3dOverlay");
-    const tagEl = document.createElement("div");
-    tagEl.className = "tag-3d-card";
-    tagEl.onclick = (ev) => { ev.stopPropagation(); selectPerson(idx); };
-    const bubbleEl = document.createElement("div");
-    bubbleEl.className = "bubble-tag-3d st-offline";
-    const nameEl = document.createElement("div");
-    nameEl.className = "name-chip-3d";
-    nameEl.textContent = p.name;
-    tagEl.appendChild(bubbleEl);
-    tagEl.appendChild(nameEl);
-    overlayHost.appendChild(tagEl);
+    const tagEl = document.createElement("div"); tagEl.className = "tag-3d-card"; tagEl.onclick = (ev) => { ev.stopPropagation(); selectPerson(idx); };
+    const bubbleEl = document.createElement("div"); bubbleEl.className = "bubble-tag-3d st-offline";
+    const nameEl = document.createElement("div"); nameEl.className = "name-chip-3d"; nameEl.textContent = p.name;
+    tagEl.appendChild(bubbleEl); tagEl.appendChild(nameEl); document.getElementById("labels3dOverlay").appendChild(tagEl);
 
-    staff3DObjects.push({
-      person: p,
-      idx,
-      group: unitGroup,
-      avatarGroup: parts.charGroup,
-      headGroup: parts.headGroup,
-      armLGroup: parts.armLGroup,
-      armRGroup: parts.armRGroup,
-      lapScreenMat,
-      homePos: { x: pos.x, z: pos.z },
-      tagEl,
-      bubbleEl,
-      nameEl,
-      hitBox
-    });
+    staff3DObjects.push({ person:p, idx, group:unitGroup, avatarGroup:parts.charGroup, headGroup:parts.headGroup, armLGroup:parts.armLGroup, armRGroup:parts.armRGroup, lapScreenMat, homePos:{x:pos.x,z:pos.z}, tagEl, bubbleEl, nameEl, hitBox });
   }
 
   function createWoodFloorTexture() {
-    const c = document.createElement("canvas");
-    c.width = 256; c.height = 256;
-    const ctx = c.getContext("2d");
-    ctx.fillStyle = "#deb07a";
-    ctx.fillRect(0, 0, 256, 256);
-    const shades = ["#d4a26a", "#e5ba86", "#cb985e", "#ebc494"];
-    for (let y = 0; y < 256; y += 32) {
-      ctx.fillStyle = shades[(y / 32) % shades.length];
-      ctx.fillRect(0, y, 256, 30);
-      ctx.fillStyle = "rgba(120, 72, 32, 0.22)";
-      ctx.fillRect(0, y + 30, 256, 2);
-    }
-    const tex = new THREE.CanvasTexture(c);
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(9, 7);
-    return tex;
+    const c = document.createElement("canvas"); c.width = 256; c.height = 256; const ctx = c.getContext("2d"); ctx.fillStyle = "#deb07a"; ctx.fillRect(0,0,256,256);
+    const shades = ["#d4a26a","#e5ba86","#cb985e","#ebc494"];
+    for (let y=0; y<256; y+=32) { ctx.fillStyle = shades[(y/32)%shades.length]; ctx.fillRect(0,y,256,30); ctx.fillStyle = "rgba(120,72,32,.22)"; ctx.fillRect(0,y+30,256,2); }
+    const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(9,7); return tex;
   }
 
   function init3DOffice() {
-    const host = document.getElementById("threeCanvasHost");
-    if (!host || typeof THREE === "undefined") return;
-
-    scene3D = new THREE.Scene();
-    camera3D = new THREE.PerspectiveCamera(36, host.clientWidth / Math.max(1, host.clientHeight), 0.1, 160);
-
-    renderer3D = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer3D.setSize(host.clientWidth, host.clientHeight);
-    renderer3D.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer3D.shadowMap.enabled = true;
-    renderer3D.shadowMap.type = THREE.PCFSoftShadowMap;
+    const host = document.getElementById("threeCanvasHost"); if (!host || typeof THREE === "undefined") return;
+    scene3D = new THREE.Scene(); camera3D = new THREE.PerspectiveCamera(36, host.clientWidth/Math.max(1,host.clientHeight), 0.1, 160);
+    renderer3D = new THREE.WebGLRenderer({ antialias:true, alpha:true }); renderer3D.setSize(host.clientWidth, host.clientHeight); renderer3D.setPixelRatio(Math.min(window.devicePixelRatio||1,2)); renderer3D.shadowMap.enabled = true;
     host.appendChild(renderer3D.domElement);
+    raycaster3D = new THREE.Raycaster(); pointerNDC3D = new THREE.Vector2();
 
-    raycaster3D = new THREE.Raycaster();
-    pointerNDC3D = new THREE.Vector2();
+    scene3D.add(new THREE.HemisphereLight(0xfffbeb, 0xd97706, 0.92));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85); dirLight.position.set(14,24,16); dirLight.castShadow = true; dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 1024;
+    const d = 20; dirLight.shadow.camera.left = dirLight.shadow.camera.bottom = -d; dirLight.shadow.camera.right = dirLight.shadow.camera.top = d; scene3D.add(dirLight);
+    [0xf472b6, 0x38bdf8, 0xfacc15].forEach((col,i) => { const pl = new THREE.PointLight(col, 0, 22); pl.position.set((i-1)*9, 6, 0); scene3D.add(pl); discoLights3D.push(pl); });
 
-    const hemiLight = new THREE.HemisphereLight(0xfffbeb, 0xd97706, 0.92);
-    scene3D.add(hemiLight);
+    const floorMesh = new THREE.Mesh(new THREE.BoxGeometry(32,0.4,23.5), new THREE.MeshStandardMaterial({ map: createWoodFloorTexture(), roughness:0.65 })); floorMesh.position.set(0,-0.2,0); floorMesh.receiveShadow = true; scene3D.add(floorMesh);
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness:0.7 });
+    const backWall = new THREE.Mesh(new THREE.BoxGeometry(32,3.6,0.35), wallMat); backWall.position.set(0,1.6,-11.6); backWall.receiveShadow = true;
+    const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.35,3.6,23.5), wallMat); leftWall.position.set(-15.8,1.6,0); leftWall.receiveShadow = true;
+    scene3D.add(backWall, leftWall);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
-    dirLight.position.set(14, 24, 16);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
-    const d = 20;
-    dirLight.shadow.camera.left = -d; dirLight.shadow.camera.right = d;
-    dirLight.shadow.camera.top = d; dirLight.shadow.camera.bottom = -d;
-    scene3D.add(dirLight);
-
-    [0xf472b6, 0x38bdf8, 0xfacc15].forEach((col, i) => {
-      const pl = new THREE.PointLight(col, 0, 22);
-      pl.position.set((i - 1) * 9, 6, 0);
-      scene3D.add(pl);
-      discoLights3D.push(pl);
+    regionalWallFramesGroup = new THREE.Group();
+    const frameBorderMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness:0.5 });
+    const cardColors = ["#030954","#1e3a8a","#0f172a","#172554"], cardLabels = ["PHOTO 1","PHOTO 2","PHOTO 3","PHOTO 4"];
+    [-4.5, 0.0, 4.5, 9.0].forEach((wx, idx) => {
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(3.96,2.06,0.10), frameBorderMat); frame.position.set(wx,1.95,-11.41); frame.castShadow = true; regionalWallFramesGroup.add(frame);
+      const photoMat = new THREE.MeshBasicMaterial({ map: createFallbackFrameTexture(cardLabels[idx], cardColors[idx]) });
+      const photoPlane = new THREE.Mesh(new THREE.PlaneGeometry(3.76,1.86), photoMat); photoPlane.position.set(wx,1.95,-11.355); regionalWallFramesGroup.add(photoPlane);
+      tryLoadImageToMaterial(WALL_PHOTO_URLS[idx], photoMat);
     });
+    scene3D.add(regionalWallFramesGroup);
 
-    const floorGeo = new THREE.BoxGeometry(32.0, 0.4, 23.5);
-    const floorMat = new THREE.MeshStandardMaterial({ map: createWoodFloorTexture(), roughness: 0.65 });
-    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
-    floorMesh.position.set(0, -0.2, 0);
-    floorMesh.receiveShadow = true;
-    scene3D.add(floorMesh);
+    const boardFrame = new THREE.Mesh(new THREE.BoxGeometry(4.6,2.0,0.14), new THREE.MeshStandardMaterial({ color: 0x334155 })); boardFrame.position.set(-11.2,1.95,-11.38); scene3D.add(boardFrame);
+    [-3.0, 2.5, 8.0].forEach(bx => { const shelf = new THREE.Mesh(new THREE.BoxGeometry(2.3,0.95,0.45), new THREE.MeshStandardMaterial({ color: 0xb45309 })); shelf.position.set(bx,0.48,-11.0); shelf.castShadow = true; scene3D.add(shelf); });
 
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.7 });
-    const backWall = new THREE.Mesh(new THREE.BoxGeometry(32.0, 3.6, 0.35), wallMat);
-    backWall.position.set(0, 1.6, -11.6);
-    backWall.receiveShadow = true;
-    scene3D.add(backWall);
+    const carpet = new THREE.Mesh(new THREE.BoxGeometry(5.2,0.04,4.8), new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness:0.85 })); carpet.position.set(CARPET_3D_CENTER.x,0.02,CARPET_3D_CENTER.z); carpet.receiveShadow = true; scene3D.add(carpet);
+    const sofaMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness:0.7 });
+    const sofaBase = new THREE.Mesh(new THREE.BoxGeometry(3.2,0.45,1.15), sofaMat); sofaBase.position.set(-11.5,0.22,9.4); sofaBase.castShadow = true;
+    const sofaBack = new THREE.Mesh(new THREE.BoxGeometry(3.2,0.6,0.25), sofaMat); sofaBack.position.set(-11.5,0.65,9.85); scene3D.add(sofaBase, sofaBack);
 
-    const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.35, 3.6, 23.5), wallMat);
-    leftWall.position.set(-15.8, 1.6, 0);
-    leftWall.receiveShadow = true;
-    scene3D.add(leftWall);
+    const coffeeCounter = new THREE.Mesh(new THREE.BoxGeometry(1.8,0.85,1.0), new THREE.MeshStandardMaterial({ color: 0x451a03 })); coffeeCounter.position.set(COFFEE_3D_SPOT.x,0.42,COFFEE_3D_SPOT.z+0.8); coffeeCounter.castShadow = true;
+    const coffeeMachine = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.55,0.48), new THREE.MeshStandardMaterial({ color: 0xfbbf24 })); coffeeMachine.position.set(COFFEE_3D_SPOT.x,1.12,COFFEE_3D_SPOT.z+0.8); scene3D.add(coffeeCounter, coffeeMachine);
 
-    const winGlassMat = new THREE.MeshStandardMaterial({ color: 0xbae6fd, emissive: 0x38bdf8, emissiveIntensity: 0.25 });
-    [-4.5, 0.0, 4.5, 9.0].forEach(wx => {
-      const win = new THREE.Mesh(new THREE.BoxGeometry(3.8, 1.9, 0.12), winGlassMat);
-      win.position.set(wx, 1.95, -11.4);
-      scene3D.add(win);
-    });
-
-    const boardFrame = new THREE.Mesh(new THREE.BoxGeometry(4.6, 2.0, 0.14), new THREE.MeshStandardMaterial({ color: 0x334155 }));
-    boardFrame.position.set(-11.2, 1.95, -11.38);
-    scene3D.add(boardFrame);
-
-    [-3.0, 2.5, 8.0].forEach(bx => {
-      const shelf = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.95, 0.45), new THREE.MeshStandardMaterial({ color: 0xb45309 }));
-      shelf.position.set(bx, 0.48, -11.0);
-      shelf.castShadow = true;
-      scene3D.add(shelf);
-    });
-
-    const carpet = new THREE.Mesh(
-      new THREE.BoxGeometry(5.2, 0.04, 4.8),
-      new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.85 })
-    );
-    carpet.position.set(CARPET_3D_CENTER.x, 0.02, CARPET_3D_CENTER.z);
-    carpet.receiveShadow = true;
-    scene3D.add(carpet);
-
-    const sofaMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.7 });
-    const sofaBase = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.45, 1.15), sofaMat);
-    sofaBase.position.set(-11.5, 0.22, 9.4);
-    sofaBase.castShadow = true;
-    const sofaBack = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.6, 0.25), sofaMat);
-    sofaBack.position.set(-11.5, 0.65, 9.85);
-    scene3D.add(sofaBase, sofaBack);
-
-    const coffeeCounter = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.85, 1.0), new THREE.MeshStandardMaterial({ color: 0x451a03 }));
-    coffeeCounter.position.set(COFFEE_3D_SPOT.x, 0.42, COFFEE_3D_SPOT.z + 0.8);
-    coffeeCounter.castShadow = true;
-    const coffeeMachine = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.55, 0.48), new THREE.MeshStandardMaterial({ color: 0xfbbf24 }));
-    coffeeMachine.position.set(COFFEE_3D_SPOT.x, 1.12, COFFEE_3D_SPOT.z + 0.8);
-    scene3D.add(coffeeCounter, coffeeMachine);
-
-    [[-14.5, -10.3], [14.5, -10.3], [-14.5, 10.3], [14.5, 10.3]].forEach(([px, pz]) => {
-      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.28, 0.48, 12), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
-      pot.position.set(px, 0.24, pz);
-      const bush = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55), new THREE.MeshStandardMaterial({ color: 0x16a34a }));
-      bush.position.set(px, 0.82, pz);
-      bush.castShadow = true;
-      scene3D.add(pot, bush);
+    [[-14.5,-10.3],[14.5,-10.3],[-14.5,10.3],[14.5,10.3]].forEach(([px,pz]) => {
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.28,0.48,12), new THREE.MeshStandardMaterial({ color: 0xd97706 })); pot.position.set(px,0.24,pz);
+      const bush = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55), new THREE.MeshStandardMaterial({ color: 0x16a34a })); bush.position.set(px,0.82,pz); bush.castShadow = true; scene3D.add(pot, bush);
     });
 
     PEOPLE.forEach((p, idx) => buildWorkstation3D(p, idx));
-
-    update3DCameraTransform();
-    bind3DInteractions(host);
-    animate3DLoop();
+    update3DCameraTransform(); bind3DInteractions(host); animate3DLoop();
   }
 
-  function update3DCameraTransform() {
-    if (!camera3D) return;
-    const sinPhi = Math.sin(camSpherical.phi);
-    camera3D.position.set(
-      camTarget.x + camSpherical.radius * sinPhi * Math.sin(camSpherical.theta),
-      camTarget.y + camSpherical.radius * Math.cos(camSpherical.phi),
-      camTarget.z + camSpherical.radius * sinPhi * Math.cos(camSpherical.theta)
-    );
-    camera3D.lookAt(camTarget.x, camTarget.y, camTarget.z);
-  }
-
-  function reset3DCamera() {
-    camSpherical = { theta: 0.44, phi: 0.94, radius: 32.0 };
-    camTarget = { x: 0, y: 1.0, z: 0.4 };
-    update3DCameraTransform();
-  }
-
+  function update3DCameraTransform() { if (!camera3D) return; const sp = Math.sin(camSpherical.phi); camera3D.position.set(camTarget.x + camSpherical.radius*sp*Math.sin(camSpherical.theta), camTarget.y + camSpherical.radius*Math.cos(camSpherical.phi), camTarget.z + camSpherical.radius*sp*Math.cos(camSpherical.theta)); camera3D.lookAt(camTarget.x, camTarget.y, camTarget.z); }
+  function reset3DCamera() { camSpherical = { theta:0.44, phi:0.94, radius:32.0 }; camTarget = { x:0, y:1.0, z:0.4 }; update3DCameraTransform(); }
   function bind3DInteractions(host) {
-    host.addEventListener("pointerdown", (e) => {
-      isDragging3D = true;
-      dragMoved3D = false;
-      prevPointer3D = { x: e.clientX, y: e.clientY };
-    });
-
-    window.addEventListener("pointermove", (e) => {
-      if (!isDragging3D) return;
-      const dx = e.clientX - prevPointer3D.x;
-      const dy = e.clientY - prevPointer3D.y;
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragMoved3D = true;
-      prevPointer3D = { x: e.clientX, y: e.clientY };
-      camSpherical.theta -= dx * 0.0075;
-      camSpherical.phi = Math.max(0.35, Math.min(1.32, camSpherical.phi - dy * 0.0065));
-      update3DCameraTransform();
-    });
-
-    window.addEventListener("pointerup", (e) => {
+    host.addEventListener("pointerdown", e => { isDragging3D = true; dragMoved3D = false; prevPointer3D = { x:e.clientX, y:e.clientY }; });
+    window.addEventListener("pointermove", e => { if (!isDragging3D) return; const dx = e.clientX-prevPointer3D.x, dy = e.clientY-prevPointer3D.y; if (Math.abs(dx)>3 || Math.abs(dy)>3) dragMoved3D = true; prevPointer3D = { x:e.clientX, y:e.clientY }; camSpherical.theta -= dx*0.0075; camSpherical.phi = Math.max(0.35, Math.min(1.32, camSpherical.phi - dy*0.0065)); update3DCameraTransform(); });
+    window.addEventListener("pointerup", e => {
       if (isDragging3D && !dragMoved3D) {
-        const rect = renderer3D.domElement.getBoundingClientRect();
-        if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
-          pointerNDC3D.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-          pointerNDC3D.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        const r = renderer3D.domElement.getBoundingClientRect();
+        if (e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom) {
+          pointerNDC3D.x = ((e.clientX-r.left)/r.width)*2-1; pointerNDC3D.y = -((e.clientY-r.top)/r.height)*2+1;
           raycaster3D.setFromCamera(pointerNDC3D, camera3D);
-          const hitTargets = staff3DObjects.filter(o => o.group.visible).map(o => o.hitBox);
-          const hits = raycaster3D.intersectObjects(hitTargets, false);
-          if (hits.length > 0 && typeof hits[0].object.userData.personIdx === "number") {
-            selectPerson(hits[0].object.userData.personIdx);
-          }
+          const hits = raycaster3D.intersectObjects(staff3DObjects.filter(o=>o.group.visible).map(o=>o.hitBox), false);
+          if (hits.length && typeof hits[0].object.userData.personIdx === "number") selectPerson(hits[0].object.userData.personIdx);
         }
       }
       isDragging3D = false;
     });
-
-    host.addEventListener("wheel", (e) => {
-      e.preventDefault();
-      camSpherical.radius = Math.max(14, Math.min(46, camSpherical.radius + e.deltaY * 0.016));
-      update3DCameraTransform();
-    }, { passive: false });
-
+    host.addEventListener("wheel", e => { e.preventDefault(); camSpherical.radius = Math.max(14, Math.min(46, camSpherical.radius + e.deltaY*0.016)); update3DCameraTransform(); }, { passive:false });
     window.addEventListener("resize", onWindowResize3D);
   }
-
-  function onWindowResize3D() {
-    const host = document.getElementById("threeCanvasHost");
-    if (!host || !renderer3D || !camera3D) return;
-    const w = host.clientWidth;
-    const h = host.clientHeight;
-    if (w > 0 && h > 0) {
-      camera3D.aspect = w / h;
-      camera3D.updateProjectionMatrix();
-      renderer3D.setSize(w, h);
-    }
-  }
-
-  function project3DToScreen(worldVec) {
-    const host = document.getElementById("threeCanvasHost");
-    const v = worldVec.clone().project(camera3D);
-    return {
-      x: (v.x * 0.5 + 0.5) * host.clientWidth,
-      y: (-(v.y * 0.5) + 0.5) * host.clientHeight,
-      visible: v.z < 1
-    };
-  }
-
-  const tempWorldVec3 = new THREE.Vector3();
+  function onWindowResize3D() { const host = document.getElementById("threeCanvasHost"); if (!host || !renderer3D || !camera3D) return; const w = host.clientWidth, h = host.clientHeight; if (w>0 && h>0) { camera3D.aspect = w/h; camera3D.updateProjectionMatrix(); renderer3D.setSize(w,h); } }
+  function project3DToScreen(wv) { const host = document.getElementById("threeCanvasHost"), v = wv.clone().project(camera3D); return { x:(v.x*0.5+0.5)*host.clientWidth, y:(-(v.y*0.5)+0.5)*host.clientHeight, visible:v.z<1 }; }
 
   function animate3DLoop() {
-    requestAnimationFrame(animate3DLoop);
-    if (!renderer3D || !scene3D || !camera3D) return;
-
-    const nowSec = performance.now() * 0.001;
-    const dancing = isDancingNow();
-
-    discoLights3D.forEach((pl, i) => {
-      pl.intensity = dancing ? (1.6 + Math.sin(nowSec * 6 + i * 2) * 1.1) : 0;
-    });
-
-    staff3DObjects.forEach((obj) => {
-      const p = obj.person;
-      const isOnline = p.status === "online";
-      const isCoffeeWalker = coffeeBusy && activeCoffeeName === p.name && isOnline;
-
-      if (!obj.group.visible) {
-        obj.tagEl.classList.add("hidden-out");
-        return;
-      }
-
+    requestAnimationFrame(animate3DLoop); if (!renderer3D || !scene3D || !camera3D) return;
+    const nowSec = performance.now()*0.001, dancing = isDancingNow();
+    discoLights3D.forEach((pl,i) => { pl.intensity = dancing ? (1.6 + Math.sin(nowSec*6+i*2)*1.1) : 0; });
+    staff3DObjects.forEach(obj => {
+      const p = obj.person, isOnline = p.status === "online", isCoffeeWalker = coffeeBusy && activeCoffeeName === p.name && isOnline;
+      if (!obj.group.visible) { obj.tagEl.classList.add("hidden-out"); return; }
       if (isCoffeeWalker) {
-        const targetLocalX = COFFEE_3D_SPOT.x - obj.homePos.x;
-        const targetLocalZ = COFFEE_3D_SPOT.z - obj.homePos.z;
-        let ratio = 1;
-        if (coffeePhase === "to") {
-          coffeeProgress = Math.min(1, coffeeProgress + 0.012);
-          ratio = coffeeProgress;
-          if (coffeeProgress >= 1) coffeePhase = "drink";
-        } else if (coffeePhase === "back") {
-          coffeeProgress = Math.max(0, coffeeProgress - 0.012);
-          ratio = coffeeProgress;
-          if (coffeeProgress <= 0) {
-            stopCoffeeWalk();
-            renderFloor();
-          }
-        }
-        obj.avatarGroup.position.set(
-          targetLocalX * ratio,
-          0.49 + Math.abs(Math.sin(nowSec * 12)) * 0.12,
-          -0.34 + (targetLocalZ + 0.34) * ratio
-        );
+        const tx = COFFEE_3D_SPOT.x - obj.homePos.x, tz = COFFEE_3D_SPOT.z - obj.homePos.z;
+        if (coffeePhase === "to") { coffeeProgress = Math.min(1, coffeeProgress+0.012); if (coffeeProgress>=1) coffeePhase = "drink"; }
+        else if (coffeePhase === "back") { coffeeProgress = Math.max(0, coffeeProgress-0.012); if (coffeeProgress<=0) { stopCoffeeWalk(); renderFloor(); } }
+        obj.avatarGroup.position.set(tx*coffeeProgress, 0.49+Math.abs(Math.sin(nowSec*12))*0.12, -0.34+(tz+0.34)*coffeeProgress);
         obj.avatarGroup.rotation.y = coffeePhase === "back" ? Math.PI : 0;
-        if (obj.headGroup) {
-          obj.headGroup.rotation.x = Math.sin(nowSec * 8) * 0.12;
-          obj.headGroup.rotation.y = Math.cos(nowSec * 5) * 0.15;
-        }
+        if (obj.headGroup) { obj.headGroup.rotation.x = Math.sin(nowSec*8)*0.12; obj.headGroup.rotation.y = Math.cos(nowSec*5)*0.15; }
       } else {
-        const bob = isOnline ? (dancing ? Math.abs(Math.sin(nowSec * 9 + obj.idx)) * 0.22 : Math.sin(nowSec * 4 + obj.idx) * 0.025) : 0;
-        obj.avatarGroup.position.set(0, 0.49 + bob, -0.34);
-        obj.avatarGroup.rotation.y = dancing && isOnline ? Math.sin(nowSec * 7 + obj.idx) * 0.45 : 0;
-
+        obj.avatarGroup.position.set(0, 0.49+(isOnline?(dancing?Math.abs(Math.sin(nowSec*9+obj.idx))*0.22:Math.sin(nowSec*4+obj.idx)*0.025):0), -0.34);
+        obj.avatarGroup.rotation.y = dancing && isOnline ? Math.sin(nowSec*7+obj.idx)*0.45 : 0;
         if (obj.armLGroup && obj.armRGroup && obj.headGroup) {
-          if (isOnline) {
-            obj.armLGroup.rotation.x = Math.sin(nowSec * 11 + obj.idx) * 0.28;
-            obj.armRGroup.rotation.x = Math.cos(nowSec * 11 + obj.idx) * 0.28;
-            obj.headGroup.rotation.x = Math.sin(nowSec * 3.5 + obj.idx) * 0.06;
-            obj.headGroup.rotation.y = Math.cos(nowSec * 2.4 + obj.idx) * 0.12;
-          } else {
-            obj.armLGroup.rotation.x = 0;
-            obj.armRGroup.rotation.x = 0;
-            obj.headGroup.rotation.x = 0.12;
-            obj.headGroup.rotation.y = 0;
-          }
+          if (isOnline) { obj.armLGroup.rotation.x = Math.sin(nowSec*11+obj.idx)*0.28; obj.armRGroup.rotation.x = Math.cos(nowSec*11+obj.idx)*0.28; obj.headGroup.rotation.x = Math.sin(nowSec*3.5+obj.idx)*0.06; obj.headGroup.rotation.y = Math.cos(nowSec*2.4+obj.idx)*0.12; }
+          else { obj.armLGroup.rotation.x = obj.armRGroup.rotation.x = obj.headGroup.rotation.y = 0; obj.headGroup.rotation.x = 0.12; }
         }
       }
-
-      if (obj.lapScreenMat) {
-        obj.lapScreenMat.emissiveIntensity = isOnline ? (0.45 + Math.sin(nowSec * 5 + obj.idx) * 0.15) : 0.05;
-      }
-
-      const scaleTarget = isOnline ? 1.06 : 0.92;
-      obj.avatarGroup.scale.set(scaleTarget, scaleTarget, scaleTarget);
-
-      obj.avatarGroup.getWorldPosition(tempWorldVec3);
-      tempWorldVec3.y += 1.38;
-      const screenPos = project3DToScreen(tempWorldVec3);
-      if (screenPos.visible) {
-        obj.tagEl.style.left = screenPos.x.toFixed(1) + "px";
-        obj.tagEl.style.top = screenPos.y.toFixed(1) + "px";
-      }
+      if (obj.lapScreenMat) obj.lapScreenMat.emissiveIntensity = isOnline ? (0.45+Math.sin(nowSec*5+obj.idx)*0.15) : 0.05;
+      const sc = isOnline ? 1.06 : 0.92; obj.avatarGroup.scale.set(sc,sc,sc);
+      obj.avatarGroup.getWorldPosition(tempWorldVec3); tempWorldVec3.y += 1.38;
+      const sp = project3DToScreen(tempWorldVec3); if (sp.visible) { obj.tagEl.style.left = sp.x.toFixed(1)+"px"; obj.tagEl.style.top = sp.y.toFixed(1)+"px"; }
     });
-
     renderer3D.render(scene3D, camera3D);
   }
 
   function renderFloor() {
-    if (coffeeBusy && activeCoffeeName) {
-      const walkerPerson = PEOPLE.find(p => p.name === activeCoffeeName);
-      if (!walkerPerson || walkerPerson.status !== "online") {
-        stopCoffeeWalk();
-      }
-    }
-
-    updateSummaryCounts();
-    syncViewOnlyUi();
-
-    const prov = document.getElementById("provFilter").value;
-    const isProvSquare = PROVINCE_CODES.includes(prov);
-    const stFilter = document.getElementById("statusFilter").value;
-    const hideOut = document.getElementById("hideOutChk").checked;
-    let provSlotIdx = 0;
-
-    staff3DObjects.forEach((obj) => {
-      const p = obj.person;
-      const isOut = p.status !== "online";
-      const provMatch = (p.province || "Regional") === prov;
-      const hiddenByFilter = !provMatch || (stFilter !== "ALL" && p.status !== stFilter) || (hideOut && isOut);
-      const walkingCoffee = coffeeBusy && activeCoffeeName === p.name && p.status === "online" && !isProvSquare;
-
-      obj.group.visible = !hiddenByFilter;
-      obj.tagEl.classList.toggle("hidden-out", hiddenByFilter);
-      obj.tagEl.classList.toggle("selected", obj.idx === selectedIndex);
-
-      if (isProvSquare && provMatch) {
-        const pos = map2Dto3D(p.x, p.y);
-        obj.group.position.set(pos.x, 0, pos.z);
-        obj.homePos = { x: pos.x, z: pos.z };
-        provSlotIdx++;
-      } else if (p.name === "Jojo (Chief)" && prov === "Regional") {
-        obj.group.position.set(CARPET_3D_CENTER.x, 0, CARPET_3D_CENTER.z);
-        obj.homePos = { x: CARPET_3D_CENTER.x, z: CARPET_3D_CENTER.z };
-      } else {
-        const pos = map2Dto3D(p.x, p.y);
-        obj.group.position.set(pos.x, 0, pos.z);
-        obj.homePos = { x: pos.x, z: pos.z };
-      }
-
-      let bubbleCls = "st-" + p.status;
-      let bubbleText = statusLabel(p.status);
-      if (walkingCoffee) {
-        bubbleCls = "st-coffee";
-        bubbleText = getCoffeeChatterLine(p);
-      } else if (p.status === "online" && p.note && !/^(checked-in|in office|online)$/i.test(p.note.trim())) {
-        bubbleText = p.note.trim();
-      }
-
-      obj.bubbleEl.className = "bubble-tag-3d " + bubbleCls;
-      obj.bubbleEl.textContent = bubbleText;
+    if (coffeeBusy && activeCoffeeName) { const wp = PEOPLE.find(p=>p.name===activeCoffeeName); if (!wp || wp.status!=="online") stopCoffeeWalk(); }
+    updateSummaryCounts(); syncViewOnlyUi();
+    const prov = document.getElementById("provFilter").value, stFilter = document.getElementById("statusFilter").value, hideOut = document.getElementById("hideOutChk").checked;
+    if (regionalWallFramesGroup) regionalWallFramesGroup.visible = (prov === "Regional");
+    staff3DObjects.forEach(obj => {
+      const p = obj.person, isOut = p.status !== "online", provMatch = (p.province || "Regional") === prov;
+      const hidden = !provMatch || (stFilter !== "ALL" && p.status !== stFilter) || (hideOut && isOut);
+      const walkingCoffee = coffeeBusy && activeCoffeeName === p.name && p.status === "online" && !PROVINCE_CODES.includes(prov);
+      obj.group.visible = !hidden; obj.tagEl.classList.toggle("hidden-out", hidden); obj.tagEl.classList.toggle("selected", obj.idx === selectedIndex);
+      if (p.name === "Jojo (Chief)" && prov === "Regional") { obj.group.position.set(CARPET_3D_CENTER.x,0,CARPET_3D_CENTER.z); obj.homePos = {x:CARPET_3D_CENTER.x,z:CARPET_3D_CENTER.z}; }
+      else { const pos = map2Dto3D(p.x, p.y); obj.group.position.set(pos.x,0,pos.z); obj.homePos = {x:pos.x,z:pos.z}; }
+      let cls = "st-" + p.status, txt = statusLabel(p.status);
+      if (walkingCoffee) { cls = "st-coffee"; txt = getCoffeeChatterLine(p); }
+      else if (p.status === "online" && p.note && !/^(checked-in|in office|online)$/i.test(p.note.trim())) txt = p.note.trim();
+      obj.bubbleEl.className = "bubble-tag-3d " + cls; obj.bubbleEl.textContent = txt;
     });
-
     updateSelectedFooter();
   }
 
-  function selectPerson(idx) {
-    selectedIndex = idx;
-    document.getElementById("noteInput").value = PEOPLE[idx].note || "";
-    renderFloor();
-  }
-
+  function selectPerson(idx) { selectedIndex = idx; document.getElementById("noteInput").value = PEOPLE[idx].note || ""; renderFloor(); }
   function updateSelectedFooter() {
     updateActionPinStatus();
-    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) {
-      document.getElementById("selectedInfo").innerHTML = "Click a member on the 3D office to select";
-      document.getElementById("timingBadge").textContent = "--";
-      document.getElementById("checkTimesInfo").textContent = "In: -- | Out: --";
-      return;
-    }
-    const p = PEOPLE[selectedIndex];
-    const prov = document.getElementById("provFilter").value;
+    if (selectedIndex < 0 || !PEOPLE[selectedIndex]) { document.getElementById("selectedInfo").innerHTML = "Click a member on the 3D office to select"; document.getElementById("timingBadge").textContent = "--"; document.getElementById("checkTimesInfo").textContent = "In: -- | Out: --"; return; }
+    const p = PEOPLE[selectedIndex], prov = document.getElementById("provFilter").value;
     document.getElementById("selectedInfo").innerHTML = "Selected: <strong>" + esc(p.name) + "</strong> (" + esc(prov) + ") — " + esc(statusLabel(p.status)) + (isViewingProvinceOffice() ? " • [View Only]" : "");
     document.getElementById("timingBadge").textContent = getTimingBadgeText(p);
     document.getElementById("checkTimesInfo").textContent = "In: " + (formatTimeOnly(p.checkInAt) || "--") + " | Out: " + (formatTimeOnly(p.checkOutAt) || "--");
   }
-
   async function postStatusPayload(p, action, logEntry) {
     if (!APPS_SCRIPT_URL) return;
-    try {
-      await fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          type: "status",
-          name: p.name,
-          status: p.status,
-          note: p.note,
-          province: p.province || "Regional",
-          action: action,
-          time: logEntry ? formatTimeOnly(logEntry.time) : "",
-          timing: logEntry ? logEntry.timing : "",
-          checkInAt: formatTimeOnly(p.checkInAt) || "",
-          checkOutAt: formatTimeOnly(p.checkOutAt) || ""
-        })
-      });
-    } catch (_) {}
+    try { await fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ type:"status", name:p.name, status:p.status, note:p.note, province:p.province||"Regional", action, time:logEntry?formatTimeOnly(logEntry.time):"", timing:logEntry?logEntry.timing:"", checkInAt:formatTimeOnly(p.checkInAt)||"", checkOutAt:formatTimeOnly(p.checkOutAt)||"" }) }); } catch(_){}
   }
-
   function triggerCoffeeBreak() {
     if (coffeeBusy || isDancingNow() || isAfterHours || isViewingProvinceOffice()) return;
-    const onlineList = PEOPLE.filter(p => p.status === "online" && (p.province || "Regional") === "Regional");
-    if (!onlineList.length) return;
-    const p = onlineList[Math.floor(Math.random() * onlineList.length)];
-    if (!p || p.status !== "online") return;
-
-    coffeeBusy = true;
-    activeCoffeeName = p.name;
-    coffeePhase = "to";
-    coffeeProgress = 0;
-    coffeeChatterIndex = 0;
-
-    clearTimeout(coffeeDrinkTimeout);
-    clearInterval(coffeeChatterInterval);
-    renderFloor();
-
-    coffeeChatterInterval = setInterval(() => {
-      if (!coffeeBusy || p.status !== "online") {
-        stopCoffeeWalk();
-        renderFloor();
-        return;
-      }
-      coffeeChatterIndex++;
-      renderFloor();
-    }, 5500);
-
-    coffeeDrinkTimeout = setTimeout(() => {
-      if (!coffeeBusy || p.status !== "online") {
-        stopCoffeeWalk();
-        renderFloor();
-        return;
-      }
-      coffeePhase = "back";
-      coffeeChatterIndex++;
-      renderFloor();
-    }, COFFEE_DURATION_MS);
+    const online = PEOPLE.filter(p => p.status === "online" && (p.province || "Regional") === "Regional"); if (!online.length) return;
+    const p = online[Math.floor(Math.random()*online.length)]; if (!p || p.status !== "online") return;
+    coffeeBusy = true; activeCoffeeName = p.name; coffeePhase = "to"; coffeeProgress = 0; coffeeChatterIndex = 0;
+    clearTimeout(coffeeDrinkTimeout); clearInterval(coffeeChatterInterval); renderFloor();
+    coffeeChatterInterval = setInterval(() => { if (!coffeeBusy || p.status !== "online") { stopCoffeeWalk(); renderFloor(); return; } coffeeChatterIndex++; renderFloor(); }, 5500);
+    coffeeDrinkTimeout = setTimeout(() => { if (!coffeeBusy || p.status !== "online") { stopCoffeeWalk(); renderFloor(); return; } coffeePhase = "back"; coffeeChatterIndex++; renderFloor(); }, COFFEE_DURATION_MS);
   }
-
   function startDanceBreak(mins) {
-    if (isAfterHours) return;
-    danceEndTime = Date.now() + (mins || DANCE_BREAK_MINUTES) * 60000;
-    document.getElementById("danceBanner").classList.add("active");
-    clearInterval(danceCountdownInterval);
-    danceCountdownInterval = setInterval(() => {
-      const rem = Math.max(0, Math.floor((danceEndTime - Date.now()) / 1000));
-      if (rem <= 0) { stopDanceBreak(); return; }
-      document.getElementById("danceTimerText").textContent = String(Math.floor(rem / 60)).padStart(2, "0") + ":" + String(rem % 60).padStart(2, "0");
-    }, 1000);
+    if (isAfterHours) return; danceEndTime = Date.now() + (mins || DANCE_BREAK_MINUTES)*60000; document.getElementById("danceBanner").classList.add("active");
+    clearInterval(danceCountdownInterval); danceCountdownInterval = setInterval(() => { const rem = Math.max(0, Math.floor((danceEndTime-Date.now())/1000)); if (rem<=0) { stopDanceBreak(); return; } document.getElementById("danceTimerText").textContent = String(Math.floor(rem/60)).padStart(2,"0")+":"+String(rem%60).padStart(2,"0"); }, 1000);
   }
-
-  function stopDanceBreak() {
-    danceEndTime = 0;
-    clearInterval(danceCountdownInterval);
-    document.getElementById("danceBanner").classList.remove("active");
-  }
-
-  function checkAutoOfflineSchedule() {
-    const now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
-    const after730 = (mins >= 19 * 60 + 30) || (mins < 6 * 60);
-    isAfterHours = after730;
-    document.getElementById("stageWrap").classList.toggle("after-hours-dim", after730);
-    document.getElementById("afterHoursPill").classList.toggle("active", after730);
-  }
-
-  function openTodayLogModal() {
-    document.getElementById("logModalBackdrop").classList.add("open");
-    renderTodayLogTable();
-    fetchFromSheet(false);
-  }
+  function stopDanceBreak() { danceEndTime = 0; clearInterval(danceCountdownInterval); document.getElementById("danceBanner").classList.remove("active"); }
+  function checkAutoOfflineSchedule() { const now = new Date(), m = now.getHours()*60 + now.getMinutes(), after = (m >= 19*60+30) || (m < 6*60); isAfterHours = after; document.getElementById("stageWrap").classList.toggle("after-hours-dim", after); document.getElementById("afterHoursPill").classList.toggle("active", after); }
+  function openTodayLogModal() { document.getElementById("logModalBackdrop").classList.add("open"); renderTodayLogTable(); fetchFromSheet(false); }
   function closeTodayLogModal() { document.getElementById("logModalBackdrop").classList.remove("open"); }
-  function renderTodayLogTable() {
-    const tb = document.getElementById("logTableBody");
-    tb.innerHTML = todayLogsData.length ? todayLogsData.map(r => `<tr><td>${esc(formatTimeOnly(r.time))}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.province)}</td><td>${esc(r.action)}</td><td>${esc(r.status)}</td><td>${esc(r.timing)}</td><td>${esc(r.note)}</td></tr>`).join("") : `<tr><td colspan="7">No check-in/out logs recorded yet today.</td></tr>`;
-  }
+  function renderTodayLogTable() { document.getElementById("logTableBody").innerHTML = todayLogsData.length ? todayLogsData.map(r => `<tr><td>${esc(formatTimeOnly(r.time))}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.province)}</td><td>${esc(r.action)}</td><td>${esc(r.status)}</td><td>${esc(r.timing)}</td><td>${esc(r.note)}</td></tr>`).join("") : `<tr><td colspan="7">No check-in/out logs recorded yet today.</td></tr>`; }
   function exportTodayLogCsv() {
-    const lines = [["Date", "Time", "Name", "Office", "Action", "Status", "Timing", "Note"].join(",")].concat(todayLogsData.map(r => [r.date, formatTimeOnly(r.time), r.name, r.province, r.action, r.status, r.timing, r.note].map(v => `"${String(v || "").replace(/"/g, '""')}"`).join(",")));
-    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" }), url = URL.createObjectURL(blob), a = document.createElement("a");
-    a.href = url; a.download = "PDMU_Log_" + new Date().toISOString().slice(0, 10) + ".csv"; a.click(); URL.revokeObjectURL(url);
+    const lines = [["Date","Time","Name","Office","Action","Status","Timing","Note"].join(",")].concat(todayLogsData.map(r => [r.date,formatTimeOnly(r.time),r.name,r.province,r.action,r.status,r.timing,r.note].map(v => `"${String(v||"").replace(/"/g,'""')}"`).join(",")));
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type:"text/csv;charset=utf-8;" })); a.download = "PDMU_Log_" + new Date().toISOString().slice(0,10) + ".csv"; a.click();
   }
-  async function archiveTodayNow() {
-    if (!APPS_SCRIPT_URL) { alert("Ibutang una ang APPS_SCRIPT_URL para ma-archive sa Sheet."); return; }
-    await fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "archive_day" }) }).catch(() => {});
-    alert("Na-archive na sa VO_Daily_History!");
-  }
-
+  async function archiveTodayNow() { if (!APPS_SCRIPT_URL) { alert("Ibutang una ang APPS_SCRIPT_URL."); return; } await fetch(APPS_SCRIPT_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({type:"archive_day"}) }).catch(()=>{}); alert("Na-archive na sa VO_Daily_History!"); }
   async function fetchFromSheet(showAlert) {
     if (!APPS_SCRIPT_URL) { document.getElementById("syncPill").textContent = "Local Mode"; return; }
     try {
       const json = await (await fetch(APPS_SCRIPT_URL + "?t=" + Date.now())).json();
       if (json && json.ok) {
-        if (Array.isArray(json.data) && json.data.length) {
-          json.data.forEach(row => {
-            const m = PEOPLE.find(p => p.name.toLowerCase() === String(row.name || "").trim().toLowerCase());
-            if (m) {
-              m.status = normalizeStatus(row.status);
-              m.note = row.note || "";
-              m.checkInAt = row.checkInAt ? formatTimeOnly(row.checkInAt) : "";
-              m.checkOutAt = row.checkOutAt ? formatTimeOnly(row.checkOutAt) : "";
-            }
-          });
-        }
+        if (Array.isArray(json.data)) json.data.forEach(row => { const m = PEOPLE.find(p => p.name.toLowerCase() === String(row.name||"").trim().toLowerCase()); if (m) { m.status = normalizeStatus(row.status); m.note = row.note || ""; m.checkInAt = row.checkInAt ? formatTimeOnly(row.checkInAt) : ""; m.checkOutAt = row.checkOutAt ? formatTimeOnly(row.checkOutAt) : ""; } });
         if (Array.isArray(json.messages)) { chatMessages = json.messages; if (convoUnlocked) renderChatMessages(); }
         if (json.pins) { savedPinsMap = json.pins; updatePinBadgeUI(); updateActionPinStatus(); }
-        if (Array.isArray(json.todayLogs)) {
-          todayLogsData = json.todayLogs.map(r => Object.assign({}, r, { time: formatTimeOnly(r.time) }));
-          renderTodayLogTable();
-        }
-        renderFloor();
-        document.getElementById("syncPill").textContent = "Live Synced";
-        if (showAlert) alert("Synced!");
+        if (Array.isArray(json.todayLogs)) { todayLogsData = json.todayLogs.map(r => Object.assign({}, r, { time: formatTimeOnly(r.time) })); renderTodayLogTable(); }
+        renderFloor(); document.getElementById("syncPill").textContent = "Live Synced"; if (showAlert) alert("Synced!");
       }
-    } catch (e) { document.getElementById("syncPill").textContent = "Offline Cache"; }
+    } catch (_) { document.getElementById("syncPill").textContent = "Offline Cache"; }
   }
 
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
-  }
-
-  populateChatSenderSelect();
-  init3DOffice();
-  renderFloor();
-  checkAutoOfflineSchedule();
-  fetchFromSheet(false);
-  setTimeout(triggerCoffeeBreak, 3500);
-  setInterval(() => fetchFromSheet(false), 15000);
-  let coffeeScheduleInterval = setInterval(triggerCoffeeBreak, COFFEE_INTERVAL_MS);
+  if ("serviceWorker" in navigator) window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+  populateChatSenderSelect(); init3DOffice(); renderFloor(); checkAutoOfflineSchedule(); fetchFromSheet(false);
+  setTimeout(triggerCoffeeBreak, 3500); setInterval(() => fetchFromSheet(false), 15000); setInterval(triggerCoffeeBreak, COFFEE_INTERVAL_MS);
 </script>
 </body>
 </html>
